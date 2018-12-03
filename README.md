@@ -49,7 +49,7 @@ url 'https://dl.bintray.com/zouyuhan/maven'
 ```
 
 如下示例图：
-![](./img/android_sdk_autotrack_1.png)
+![](https://www.sensorsdata.cn/manual/img/android_sdk_autotrack_1.png)
 
 
 **第二步：**在 **主 module** 的 build.gradle 文件中添加 com.sensorsdata.analytics.android 插件、神策分析 SDK 依赖：
@@ -68,7 +68,7 @@ implementation 'com.sensorsdata.analytics.android:SensorsAnalyticsSDK:2.1.2'
 SensorsAnalyticsSDK 的最新版本号请参考 [github 更新日志](https://github.com/sensorsdata/sa-sdk-android/releases)。
 
 如下示例图：
-![](./img/android_sdk_autotrack_2.png)
+![](https://www.sensorsdata.cn/manual//img/android_sdk_autotrack_2.png)
 
 **第三步：** 在程序的入口 **Application** 的 `onCreate()` 中调用 `SensorsDataAPI.sharedInstance()` 初始化 SDK：
 
@@ -199,7 +199,7 @@ SensorsAnalyticsEventTypeAppClick];
 
 2、对于使用 Cocoapods 集成神策分析 SDK 的开发者，推荐使用 pod 'SensorsAnalyticsSDK', :subspecs => ['ENABLE_REACT_NATIVE_APPCLICK'] 集成方式开启，或者修改 Pod 中 `SensorsAnalyticsSDK` 项目的编译选项，如下图：
 
-![](./img/ios_autotrack_1.png)
+![](https://www.sensorsdata.cn/manual//img/ios_autotrack_1.png)
 
 
 
@@ -232,7 +232,7 @@ RNSensorsAnalyticsModule.track("RN_AddToFav",{"ProductID":123456,"UserLevel":"VI
 
 具体操作如下图所示：
 
-![](./img/android_sdk_reactnative_3.png)
+![](https://www.sensorsdata.cn/manual//img/android_sdk_reactnative_3.png)
 
 __$AppClick（ React Native 元素点击）事件的预置属性：__
 
