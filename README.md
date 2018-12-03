@@ -51,6 +51,7 @@ url 'https://dl.bintray.com/zouyuhan/maven'
 如下示例图：
 ![](./img/android_sdk_autotrack_1.png)
 
+
 **第二步：**在 **主 module** 的 build.gradle 文件中添加 com.sensorsdata.analytics.android 插件、神策分析 SDK 依赖：
 
 ```android
@@ -191,16 +192,10 @@ SensorsAnalyticsEventTypeAppClick];
 ## 3.2 开启 React Native 页面控件的自动采集（$AppClick）
 
 1、对于直接集成源代码的开发者，可以在编译选项 Preprocessor Macros 中定义选项 
-```
-SENSORS_ANALYTICS_REACT_NATIVE=1
-``` 
-开启。
+`SENSORS_ANALYTICS_REACT_NATIVE=1`开启。
 
 （对于直接集成 SDK 工程的项目，需要在 SDK 对应的 project 中修改编译选项，在 Preprocessor Macros 中定义选项 
-```
-SENSORS_ANALYTICS_REACT_NATIVE=1
-``` 
-）
+`SENSORS_ANALYTICS_REACT_NATIVE=1`）
 
 2、对于使用 Cocoapods 集成神策分析 SDK 的开发者，推荐使用 pod 'SensorsAnalyticsSDK', :subspecs => ['ENABLE_REACT_NATIVE_APPCLICK'] 集成方式开启，或者修改 Pod 中 `SensorsAnalyticsSDK` 项目的编译选项，如下图：
 
