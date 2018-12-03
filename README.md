@@ -251,8 +251,8 @@ pod 'SensorsAnalyticsSDK', :subspecs => ['ENABLE_REACT_NATIVE_APPCLICK']
 
 在具体的 js 文件中导入神策模块（RNSensorsAnalyticsModule），导入模块示例如下：
 
-```java
-import { NativeModules } from 'react-native';
+```javascript
+import {NativeModules}from'react-native';
 const RNSensorsAnalyticsModule = NativeModules.RNSensorsAnalyticsModule;
 ```
 
