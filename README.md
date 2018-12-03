@@ -1,6 +1,6 @@
-# 1.使用 npm 方式 install 神策 SDK 
+# 1.使用 npm 方式 install 神策 SDK 模块
 
-对于 React Native 开发的应用，可以使用 npm 方式集成神策 SDK 插件。
+对于 React Native 开发的应用，可以使用 npm 方式集成神策 SDK RN 模块。
 
 ## 1.1 npm 安装 react-native-sensors-analytics 模块
 
