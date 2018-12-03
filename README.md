@@ -19,6 +19,7 @@ react-native link @sensors.data/react-native-sensors-analytics
 # 2. Android 端
 
 ## 2.1 集成神策的 gradle 插件、初始化 SDK 
+**第一步：**
 
 ```android
 buildscript {
@@ -198,7 +199,8 @@ SENSORS_ANALYTICS_REACT_NATIVE=1
 （对于直接集成 SDK 工程的项目，需要在 SDK 对应的 project 中修改编译选项，在 Preprocessor Macros 中定义选项 
 ```
 SENSORS_ANALYTICS_REACT_NATIVE=1
-``` ）
+``` 
+）
 
 2、对于使用 Cocoapods 集成神策分析 SDK 的开发者，推荐使用 pod 'SensorsAnalyticsSDK', :subspecs => ['ENABLE_REACT_NATIVE_APPCLICK'] 集成方式开启，或者修改 Pod 中 `SensorsAnalyticsSDK` 项目的编译选项，如下图：
 
