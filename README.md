@@ -227,15 +227,11 @@ SensorsAnalyticsEventTypeAppClick];
 ## 3.3 开启 React Native 页面控件的自动采集（$AppClick）
 
 1、对于直接集成源代码的开发者，可以在编译选项 Preprocessor Macros 中定义选项 
-```
-SENSORS_ANALYTICS_REACT_NATIVE=1
-``` 
+`SENSORS_ANALYTICS_REACT_NATIVE=1`
 开启。
 
 （对于直接集成 SDK 工程的项目，需要在 SDK 对应的 project 中修改编译选项，在 Preprocessor Macros 中定义选项 
-```
-SENSORS_ANALYTICS_REACT_NATIVE=1
-``` ）
+`SENSORS_ANALYTICS_REACT_NATIVE=1`）
 
 2、对于使用 Cocoapods 集成神策分析 SDK 的开发者，推荐使用:
 
