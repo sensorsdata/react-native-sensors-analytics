@@ -19,8 +19,7 @@ react-native link @sensors.data/react-native-sensors-analytics
 # 2. Android 端
 
 ## 2.1 集成神策的 gradle 插件、初始化 SDK 
-**第一步：**
-
+**第一步：**在 **project** 级别的 build.gradle 文件中添加 Sensors Analytics android-gradle-plugin 依赖：
 ```android
 buildscript {
 repositories {
@@ -51,7 +50,6 @@ url 'https://dl.bintray.com/zouyuhan/maven'
 如下示例图：
 ![](https://www.sensorsdata.cn/manual/img/android_sdk_autotrack_1.png)
 
-
 **第二步：**在 **主 module** 的 build.gradle 文件中添加 com.sensorsdata.analytics.android 插件、神策分析 SDK 依赖：
 
 ```android
@@ -68,7 +66,7 @@ implementation 'com.sensorsdata.analytics.android:SensorsAnalyticsSDK:2.1.2'
 SensorsAnalyticsSDK 的最新版本号请参考 [github 更新日志](https://github.com/sensorsdata/sa-sdk-android/releases)。
 
 如下示例图：
-![](https://www.sensorsdata.cn/manual//img/android_sdk_autotrack_2.png)
+![](https://www.sensorsdata.cn/manual/img/android_sdk_autotrack_2.png)
 
 **第三步：** 在程序的入口 **Application** 的 `onCreate()` 中调用 `SensorsDataAPI.sharedInstance()` 初始化 SDK：
 
@@ -175,31 +173,79 @@ SensorsDataAPI.sharedInstance().enableReactNativeAutoTrack();
 
 
 # 3. iOS 端
-## 3.1 集成神策分析 iOS SDK
+## 3.1 集成并初始化 SDK
 
-详细集成方式可查看 [iOS SDK 使用说明](https://www.sensorsdata.cn/manual/ios_sdk.html)
+**第一步：** 使用 CocoaPods 集成：
 
-在原生页面的 Appdelegate.h 文件中，初始化 SDK 之后，可通过 `enableAutoTrack:` 接口打开自动采集功能
+```
+pod 'SensorsAnalyticsSDK'
+```
+**第二步：** 
+在程序的入口（如 AppDelegate.m ）中引入 `SensorsAnalyticsSDK.h`，并在初始化方法（如 `- application:didFinishLaunchingWithOptions:launchOptions` ）中调用 `sharedInstanceWithServerURL:andLaunchOptions:andDebugMode:` 初始化 SDK。
 
-```objectivec
+
+```C
+#import "SensorsAnalyticsSDK.h"
+
+#ifdef DEBUG
+#define SA_SERVER_URL @"<#【测试项目】数据接收地址#>"
+#define SA_DEBUG_MODE SensorsAnalyticsDebugAndTrack
+#else
+#define SA_SERVER_URL @"<#【正式项目】数据接收地址#>"
+#define SA_DEBUG_MODE SensorsAnalyticsDebugOff
+#endif
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+[self initSensorsAnalyticsWithLaunchOptions:launchOptions];
+return YES;
+}
+
+- (void)initSensorsAnalyticsWithLaunchOptions:(NSDictionary *)launchOptions {
+// 初始化 SDK
+[SensorsAnalyticsSDK sharedInstanceWithServerURL:SA_SERVER_URL
+andLaunchOptions:launchOptions
+
 // 打开自动采集, 并指定追踪哪些 AutoTrack 事件
-[[SensorsAnalyticsSDK sharedInstance] enableAutoTrack:SensorsAnalyticsEventTypeAppStart |
-SensorsAnalyticsEventTypeAppEnd |
+[[SensorsAnalyticsSDK sharedInstance] enableAutoTrack:SensorsAnalyticsEventTypeAppStart|
+SensorsAnalyticsEventTypeAppEnd|
+SensorsAnalyticsEventTypeAppClick];
+
+}
+```
+## 3.2 开启全埋点
+开发者集成 Sensors Analytics SDK 后，SDK 可以自动采集一些用户行为，如 App 启动、退出等，开发者可以通过 enableAutoTrack: 接口打开自动采集功能:
+
+```C
+// 打开自动采集, 并指定追踪哪些 AutoTrack 事件
+[[SensorsAnalyticsSDK sharedInstance] enableAutoTrack:SensorsAnalyticsEventTypeAppStart|
+SensorsAnalyticsEventTypeAppEnd|
+SensorsAnalyticsEventTypeAppViewScreen|
 SensorsAnalyticsEventTypeAppClick];
 ```
 
-
-## 3.2 开启 React Native 页面控件的自动采集（$AppClick）
+## 3.3 开启 React Native 页面控件的自动采集（$AppClick）
 
 1、对于直接集成源代码的开发者，可以在编译选项 Preprocessor Macros 中定义选项 
-`SENSORS_ANALYTICS_REACT_NATIVE=1`开启。
+```
+SENSORS_ANALYTICS_REACT_NATIVE=1
+``` 
+开启。
 
 （对于直接集成 SDK 工程的项目，需要在 SDK 对应的 project 中修改编译选项，在 Preprocessor Macros 中定义选项 
-`SENSORS_ANALYTICS_REACT_NATIVE=1`）
+```
+SENSORS_ANALYTICS_REACT_NATIVE=1
+``` ）
 
-2、对于使用 Cocoapods 集成神策分析 SDK 的开发者，推荐使用 pod 'SensorsAnalyticsSDK', :subspecs => ['ENABLE_REACT_NATIVE_APPCLICK'] 集成方式开启，或者修改 Pod 中 `SensorsAnalyticsSDK` 项目的编译选项，如下图：
+2、对于使用 Cocoapods 集成神策分析 SDK 的开发者，推荐使用:
 
-![](https://www.sensorsdata.cn/manual//img/ios_autotrack_1.png)
+```
+pod 'SensorsAnalyticsSDK', :subspecs => ['ENABLE_REACT_NATIVE_APPCLICK']
+```
+
+集成方式开启，或者修改 Pod 中 `SensorsAnalyticsSDK` 项目的编译选项，如下图：
+
+![](https://www.sensorsdata.cn/manual/img/ios_autotrack_1.png)
 
 
 
@@ -232,7 +278,7 @@ RNSensorsAnalyticsModule.track("RN_AddToFav",{"ProductID":123456,"UserLevel":"VI
 
 具体操作如下图所示：
 
-![](https://www.sensorsdata.cn/manual//img/android_sdk_reactnative_3.png)
+![](https://www.sensorsdata.cn/manual/img/android_sdk_reactnative_3.png)
 
 __$AppClick（ React Native 元素点击）事件的预置属性：__
 
@@ -240,6 +286,7 @@ __$AppClick（ React Native 元素点击）事件的预置属性：__
 | :------------- | :--- | :----- | :----- | :----- |
 | $element_type | 字符串  | 元素类型 | 控件的类型（ RNView ）  |     |
 | $element_content | 字符串  | 元素内容 | 控件文本内容 |       |
+
 
 
 
