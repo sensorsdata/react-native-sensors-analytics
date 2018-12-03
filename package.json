@@ -1,6 +1,6 @@
 {
   "name": "@sensors.data/react-native-sensors-analytics",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "private": false,
   "description": "神策分析 RN 组件",
   "main": "index.js",
@@ -14,5 +14,10 @@
     "神策分析"
   ],
   "author": "zuowei.xiang",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sensorsdata/react-native-sensors-analytics.git"
+  },
+   "homepage": "https://github.com/sensorsdata/react-native-sensors-analytics"
 }
