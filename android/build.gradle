@@ -31,8 +31,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.facebook.react:react-native:+'
+    compileOnly 'com.facebook.react:react-native:+'
 
     //添加 Sensors Analytics SDK 依赖
-    api 'com.sensorsdata.analytics.android:SensorsAnalyticsSDK:latest.integration'
+    compileOnly 'com.sensorsdata.analytics.android:SensorsAnalyticsSDK:latest.integration'
 }
