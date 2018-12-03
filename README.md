@@ -19,7 +19,7 @@ react-native link @sensors.data/react-native-sensors-analytics
 # 2. Android 端
 
 ## 2.1 集成神策的 gradle 插件、初始化 SDK 
-**第一步：**在 **project** 级别的 build.gradle 文件中添加 Sensors Analytics android-gradle-plugin 依赖：
+**第一步：** 在 **project** 级别的 build.gradle 文件中添加 Sensors Analytics android-gradle-plugin 依赖：
 ```android
 buildscript {
 repositories {
@@ -50,7 +50,7 @@ url 'https://dl.bintray.com/zouyuhan/maven'
 如下示例图：
 ![](https://www.sensorsdata.cn/manual/img/android_sdk_autotrack_1.png)
 
-**第二步：**在 **主 module** 的 build.gradle 文件中添加 com.sensorsdata.analytics.android 插件、神策分析 SDK 依赖：
+**第二步：** 在 **主 module** 的 build.gradle 文件中添加 com.sensorsdata.analytics.android 插件、神策分析 SDK 依赖：
 
 ```android
 apply plugin: 'com.android.application'
