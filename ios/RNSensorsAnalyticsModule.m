@@ -47,7 +47,7 @@ RCT_EXPORT_METHOD(track:(NSString *)event withProperties:(NSDictionary *)propert
 /**
  * 导出 trackTimerBegin 方法给 RN 使用.
  *
- * 初始化事件的计时器，默认计时单位为秒(计时开始).
+ * 初始化事件的计时器，默认计时单位为毫秒(计时开始).
  * @param eventName 事件的名称.
  *
  *  RN 中使用示例：（计时器事件名称 viewTimer ）
@@ -59,7 +59,7 @@ RCT_EXPORT_METHOD(track:(NSString *)event withProperties:(NSDictionary *)propert
  */
 RCT_EXPORT_METHOD(trackTimerBegin:(NSString *)event){
     @try {
-        [[SensorsAnalyticsSDK sharedInstance] trackTimerStart:event];
+        [[SensorsAnalyticsSDK sharedInstance] trackTimerBegin:event];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
