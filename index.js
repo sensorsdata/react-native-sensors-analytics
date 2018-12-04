@@ -12,21 +12,14 @@ function login (loginId) {
 }
 
 /**
- * 注销
- */
-function logout () {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.logout && RNSensorsAnalyticsModule.logout();
-}
-
-/**
  * 设置用户属性
  *
  * @param profile 用户属性
  * Sex
  * Age
  */
-function set (profile) {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.set && RNSensorsAnalyticsModule.set(profile);
+function profileSet (profile) {
+  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.profileSet && RNSensorsAnalyticsModule.profileSet(profile);
 }
 
 /**
@@ -34,27 +27,10 @@ function set (profile) {
  *
  * @param profile
  */
-function setOnce (profile) {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.setOnce && RNSensorsAnalyticsModule.setOnce(profile);
+function profileSetOnce (profile) {
+  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.profileSetOnce && RNSensorsAnalyticsModule.profileSetOnce(profile);
 }
 
-/**
- * 开启自动追踪
- *
- * @param eventTypeList 自动采集的类型, eg: ['AppStart', 'AppEnd', 'AppClick', 'AppViewScreen']
- */
-function enableAutoTrack (eventTypeList) {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.enableAutoTrack && RNSensorsAnalyticsModule.enableAutoTrack(eventTypeList);
-}
-
-/**
- * 开启自动追踪,支持 React Native
- *
- * 只支持 Android，iOS 把 Podfile 改成 `pod 'SensorsAnalyticsSDK', :subspecs => ['ENABLE_REACT_NATIVE_APPCLICK']`
- */
-function enableReactNativeAutoTrack () {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.enableReactNativeAutoTrack && RNSensorsAnalyticsModule.enableReactNativeAutoTrack();
-}
 
 /**
  * 追踪事件
@@ -62,8 +38,8 @@ function enableReactNativeAutoTrack () {
  * @param event
  * @param properties
  */
-function track (event, properties,dyproperty = getDynamicProperties()) {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.track && RNSensorsAnalyticsModule.track(event, properties,dyproperty);
+function track (event, properties) {
+  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.track && RNSensorsAnalyticsModule.track(event, properties);
 }
 
 /**
@@ -71,8 +47,8 @@ function track (event, properties,dyproperty = getDynamicProperties()) {
  *
  * @param event
  */
-function trackBegin (event) {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.trackBegin && RNSensorsAnalyticsModule.trackBegin(event);
+function trackTimerStart (event) {
+  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.trackTimerStart && RNSensorsAnalyticsModule.trackTimerStart(event);
 }
 
 /**
@@ -81,38 +57,17 @@ function trackBegin (event) {
  * @param event
  * @param properties
  */
-function trackEnd (event, properties) {
+function trackTimerEnd (event, properties) {
   RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.trackEnd && RNSensorsAnalyticsModule.trackEnd(event, properties);
 }
 
-/**
- * 渠道追踪
- *
- * @param event
- * @param properties
- */
-function trackInstallation (event, properties = null) {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.trackInstallation && RNSensorsAnalyticsModule.trackInstallation(event, properties);
-}
-
-/** 
- * crash 追踪
- */
-function trackAppCrash () {
-  RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.trackCrash && RNSensorsAnalyticsModule.trackCrash();
-}
 
 export default {
   login,
-  logout,
-  set,
-  setOnce,
-  enableAutoTrack,
-  enableReactNativeAutoTrack,
+  profileSet,
+  profileSetOnce,
   track,
-  trackBegin,
-  trackEnd,
-  trackInstallation,
-  trackAppCrash,
+  trackTimerStart,
+  trackTimerEnd,
   sa: RNSensorsAnalyticsModule,
 };

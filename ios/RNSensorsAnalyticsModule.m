@@ -11,7 +11,7 @@
 #import <React/RCTEventDispatcher.h>
 #import "SensorsAnalyticsSDK.h"
 
-#define MODULE_VERSION @"1.0.0"
+static NSString * const moduleVersion = @"1.1.0";
 
 @implementation RNSensorsAnalyticsModule
 
@@ -47,7 +47,7 @@ RCT_EXPORT_METHOD(track:(NSString *)event withProperties:(NSDictionary *)propert
 /**
  * 导出 trackTimerBegin 方法给 RN 使用.
  *
- * 初始化事件的计时器，默认计时单位为毫秒(计时开始).
+ * 初始化事件的计时器，默认计时单位为秒(计时开始).
  * @param eventName 事件的名称.
  *
  *  RN 中使用示例：（计时器事件名称 viewTimer ）
@@ -59,7 +59,28 @@ RCT_EXPORT_METHOD(track:(NSString *)event withProperties:(NSDictionary *)propert
  */
 RCT_EXPORT_METHOD(trackTimerBegin:(NSString *)event){
     @try {
-        [[SensorsAnalyticsSDK sharedInstance] trackTimerBegin:event];
+        [[SensorsAnalyticsSDK sharedInstance] trackTimerStart:event];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 导出 trackTimerStart 方法给 RN 使用.
+ *
+ * 初始化事件的计时器，默认计时单位为秒(计时开始).
+ * @param eventName 事件的名称.
+ *
+ *  RN 中使用示例：（计时器事件名称 viewTimer ）
+ *     <Button
+ *            title="Button"
+ *            onPress={()=>
+ *            RNSensorsAnalyticsModule.trackTimerStart("viewTimer")}>
+ *     </Button>
+ */
+RCT_EXPORT_METHOD(trackTimerStart:(NSString *)event){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] trackTimerStart:event];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -67,7 +88,7 @@ RCT_EXPORT_METHOD(trackTimerBegin:(NSString *)event){
 /**
  * 导出 trackTimerEnd 方法给 RN 使用.
  *
- * 初始化事件的计时器，默认计时单位为毫秒(计时结束并触发事件).
+ * 初始化事件的计时器，默认计时单位为秒(计时结束并触发事件).
  * @param eventName 事件的名称.
  *
  *  RN 中使用示例：（计时器事件名称 viewTimer ）
@@ -217,6 +238,25 @@ RCT_EXPORT_METHOD(set:(NSDictionary *)profileDict){
     }
 }
 /**
+ * 导出 profileSet 方法给 RN 使用.
+ *
+ * @param profileDict 用户属性
+ *
+ * RN 中使用示例：（保存用户的属性 "sex":"男"）
+ *     <Button
+ *            title="Button"
+ *            onPress={()=>
+ *            RNSensorsAnalyticsModule.profileSet({"sex":"男"})}>
+ *     </Button>
+ */
+RCT_EXPORT_METHOD(profileSet:(NSDictionary *)profileDict){
+    @try {
+        [[[SensorsAnalyticsSDK sharedInstance] people] set:profileDict];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+/**
  * 导出 setOnce 方法给 RN 使用.
  *
  * 首次设置用户的一个或多个 Profile.
@@ -232,6 +272,28 @@ RCT_EXPORT_METHOD(set:(NSDictionary *)profileDict){
  *     </Button>
  */
 RCT_EXPORT_METHOD(setOnce:(NSDictionary *)profileDict){
+    @try {
+        [[[SensorsAnalyticsSDK sharedInstance] people] setOnce:profileDict];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+/**
+ * 导出 profileSetOnce 方法给 RN 使用.
+ *
+ * 首次设置用户的一个或多个 Profile.
+ * 与set接口不同的是，如果之前存在，则忽略，否则，新创建.
+ *
+ * @param profileDict 属性列表
+ *
+ *  RN 中使用示例：（保存用户的属性 "sex":"男"）
+ *     <Button
+ *            title="Button"
+ *            onPress={()=>
+ *            RNSensorsAnalyticsModule.profileSetOnce({"sex":"男"})}>
+ *     </Button>
+ */
+RCT_EXPORT_METHOD(profileSetOnce:(NSDictionary *)profileDict){
     @try {
         [[[SensorsAnalyticsSDK sharedInstance] people] setOnce:profileDict];
     } @catch (NSException *exception) {
@@ -259,6 +321,29 @@ RCT_EXPORT_METHOD(unset:(NSString *) profile){
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
 }
+
+/**
+ * 导出 profileUnset 方法给 RN 使用.
+ * <p>
+ * 删除用户的一个 Profile.
+ *
+ * @param property 属性名称.
+ *                 <p>
+ *                 RN 中使用示例：
+ *                 <Button
+ *                 title="Button"
+ *                 onPress={()=>
+ *                 RNSensorsAnalyticsModule.profileUnset("sex")}>
+ *                 </Button>
+ */
+RCT_EXPORT_METHOD(profileUnset:(NSString *) profile){
+    @try {
+        [[[SensorsAnalyticsSDK sharedInstance] people] unset:profile];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
 /**
  * 导出 increment 方法给 RN 使用.
  *
@@ -276,6 +361,30 @@ RCT_EXPORT_METHOD(unset:(NSString *) profile){
  *     </Button>
  */
 RCT_EXPORT_METHOD(increment:(NSString *)profile by:(NSNumber *)amount){
+    @try {
+        [[[SensorsAnalyticsSDK sharedInstance] people] increment:profile by:amount];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 导出 profileIncrement 方法给 RN 使用.
+ *
+ * 给一个数值类型的Profile增加一个数值. 只能对数值型属性进行操作，若该属性
+ * 未设置，则添加属性并设置默认值为0.
+ *
+ * @param property 属性名称
+ * @param value    属性的值，值的类型只允许为 Number .
+ *
+ * RN 中使用示例：
+ *     <Button
+ *            title="Button"
+ *            onPress={()=>
+ *            RNSensorsAnalyticsModule.profileIncrement("money",10)}>
+ *     </Button>
+ */
+RCT_EXPORT_METHOD(profileIncrement:(NSString *)profile by:(NSNumber *)amount){
     @try {
         [[[SensorsAnalyticsSDK sharedInstance] people] increment:profile by:amount];
     } @catch (NSException *exception) {
@@ -307,6 +416,31 @@ RCT_EXPORT_METHOD(append:(NSString *)profile by:(NSArray *)content){
     }
 }
 /**
+ * 导出 profileAppend 方法给 RN 使用.
+ * <p>
+ * 向一个<code>NSSet</code>类型的value添加一些值
+ *
+ * @param property 属性名称.
+ * @param value    新增的元素.
+ *                 <p>
+ * RN 中使用示例：
+ *      <Button
+ *                 title="Button"
+ *                 onPress={()=>{
+ *                   var list = ["Sicario","Love Letter"];
+ *                   RNSensorsAnalyticsModule.profileAppend("Move",list);}>
+ *     </Button>
+ */
+RCT_EXPORT_METHOD(profileAppend:(NSString *)profile by:(NSArray *)content){
+    @try {
+        NSSet *setCntent = [NSSet setWithArray:content];
+        [[[SensorsAnalyticsSDK sharedInstance] people] append:profile by:setCntent];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
  * 导出 deleteUser 方法给 RN 使用.
  * <p>
  * 删除当前这个用户的所有记录.
@@ -326,6 +460,56 @@ RCT_EXPORT_METHOD(deleteUser){
     }
 }
 
+/**
+ * 导出 profileDelete 方法给 RN 使用.
+ * <p>
+ * 删除当前这个用户的所有记录.
+ * <p>
+ * RN 中使用示例：
+ *      <Button
+ *                title="Button"
+ *                onPress={()=>
+ *                RNSensorsAnalyticsModule.profileDelete()}>
+ *      </Button>
+ */
+RCT_EXPORT_METHOD(profileDelete){
+    @try {
+        [[[SensorsAnalyticsSDK sharedInstance] people] deleteUser];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+
+
+/**
+ * 导出 clearKeychainData 方法给 RN 使用.
+ * <p>
+ * 删除当前 keychain记录 .
+ * <p>
+ * RN 中使用示例：
+ *      <Button
+ *                title="Button"
+ *                onPress={()=>
+ *                RNSensorsAnalyticsModule.clearKeychainData()}>
+ *      </Button>
+ */
+RCT_EXPORT_METHOD(clearKeychainData){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] clearKeychainData];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 导出 getDistinctId 方法给 RN 使用.
+ * <p>
+ * 获取distinctId .
+ * <p>
+ * RN 中使用示例：
+ * var distinctId = RNSensorsAnalyticsModule.getDistinctId();
+ */
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getDistinctId){
     @try {
         NSString *bestId = [SensorsAnalyticsSDK sharedInstance].loginId;
@@ -342,6 +526,18 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getDistinctId){
         return nil;
     }
     return nil;
+}
+
+/**
+ * 导出 version 方法给 RN 使用.
+ * <p>
+ * 获取当前插件版本 .
+ * <p>
+ * RN 中使用示例：
+ * var version = RNSensorsAnalyticsModule.version();
+ */
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(version){
+    return moduleVersion;
 }
 
 @end
