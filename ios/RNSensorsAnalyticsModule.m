@@ -11,8 +11,6 @@
 #import <React/RCTEventDispatcher.h>
 #import "SensorsAnalyticsSDK.h"
 
-static NSString * const moduleVersion = @"1.1.0";
-
 @implementation RNSensorsAnalyticsModule
 
 RCT_EXPORT_MODULE(RNSensorsAnalyticsModule)
@@ -528,17 +526,6 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getDistinctId){
     return nil;
 }
 
-/**
- * 导出 version 方法给 RN 使用.
- * <p>
- * 获取当前插件版本 .
- * <p>
- * RN 中使用示例：
- * var version = RNSensorsAnalyticsModule.version();
- */
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(version){
-    return moduleVersion;
-}
 
 @end
 
