@@ -205,6 +205,7 @@ return YES;
 // 初始化 SDK
 [SensorsAnalyticsSDK sharedInstanceWithServerURL:SA_SERVER_URL
 andLaunchOptions:launchOptions
+andDebugMode:SA_DEBUG_MODE];
 
 // 打开自动采集, 并指定追踪哪些 AutoTrack 事件
 [[SensorsAnalyticsSDK sharedInstance] enableAutoTrack:SensorsAnalyticsEventTypeAppStart|
