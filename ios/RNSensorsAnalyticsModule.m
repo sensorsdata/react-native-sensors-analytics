@@ -526,6 +526,49 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getDistinctId){
     return nil;
 }
 
+/**
+ * 导出 getDistinctIdPromise 方法给 RN 使用.
+ * <p>
+ * 删除当前这个用户的所有记录.
+ * <p>
+ * RN 中使用示例：
+ *    async  getDistinctIdPromise() {
+ *       var distinctId = await RNSensorsAnalyticsModule.getDistinctIdPromise()
+ *    };
+ */
+RCT_EXPORT_METHOD(getDistinctIdPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString *bestId = [SensorsAnalyticsSDK sharedInstance].loginId;
+        if (bestId == nil) {
+            bestId = [SensorsAnalyticsSDK sharedInstance].distinctId;
+        }
+        if (bestId == nil) {
+            [[SensorsAnalyticsSDK sharedInstance] resetAnonymousId];
+            bestId = [SensorsAnalyticsSDK sharedInstance].anonymousId;
+        }
+        resolve(bestId);
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 导出 getAnonymousIdPromise 方法给 RN 使用.
+ * <p>
+ * 删除当前这个用户的所有记录.
+ * <p>
+ * RN 中使用示例：
+ *    async  getAnonymousIdPromise() {
+ *       var anonymousId = await RNSensorsAnalyticsModule.getAnonymousIdPromise()
+ *    };
+ */
+RCT_EXPORT_METHOD(getAnonymousIdPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    @try {
+        resolve([SensorsAnalyticsSDK sharedInstance].anonymousId);
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
 
 @end
 
