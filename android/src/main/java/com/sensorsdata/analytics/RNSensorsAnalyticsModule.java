@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.Callback;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import org.json.JSONObject;
+import com.facebook.react.bridge.Promise;
 
 
 
@@ -472,6 +473,53 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
             errorCallback.invoke(e.getMessage());
+        }
+    }
+    
+    /**
+     * 导出 getDistinctIdPromise 方法给 RN 使用.
+     * <p>
+     * 删除当前这个用户的所有记录.
+     * <p>
+     * RN 中使用示例：
+     *    async  getDistinctIdPromise() {
+     *       var distinctId = await RNSensorsAnalyticsModule.getDistinctIdPromise()
+     *    };
+     */
+    @ReactMethod
+    public void getDistinctIdPromise(Promise promise){
+        try {
+            String mLoginId = SensorsDataAPI.sharedInstance().getLoginId();
+            if (!TextUtils.isEmpty(mLoginId)) {
+                promise.resolve(mLoginId);
+            } else {
+                promise.resolve(SensorsDataAPI.sharedInstance().getAnonymousId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("getDistinctId fail",e);
+        }
+    }
+
+    /**
+     * 导出 getAnonymousIdPromise 方法给 RN 使用.
+     * <p>
+     * 删除当前这个用户的所有记录.
+     * <p>
+     * RN 中使用示例：
+     *    async  getAnonymousIdPromise() {
+     *       var anonymousId = await RNSensorsAnalyticsModule.getAnonymousIdPromise()
+     *    };
+     */
+    @ReactMethod
+    public void getAnonymousIdPromise(Promise promise){
+        try {
+            promise.resolve(SensorsDataAPI.sharedInstance().getAnonymousId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("getDistinctId fail",e);
         }
     }
 }
