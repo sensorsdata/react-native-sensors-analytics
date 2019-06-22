@@ -529,7 +529,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getDistinctId){
 /**
  * 导出 getDistinctIdPromise 方法给 RN 使用.
  * <p>
- * 删除当前这个用户的所有记录.
+ * Promise 方式，获取 distinctId.
  * <p>
  * RN 中使用示例：
  *    async  getDistinctIdPromise() {
@@ -555,7 +555,7 @@ RCT_EXPORT_METHOD(getDistinctIdPromise:(RCTPromiseResolveBlock)resolve reject:(R
 /**
  * 导出 getAnonymousIdPromise 方法给 RN 使用.
  * <p>
- * 删除当前这个用户的所有记录.
+ * Promise 方式 getAnonymousId 获取匿名 ID.
  * <p>
  * RN 中使用示例：
  *    async  getAnonymousIdPromise() {
@@ -565,6 +565,65 @@ RCT_EXPORT_METHOD(getDistinctIdPromise:(RCTPromiseResolveBlock)resolve reject:(R
 RCT_EXPORT_METHOD(getAnonymousIdPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
     @try {
         resolve([SensorsAnalyticsSDK sharedInstance].anonymousId);
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 导出 registerSuperProperties 方法给 RN 使用.
+ *
+ * @param properties 要设置的公共属性
+ *
+ * RN 中使用示例：设置公共属性 "Platform":"iOS"）
+ *     <Button
+ *            title="Button"
+ *            onPress={()=>
+ *            RNSensorsAnalyticsModule.registerSuperProperties({"Platform":"iOS"})}>
+ *     </Button>
+ */
+RCT_EXPORT_METHOD(registerSuperProperties:(NSDictionary *)properties){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] registerSuperProperties:properties];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 导出 unregisterSuperProperty 方法给 RN 使用.
+ *
+ * @param property 要设置的公共属性
+ *
+ * RN 中使用示例：（删除公共属性 "Platform"）
+ *     <Button
+ *            title="Button"
+ *            onPress={()=>
+ *            RNSensorsAnalyticsModule.unregisterSuperProperty("Platform")}>
+ *     </Button>
+ */
+RCT_EXPORT_METHOD(unregisterSuperProperty:(NSString *)property){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] unregisterSuperProperty:property];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 导出 clearSuperProperties 方法给 RN 使用.
+ *
+ *
+ * RN 中使用示例：（删除所有已设置的公共属性）
+ *     <Button
+ *            title="Button"
+ *            onPress={()=>
+ *            RNSensorsAnalyticsModule.clearSuperProperties()}>
+ *     </Button>
+ */
+RCT_EXPORT_METHOD(clearSuperProperties){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] clearSuperProperties];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
