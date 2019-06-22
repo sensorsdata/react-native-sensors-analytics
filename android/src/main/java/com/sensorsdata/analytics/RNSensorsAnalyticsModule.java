@@ -479,7 +479,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     /**
      * 导出 getDistinctIdPromise 方法给 RN 使用.
      * <p>
-     * 删除当前这个用户的所有记录.
+     * Promise 方式，获取 distinctId
      * <p>
      * RN 中使用示例：
      *    async  getDistinctIdPromise() {
@@ -505,7 +505,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     /**
      * 导出 getAnonymousIdPromise 方法给 RN 使用.
      * <p>
-     * 删除当前这个用户的所有记录.
+     * Promise 方式 getAnonymousId 获取匿名 ID.
      * <p>
      * RN 中使用示例：
      *    async  getAnonymousIdPromise() {
@@ -520,6 +520,71 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
             promise.reject("getDistinctId fail",e);
+        }
+    }
+    
+    /**
+     * 导出 registerSuperProperties 方法给 RN 使用.
+     *
+     * @param properties 要设置的公共属性
+     *                   <p>
+     *                   RN 中使用示例：（设置公共属性 "Platform":"Android"）
+     *                   <Button
+     *                   title="Button"
+     *                   onPress={()=>
+     *                   RNSensorsAnalyticsModule.registerSuperProperties({"Platform":"Android"})}>
+     *                   </Button>
+     */
+    @ReactMethod
+    public void registerSuperProperties(ReadableMap properties) {
+        try {
+            SensorsDataAPI.sharedInstance().registerSuperProperties(convertToJSONObject(properties));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 导出 unregisterSuperProperty 方法给 RN 使用.
+     *
+     * @param property 要删除的公共属性属性
+     *                   <p>
+     *                   RN 中使用示例：（删除公共属性 "Platform"）
+     *                   <Button
+     *                   title="Button"
+     *                   onPress={()=>
+     *                   RNSensorsAnalyticsModule.unregisterSuperProperty("Platform")}>
+     *                   </Button>
+     */
+    @ReactMethod
+    public void unregisterSuperProperty(String property) {
+        try {
+            SensorsDataAPI.sharedInstance().unregisterSuperProperty(property);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 导出 clearSuperProperties 方法给 RN 使用.
+     *
+     *                   <p>
+     *                   RN 中使用示例：（删除所有已设置的公共属性）
+     *                   <Button
+     *                   title="Button"
+     *                   onPress={()=>
+     *                   RNSensorsAnalyticsModule.clearSuperProperties()}>
+     *                   </Button>
+     */
+    @ReactMethod
+    public void clearSuperProperties() {
+        try {
+            SensorsDataAPI.sharedInstance().clearSuperProperties();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
         }
     }
 }
