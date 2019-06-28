@@ -37,7 +37,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     private static final String MODULE_NAME = "RNSensorsAnalyticsModule";
-    private static final String MODULE_VERSION = "1.0.1";
+    private static final String MODULE_VERSION = "1.1.0";
     private static final String LOGTAG = "SA.RN";
 
     /**
