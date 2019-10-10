@@ -10,7 +10,7 @@ npm install @sensors.data/react-native-sensors-analytics
 
 ## 1.2 `link` react-native-sensors-analytics 模块
 
-
+<span style="color:red">注意：React Native 0.60 及以上版本会 autolinking，不需要执行下边的 react-native link 命令</span>
 ```sh
 react-native link @sensors.data/react-native-sensors-analytics 
 ```
