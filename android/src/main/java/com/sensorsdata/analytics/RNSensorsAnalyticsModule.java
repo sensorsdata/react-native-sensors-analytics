@@ -12,6 +12,8 @@ import com.facebook.react.bridge.Callback;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import org.json.JSONObject;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableArray;
+import java.util.HashSet;
 
 
 
@@ -37,7 +39,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     private static final String MODULE_NAME = "RNSensorsAnalyticsModule";
-    private static final String MODULE_VERSION = "1.1.0";
     private static final String LOGTAG = "SA.RN";
 
     /**
@@ -93,7 +94,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                   <Button
      *                   title="Button"
      *                   onPress={()=>
-     *                   SensorsDataAPI_Android.track("RN_AddToFav",{"ProductID":123456,"UserLevel":"VIP"})}>
+     *                   RNSensorsAnalyticsModule.track("RN_AddToFav",{"ProductID":123456,"UserLevel":"VIP"})}>
      *                   </Button>
      */
     @ReactMethod
@@ -117,7 +118,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                  <Button
      *                  title="Button"
      *                  onPress={()=>
-     *                  SensorsDataAPI_Android.trackTimerStart("viewTimer")}>
+     *                  RNSensorsAnalyticsModule.trackTimerStart("viewTimer")}>
      *                  </Button>
      */
     @ReactMethod
@@ -141,7 +142,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                  <Button
      *                  title="Button"
      *                  onPress={()=>
-     *                  SensorsDataAPI_Android.trackTimerBegin("viewTimer")}>
+     *                  RNSensorsAnalyticsModule.trackTimerBegin("viewTimer")}>
      *                  </Button>
      */
     @ReactMethod
@@ -165,7 +166,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                  <Button
      *                  title="Button"
      *                  onPress={()=>
-     *                  SensorsDataAPI_Android.trackTimerEnd("viewTimer",{"ProductID":123456,"UserLevel":"VIP"})}>
+     *                  RNSensorsAnalyticsModule.trackTimerEnd("viewTimer",{"ProductID":123456,"UserLevel":"VIP"})}>
      *                  </Button>
      */
     @ReactMethod
@@ -188,7 +189,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * <Button
      * title="Button"
      * onPress={()=>
-     * SensorsDataAPI_Android.clearTrackTimer()}>
+     * RNSensorsAnalyticsModule.clearTrackTimer()}>
      * </Button>
      */
     @ReactMethod
@@ -209,7 +210,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                <Button
      *                title="Button"
      *                onPress={()=>
-     *                SensorsDataAPI_Android.login("developer@sensorsdata.cn")}>
+     *                RNSensorsAnalyticsModule.login("developer@sensorsdata.cn")}>
      *                </Button>
      */
     @ReactMethod
@@ -229,7 +230,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * <Button
      * title="Button"
      * onPress={()=>
-     * SensorsDataAPI_Android.logout()}>
+     * RNSensorsAnalyticsModule.logout()}>
      * </Button>
      */
     @ReactMethod
@@ -254,7 +255,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                   <Button
      *                   title="Button"
      *                   onPress={()=>
-     *                   SensorsDataAPI_Android.trackInstallation("AppInstall",{"$utm_source":"渠道A","$utm_campaign":"广告A"})}>
+     *                   RNSensorsAnalyticsModule.trackInstallation("AppInstall",{"$utm_source":"渠道A","$utm_campaign":"广告A"})}>
      *                   </Button>
      */
     @ReactMethod
@@ -282,7 +283,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                   <Button
      *                   title="Button"
      *                   onPress={()=>
-     *                   SensorsDataAPI_Android.trackViewScreen(null,{"$title":"RN主页","$screen_name":"cn.sensorsdata.demo.RNHome"})}>
+     *                   RNSensorsAnalyticsModule.trackViewScreen(null,{"$title":"RN主页","$screen_name":"cn.sensorsdata.demo.RNHome"})}>
      *                   </Button>
      */
     @ReactMethod
@@ -304,7 +305,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                   <Button
      *                   title="Button"
      *                   onPress={()=>
-     *                   SensorsDataAPI_Android.profileSet({"sex":"男"})}>
+     *                   RNSensorsAnalyticsModule.profileSet({"sex":"男"})}>
      *                   </Button>
      */
     @ReactMethod
@@ -329,7 +330,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                   <Button
      *                   title="Button"
      *                   onPress={()=>
-     *                   SensorsDataAPI_Android.profileSetOnce({"sex":"男"})}>
+     *                   RNSensorsAnalyticsModule.profileSetOnce({"sex":"男"})}>
      *                   </Button>
      */
     @ReactMethod
@@ -356,7 +357,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                 <Button
      *                 title="Button"
      *                 onPress={()=>
-     *                 SensorsDataAPI_Android.profileIncrement("money",10)}>
+     *                 RNSensorsAnalyticsModule.profileIncrement("money",10)}>
      *                 </Button>
      */
     @ReactMethod
@@ -369,25 +370,29 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
         }
     }
 
-    /**
+     /**
      * 导出 profileAppend 方法给 RN 使用.
      * <p>
      * 给一个列表类型的 Profile 增加一个元素.
      *
      * @param property 属性名称.
-     * @param value    新增的元素.
+     * @param strList    新增的元素.
      *                 <p>
      *                 RN 中使用示例：
      *                 <Button
      *                 title="Button"
      *                 onPress={()=>
-     *                 SensorsDataAPI_Android.profileAppend("VIP","Gold")}>
+     *                 RNSensorsAnalyticsModule.profileAppend("VIP",["Gold","Diamond"])}>
      *                 </Button>
      */
     @ReactMethod
-    public void profileAppend(String property, String value) {
+    public void profileAppend(String property, ReadableArray strList) {
         try {
-            SensorsDataAPI.sharedInstance().profileAppend(property, value);
+            HashSet<String> strSet = new HashSet<>();
+            for (int i = 0; i < strList.size(); i++) {
+                strSet.add(strList.getString(i));
+            }
+            SensorsDataAPI.sharedInstance().profileAppend(property, strSet);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -405,7 +410,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      *                 <Button
      *                 title="Button"
      *                 onPress={()=>
-     *                 SensorsDataAPI_Android.profileUnset("sex")}>
+     *                 RNSensorsAnalyticsModule.profileUnset("sex")}>
      *                 </Button>
      */
     @ReactMethod
@@ -427,7 +432,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * <Button
      * title="Button"
      * onPress={()=>
-     * SensorsDataAPI_Android.profileDelete()}>
+     * RNSensorsAnalyticsModule.profileDelete()}>
      * </Button>
      */
     @ReactMethod
@@ -451,7 +456,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * <Button
      * title="Button"
      * onPress={()=>
-     * SensorsDataAPI_Android.getDistinctId(success=>{
+     * RNSensorsAnalyticsModule.getDistinctId(success=>{
      * console.log(success)
      * },
      * error=>{
@@ -582,6 +587,48 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     public void clearSuperProperties() {
         try {
             SensorsDataAPI.sharedInstance().clearSuperProperties();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 导出 flush 方法给 RN 使用.
+     *
+     *                   <p>
+     *                   RN 中使用示例：（强制发送数据到服务端）
+     *                   <Button
+     *                   title="Button"
+     *                   onPress={()=>
+     *                   RNSensorsAnalyticsModule.flush()}>
+     *                   </Button>
+     */
+    @ReactMethod
+    public void flush() {
+        try {
+            SensorsDataAPI.sharedInstance().flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 导出 deleteAll 方法给 RN 使用.
+     *
+     *                   <p>
+     *                   RN 中使用示例：（删除本地数据库的所有数据！！！请谨慎使用）
+     *                   <Button
+     *                   title="Button"
+     *                   onPress={()=>
+     *                   RNSensorsAnalyticsModule.deleteAll()}>
+     *                   </Button>
+     */
+    @ReactMethod
+    public void deleteAll() {
+        try {
+            SensorsDataAPI.sharedInstance().deleteAll();
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");

@@ -629,5 +629,43 @@ RCT_EXPORT_METHOD(clearSuperProperties){
     }
 }
 
+/**
+ * 导出 flush 方法给 RN 使用.
+ *
+ *                   <p>
+ *                   RN 中使用示例：（强制发送数据到服务端）
+ *                   <Button
+ *                   title="Button"
+ *                   onPress={()=>
+ *                   RNSensorsAnalyticsModule.flush()}>
+ *                   </Button>
+ */
+RCT_EXPORT_METHOD(flush){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] flush];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 导出 deleteAll 方法给 RN 使用.
+ *
+ *                   <p>
+ *                   RN 中使用示例：（删除本地数据库的所有数据！！！请谨慎使用）
+ *                   <Button
+ *                   title="Button"
+ *                   onPress={()=>
+ *                   RNSensorsAnalyticsModule.deleteAll()}>
+ *                   </Button>
+ */
+RCT_EXPORT_METHOD(deleteAll){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] deleteAll];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
 @end
 
