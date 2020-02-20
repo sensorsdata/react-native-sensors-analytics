@@ -57,7 +57,7 @@ RCT_EXPORT_METHOD(track:(NSString *)event withProperties:(NSDictionary *)propert
  */
 RCT_EXPORT_METHOD(trackTimerBegin:(NSString *)event){
     @try {
-        [[SensorsAnalyticsSDK sharedInstance] trackTimerBegin:event];
+        [[SensorsAnalyticsSDK sharedInstance] trackTimerStart:event];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -667,5 +667,56 @@ RCT_EXPORT_METHOD(deleteAll){
     }
 }
 
-@end
+/**
+ * 导出 identify 方法给 RN 使用.
+ *
+ * @param anonymousId 当前用户的 anonymousId
+ *
+ *  RN 中使用示例：（在初始化 SDK 之后立即调用，替换神策分析默认分配的 *匿名 ID*）
+ *                   <Button
+ *                   title="Button"
+ *                   onPress={()=>
+ *                   RNSensorsAnalyticsModule.identify("AAA")}>
+ *                   </Button>
+*/
+RCT_EXPORT_METHOD(identify:(NSString *)anonymousId) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] identify:anonymousId];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
 
+/**
+ * 导出 trackChannelEvent:properties 方法给 RN 使用.
+ * 需要 iOS SensorsAnalytics SDK 升级至 v1.11.15 及以上版本
+ *
+ * @param event  事件名称
+ * @param propertyDict 事件的具体属性
+ *
+ * RN 中使用示例：（调用 track 接口并附加渠道信息）
+ *
+ *                   <Button
+ *                   title="Button"
+ *                   onPress={()=>
+ *                   RNSensorsAnalyticsModule.trackChannelEvent("channelEvent",{"ProductID":123456,"UserLevel":"VIP"})}>
+ *                   </Button>
+*/
+RCT_EXPORT_METHOD(trackChannelEvent:(NSString *)event properties:(nullable NSDictionary *)propertyDict) {
+    @try {
+        SEL sel = NSSelectorFromString(@"trackChannelEvent:properties:");
+        SensorsAnalyticsSDK *sdk = [SensorsAnalyticsSDK sharedInstance];
+        if (![sdk respondsToSelector:sel]) {
+            NSLog(@"[RNSensorsAnalytics] error: trackChannelEvent:properties: 方法只在 iOS SensorsAnalytics SDK v1.11.15 及以上版本存在，请升级 SDK 版本至最新后再使用该功能！！！");
+            return;
+        }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [sdk performSelector:sel withObject:event withObject:propertyDict];
+#pragma clang diagnostic pop
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+@end
