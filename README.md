@@ -2,13 +2,13 @@
 
 对于 React Native 开发的应用，可以使用 npm 方式集成神策 SDK RN 模块。
 
-## 1.1 npm 安装 react-native-sensorsdata-analytics 模块
+## 1.1 npm 安装 sensorsdata-analytics-react-native 模块
 
 ```sh
 npm install react-native-sensorsdata-analytics
 ```
 
-## 1.2 `link` react-native-sensorsdata-analytics 模块
+## 1.2 `link` sensorsdata-analytics-react-native 模块
 
 <span style="color:red">注意：React Native 0.60 及以上版本会 autolinking，不需要执行下边的 react-native link 命令</span>
 ```sh
