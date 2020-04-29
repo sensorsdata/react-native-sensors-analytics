@@ -7,9 +7,14 @@
 //
 
 #import "RNSensorsAnalyticsModule.h"
-#import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
+#import "SAReactNativeManager.h"
+
+#if __has_include("SensorsAnalyticsSDK.h")
+#import "SensorsAnalyticsSDK.h"
+#else
 #import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
+#endif
+
 
 @implementation RNSensorsAnalyticsModule
 
@@ -210,11 +215,10 @@ RCT_EXPORT_METHOD(logout){
  */
 RCT_EXPORT_METHOD(trackViewScreen:(NSString *)url withProperties:(NSDictionary *)properties){
     @try {
-        [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:properties];
+        [[SAReactNativeManager sharedInstance] trackViewScreen:url properties:properties autoTrack:NO];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
-    
 }
 /**
  * 导出 set 方法给 RN 使用.

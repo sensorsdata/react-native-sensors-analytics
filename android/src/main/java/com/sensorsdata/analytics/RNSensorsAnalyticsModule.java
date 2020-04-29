@@ -30,6 +30,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
+import com.sensorsdata.analytics.utils.RNUtils;
 
 import org.json.JSONObject;
 
@@ -67,30 +68,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
         return MODULE_NAME;
     }
 
-    /**
-     * ReadableMap 转换成 JSONObject
-     */
-    private JSONObject convertToJSONObject(ReadableMap properties) {
-        if (properties == null) {
-            return null;
-        }
-
-        JSONObject json = null;
-        ReadableNativeMap nativeMap = null;
-        try {
-            nativeMap = (ReadableNativeMap) properties;
-            json = new JSONObject(properties.toString()).getJSONObject("NativeMap");
-        } catch (Exception e) {
-            Log.e(LOGTAG, "" + e.getMessage());
-            String superName = nativeMap.getClass().getSuperclass().getSimpleName();
-            try {
-                json = new JSONObject(properties.toString()).getJSONObject(superName);
-            } catch (Exception e1) {
-                Log.e(LOGTAG, "" + e1.getMessage());
-            }
-        }
-        return json;
-    }
 
     /**
      * 参数类型在@ReactMethod注明的方法中，会被直接映射到它们对应的JavaScript类型
@@ -118,7 +95,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void track(String eventName, ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().track(eventName, convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().track(eventName, RNUtils.convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -190,7 +167,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void trackTimerEnd(String eventName, ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().trackTimerEnd(eventName, convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().trackTimerEnd(eventName, RNUtils.convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -279,7 +256,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void trackInstallation(String eventName, ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().trackInstallation(eventName, convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().trackInstallation(eventName, RNUtils.convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -289,25 +266,25 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     /**
      * 导出 trackViewScreen 方法给 RN 使用.
      * <p>
-     * 此方法用于 RN 中 Tab 切换页面的时候调用，用于记录 $AppViewScreen 事件.
+     * 此方法用于 RN 中切换页面的时候调用，用于记录 $AppViewScreen 事件.
      *
-     * @param url 页面的 url  记录到 $url 字段中(如果不需要此属性，可以传 null ).
+     * @param url 页面的 url  记录到 $url 字段中.
      * @param properties 页面的属性.
      * <p>
      * 注：为保证记录到的 $AppViewScreen 事件和 Auto Track 采集的一致，
-     * 需要传入 $title（页面的title） 、$screen_name （页面的名称，即 包名.类名）字段.
+     * 需要传入 $title（页面的标题） 、$screen_name （页面的名称，即 包名.类名）字段.
      * <p>
      * RN 中使用示例：
      * <Button
      * title="Button"
      * onPress={()=>
-     * RNSensorsAnalyticsModule.trackViewScreen(null,{"$title":"RN主页","$screen_name":"cn.sensorsdata.demo.RNHome"})}>
+     * RNSensorsAnalyticsModule.trackViewScreen(url, {"$title":"RN主页","$screen_name":"cn.sensorsdata.demo.RNHome"})}>
      * </Button>
      */
     @ReactMethod
     public void trackViewScreen(String url, ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().trackViewScreen(url, convertToJSONObject(properties));
+            RNAgent.trackViewScreen(url, RNUtils.convertToJSONObject(properties), false);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -329,7 +306,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void profileSet(ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().profileSet(convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().profileSet(RNUtils.convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -354,7 +331,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void profileSetOnce(ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().profileSetOnce(convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().profileSetOnce(RNUtils.convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -561,7 +538,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void registerSuperProperties(ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().registerSuperProperties(convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().registerSuperProperties(RNUtils.convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -663,7 +640,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void trackChannelEvent(String eventName, ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().trackChannelEvent(eventName, convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().trackChannelEvent(eventName, RNUtils.convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -687,5 +664,4 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             Log.e(LOGTAG, e.toString() + "");
         }
     }
-
 }

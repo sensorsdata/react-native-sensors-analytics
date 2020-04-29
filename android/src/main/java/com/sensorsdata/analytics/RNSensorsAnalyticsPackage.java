@@ -15,11 +15,13 @@ import java.util.List;
  */
 
 public class RNSensorsAnalyticsPackage implements ReactPackage {
+    public static final String VERSION = "2.0.0";
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         //在你们的Package中 添加神策原生模块
         modules.add(new RNSensorsAnalyticsModule(reactContext));
+        modules.add(new RNSensorsDataModule(reactContext));
         return modules;
     }
 

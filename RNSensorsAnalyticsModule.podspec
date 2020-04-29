@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "RNSensorsAnalyticsModule"
-  s.version      = "1.1.8"
+  s.version      = "2.0.0"
   s.summary      = "The official React Native SDK of Sensors Analytics."
   s.description  = <<-DESC
                   神策分析 RN 组件
@@ -18,4 +18,3 @@ Pod::Spec.new do |s|
 
 end
 
-  
