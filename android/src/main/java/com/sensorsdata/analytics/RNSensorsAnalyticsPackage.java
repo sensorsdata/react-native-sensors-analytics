@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 public class RNSensorsAnalyticsPackage implements ReactPackage {
-    public static final String VERSION = "2.0.0";
+    public static final String VERSION = "2.0.1";
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();

@@ -362,7 +362,7 @@ RCT_EXPORT_METHOD(profileUnset:(NSString *) profile){
  *            RNSensorsAnalyticsModule.increment("money",10)}>
  *     </Button>
  */
-RCT_EXPORT_METHOD(increment:(NSString *)profile by:(NSNumber *)amount){
+RCT_EXPORT_METHOD(increment:(NSString *)profile by:(nonnull NSNumber *)amount){
     @try {
         [[[SensorsAnalyticsSDK sharedInstance] people] increment:profile by:amount];
     } @catch (NSException *exception) {
@@ -386,7 +386,7 @@ RCT_EXPORT_METHOD(increment:(NSString *)profile by:(NSNumber *)amount){
  *            RNSensorsAnalyticsModule.profileIncrement("money",10)}>
  *     </Button>
  */
-RCT_EXPORT_METHOD(profileIncrement:(NSString *)profile by:(NSNumber *)amount){
+RCT_EXPORT_METHOD(profileIncrement:(NSString *)profile by:(nonnull NSNumber *)amount){
     @try {
         [[[SensorsAnalyticsSDK sharedInstance] people] increment:profile by:amount];
     } @catch (NSException *exception) {

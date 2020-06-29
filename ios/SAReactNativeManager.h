@@ -25,9 +25,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SAReactNativeManager : NSObject
 
-@property (nonatomic, copy, readonly) NSString *currentScreenName;
-
 + (instancetype)sharedInstance;
+
+/**
+ @abstract
+ 可视化全埋点获取页面消息
+
+ @return 页面信息字典
+ */
+- (NSDictionary *)visualizeProperties;
+
+/**
+ @abstract
+ 获取 View 的可点击状态
+
+ @param view  获取状态的 View 对象
+ @return 点击状态
+ */
+- (BOOL)clickableForView:(UIView *)view;
+
+/**
+@abstract
+记录 View 的点击状态及自定义属性
+
+@param reactTag  React Native 分配的唯一标识符
+@param clickable  是否可点击
+@param paramters  自定义属性
+@return 可点击控件是否记录成功
+*/
+- (BOOL)prepareView:(NSNumber *)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters;
 
 /**
  @abstract

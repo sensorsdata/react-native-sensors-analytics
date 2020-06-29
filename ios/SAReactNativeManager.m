@@ -33,10 +33,106 @@
 #import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
 #endif
 
+#import "SAReactNativeswizzler.h"
+#import <objc/runtime.h>
+
 @interface SAReactNativeManager ()
 
 @property (nonatomic, copy) NSString *currentScreenName;
 @property (nonatomic, copy) NSString *currentTitle;
+@property (nonatomic, strong) NSSet *ignoreClasses;
+@property (nonatomic, strong) NSMutableSet *clickableViewTags;
+@property (nonatomic, assign) BOOL isRootViewVisible;
+
+@end
+
+@interface UIViewController (SAReactNative)
+
+@property (nonatomic, assign) BOOL sa_reactnative_isReferrerRootView;
+
+@end
+
+@implementation UIViewController (SAReactNative)
+
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [UIViewController sa_reactnative_swizzleMethod:@selector(viewDidAppear:)
+                                            withMethod:@selector(sa_reactnative_viewDidAppear:)
+                                                 error:NULL];
+
+        [UIViewController sa_reactnative_swizzleMethod:@selector(viewDidDisappear:)
+                                            withMethod:@selector(sa_reactnative_viewDidDisappear:)
+                                                 error:NULL];
+    });
+}
+
+- (BOOL)sa_reactnative_isReferrerRootView {
+    NSNumber *result = objc_getAssociatedObject(self, @"sa_reactnative_isReferrerRootView");
+    return result.boolValue;
+}
+
+- (void)setSa_reactnative_isReferrerRootView:(BOOL)isRootView {
+    objc_setAssociatedObject(self, @"sa_reactnative_isReferrerRootView", @(isRootView), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)sa_reactnative_viewDidAppear:(BOOL)animated {
+    [self sa_reactnative_viewDidAppear:animated];
+
+    if ([self isKindOfClass:UIAlertController.class]) {
+        return;
+    }
+    // 当前 Controller 为 React Native 根视图时，设置标志位为 YES
+    if ([self.view isReactRootView]) {
+        [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
+        return;
+    }
+
+    //检查 referrer 是否为 React Native 根视图
+    UIViewController *referrer = self.presentingViewController;
+    if (!referrer) {
+        return;
+    }
+
+    // 当前 Controller 不为 React Native 根视图时， isRootViewVisible 肯定为 NO
+    [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
+
+    if ([referrer isKindOfClass:UITabBarController.class]) {
+        UIViewController *controller = [(UITabBarController *)referrer selectedViewController];
+        [self checkReferrerController:controller];
+    } else {
+        [self checkReferrerController:referrer];
+    }
+}
+
+- (void)checkReferrerController:(UIViewController *)controler {
+    if ([controler isKindOfClass:UINavigationController.class]) {
+        UIViewController *vc = [(UINavigationController *)controler viewControllers].lastObject;
+        if ([vc.view isReactRootView]) {
+            self.sa_reactnative_isReferrerRootView = YES;
+        }
+    } else if ([controler isKindOfClass:UIViewController.class]) {
+        if ([controler.view isReactRootView]) {
+            self.sa_reactnative_isReferrerRootView = YES;
+        }
+    }
+}
+
+- (void)sa_reactnative_viewDidDisappear:(BOOL)animated {
+    [self sa_reactnative_viewDidDisappear:animated];
+
+    // 当前 Controller 为 React Native 根视图时，消失时将标志位设置为 NO
+    if ([self.view isReactRootView]) {
+        [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
+        return;
+    }
+
+    // 当前 Controller 的 referrer 为 React Native 根视图时，消失时将标志位设置为 YES
+    if (self.sa_reactnative_isReferrerRootView) {
+        [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
+        return;
+    }
+}
 
 @end
 
@@ -48,11 +144,48 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[SAReactNativeManager alloc] init];
+
     });
     return manager;
 }
 
-#pragma mark - public
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        NSSet *ignoreClasses = [NSSet setWithObjects:@"RCTSwitch", @"RCTSlider", @"RCTSegmentedControl", @"RNGestureHandlerButton", nil];
+        for (NSString *className in ignoreClasses) {
+            if (NSClassFromString(className)) {
+                [[SensorsAnalyticsSDK sharedInstance] ignoreViewType:NSClassFromString(className)];
+            }
+        }
+        _ignoreClasses = [NSSet setWithObjects:@"RCTScrollView", nil];
+        _clickableViewTags = [[NSMutableSet alloc] init];
+        _isRootViewVisible = NO;
+    }
+    return self;
+}
+
+#pragma mark - visualize
+- (NSDictionary *)visualizeProperties {
+    return _isRootViewVisible ? [self screenProperties] : nil;
+}
+
+- (BOOL)clickableForView:(UIView *)view {
+    if ([_ignoreClasses containsObject:NSStringFromClass(view.class)]) {
+        return NO;
+    }
+    return [_clickableViewTags containsObject:view.reactTag];
+}
+
+- (BOOL)prepareView:(NSNumber *)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters {
+    if (!clickable) {
+        return NO;
+    }
+    [_clickableViewTags addObject:reactTag];
+    return YES;
+}
+
+#pragma mark - AppClick
 - (void)trackViewClick:(NSNumber *)reactTag {
     if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
@@ -61,17 +194,19 @@
     if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppClick]) {
         return;
     }
+
     dispatch_async(dispatch_get_main_queue(), ^{
         UIView *view = [[SAReactNativeManager sharedInstance] viewForTag:reactTag];
         NSMutableDictionary *properties = [NSMutableDictionary dictionary];
-        NSDictionary *clickProperties = [self viewClickPorperties];
-        [properties addEntriesFromDictionary:clickProperties];
-        properties[@"$element_content"] = [view accessibilityLabel];
+        NSDictionary *screenProperties = [self screenProperties];
+        [properties addEntriesFromDictionary:screenProperties];
+        properties[@"$element_content"] = [view.accessibilityLabel stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
         [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:[properties copy]];
     });
 }
 
+#pragma mark - AppViewScreen
 - (void)trackViewScreen:(nullable NSString *)url properties:(nullable NSDictionary *)properties autoTrack:(BOOL)autoTrack {
     if (url && ![url isKindOfClass:NSString.class]) {
         NSLog(@"[RNSensorsAnalytics] error: url {%@} is not String Class ！！！", url);
@@ -88,6 +223,7 @@
     if (autoTrack && [[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
         return;
     }
+
     NSMutableDictionary *eventProps = [NSMutableDictionary dictionary];
     [eventProps addEntriesFromDictionary:pageProps];
     [eventProps addEntriesFromDictionary:properties];
@@ -135,10 +271,10 @@
 - (NSDictionary *)viewScreenProperties:(NSString *)screenName title:(NSString *)title {
     _currentScreenName = screenName;
     _currentTitle = title ?: screenName;
-    return [self viewClickPorperties];
+    return [self screenProperties];
 }
 
-- (NSDictionary *)viewClickPorperties {
+- (NSDictionary *)screenProperties {
     NSMutableDictionary *properties = [NSMutableDictionary dictionary];
     properties[@"$screen_name"] = _currentScreenName;
     properties[@"$title"] = _currentTitle;

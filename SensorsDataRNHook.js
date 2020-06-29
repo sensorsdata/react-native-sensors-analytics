@@ -9,11 +9,36 @@ var reactNavigationPath = dir + '/react-navigation',
 // 自定义变量
 // RN 控制点击事件 Touchable.js 源码文件
 var RNClickFilePath = dir + '/react-native/Libraries/Components/Touchable/Touchable.js';
-
+var RNClickableFiles = [dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber.js',
+dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber-dev.js',
+dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber-prod.js',
+dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber-profiling.js',
+dir + '/react-native/Libraries/Renderer/ReactNativeFiber-dev.js',
+dir + '/react-native/Libraries/Renderer/ReactNativeFiber-prod.js',
+dir + '/react-native/Libraries/Renderer/oss/ReactNativeRenderer-dev.js',
+dir + '/react-native/Libraries/Renderer/oss/ReactNativeRenderer-prod.js',
+dir + '/react-native/Libraries/Renderer/ReactNativeStack-dev.js',
+dir + '/react-native/Libraries/Renderer/ReactNativeStack-prod.js',
+dir + '/react-native/Libraries/Renderer/oss/ReactNativeRenderer-profiling.js',
+dir + '/react-native/Libraries/Renderer/ReactNativeRenderer-dev.js',
+dir + '/react-native/Libraries/Renderer/ReactNativeRenderer-prod.js'];
+// RN 控制 slider 的文件
+var RNSliderFiles = [dir + '/react-native/Libraries/Components/Slider/Slider.js',
+dir + '/react-native/Libraries/Components/Slider/Slider.js'];
+// RN 控制 switch 的文件
+var RNSwitchFiles = [dir + '/react-native/Libraries/Components/Switch/Switch.js',
+dir + '/react-native/Libraries/Components/Switch/Switch.js'];
+// RN 控制 SegmentedControl 的文件
+var RNSegmentedControlFilePath = dir + '/react-native/Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js';
+// RN 控制 GestureButtons 的文件
+var RNGestureButtonsFilePath = dir + '/react-native-gesture-handler/GestureButtons.js';
 // click 需 hook 的自执行代码
-var sensorsdataClickHookCode = "(function(thatThis){ try {var ReactNative = require('react-native');thatThis.props.onPress && ReactNative.NativeModules.RNSensorsDataModule.trackViewClick(ReactNative.findNodeHandle(thatThis))} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */ ";
+var sensorsdataClickHookCode = "(function(thatThis){ try {var ReactNative = require('react-native');var dataModule = ReactNative.NativeModules.RNSensorsDataModule;thatThis.props.onPress && dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis))} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */ ";
+var sensorsdataSliderHookCode = "(function(thatThis){ try {var ReactNative = require('react-native');var dataModule = ReactNative.NativeModules.RNSensorsDataModule;dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */";
+var sensorsdataSegmentedControlHookCode = "if(this.props.onChange != null || this.props.onValueChange != null){(function(thatThis){ try {var ReactNative = require('react-native');var dataModule = ReactNative.NativeModules.RNSensorsDataModule;dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */}";
+var sensorsdataSwitchHookCode = "if(this.props.onChange != null || this.props.onValueChange != null){(function(thatThis){ try {var ReactNative = require('react-native');var dataModule = ReactNative.NativeModules.RNSensorsDataModule;dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis));} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */}";
 
-// hook 代码实现点击事件采集
+// hook click
 sensorsdataHookClickRN = function () {
     // 读取文件内容
     var fileContent = fs.readFileSync(RNClickFilePath, 'utf8');
@@ -33,10 +58,226 @@ sensorsdataHookClickRN = function () {
     fs.renameSync(RNClickFilePath, `${RNClickFilePath}_sensorsdata_backup`);
     // 重写 Touchable.js 文件
     fs.writeFileSync(RNClickFilePath, hookedContent, 'utf8');
+    console.log(`found and modify Touchable.js: ${RNClickFilePath}`);
+};
+// hook slider
+sensorsdataHookSliderRN = function (reset = false) {
+    RNSliderFiles.forEach(function (onefile) {
+        if (fs.existsSync(onefile)) {
+            // 读取文件内容
+            var fileContent = fs.readFileSync(onefile, "utf8");
+            if (reset) {
+                // 未被 hook 过代码，不需要处理
+                if (fileContent.indexOf('SENSORSDATA HOOK') == -1) {
+                    return;
+                }
+                // 检查备份文件是否存在
+                var backFilePath = `${onefile}_sensorsdata_backup`;
+                if (!fs.existsSync(backFilePath)) {
+                    throw `File: ${backFilePath} not found, Please rm -rf node_modules and npm install again`;
+                }
+                // 将备份文件重命名恢复 + 自动覆盖被 hook 过的同名文件
+                fs.renameSync(backFilePath, onefile);
+            } else {
+                // 已经 hook 过了，不需要再次 hook
+                if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
+                    return;
+                }
+                // 获取 hook 的代码插入的位置
+                var scriptStr = 'onSlidingComplete(event.nativeEvent.value);';
+                var hookIndex = fileContent.indexOf(scriptStr);
+                // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
+                if (hookIndex == -1) {
+                    throw "Can't not find onSlidingComplete function";
+                };
+                // 插入 hook 代码
+                var hookedContent = `${fileContent.substring(0, hookIndex+scriptStr.length)}\n${sensorsdataSliderHookCode}\n${fileContent.substring(hookIndex+scriptStr.length)}`;
+                // 备份源文件
+                fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
+                // 重写文件
+                fs.writeFileSync(onefile, hookedContent, 'utf8');
+                console.log(`found and modify Slider.js: ${onefile}`);
+            }
+        }
+    });
+};
+// hook switch
+sensorsdataHookSwitchRN = function (reset = false) {
+    RNSwitchFiles.forEach(function (onefile) {
+        if (fs.existsSync(onefile)) {
+            // 读取文件内容
+            var fileContent = fs.readFileSync(onefile, "utf8");
+            if (reset) {
+                // 未被 hook 过代码，不需要处理
+                if (fileContent.indexOf('SENSORSDATA HOOK') == -1) {
+                    return;
+                }
+                // 检查备份文件是否存在
+                var backFilePath = `${onefile}_sensorsdata_backup`;
+                if (!fs.existsSync(backFilePath)) {
+                    throw `File: ${backFilePath} not found, Please rm -rf node_modules and npm install again`;
+                }
+                // 将备份文件重命名恢复 + 自动覆盖被 hook 过的同名文件
+                fs.renameSync(backFilePath, onefile);
+            } else {
+                // 已经 hook 过了，不需要再次 hook
+                if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
+                    return;
+                }
+                // 特殊情况的单独插入
+                // if (this.props.onValueChange != null) {
+                var scriptStr = "if (this.props.onValueChange != null) {";
+                var hookIndex = fileContent.indexOf(scriptStr);
+                if (hookIndex > -1) {
+                    // 插入 hook 代码
+                    var hookedContent = `${fileContent.substring(0, hookIndex)}\n${sensorsdataSwitchHookCode}\n${fileContent.substring(hookIndex)}`;
+                    // 备份源文件
+                    fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
+                    // 重写文件
+                    fs.writeFileSync(onefile, hookedContent, 'utf8');
+                    console.log(`found and modify Switch.js: ${onefile}`);
+                } else {
+                    // 获取 hook 的代码插入的位置
+                    scriptStr = "this.props.onValueChange(event.nativeEvent.value);";
+                    hookIndex = fileContent.indexOf(scriptStr);
+                    // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
+                    if (hookIndex == -1) {
+                        throw "Can't not find onValueChange function";
+                    };
+                    // 插入 hook 代码
+                    var hookedContent = `${fileContent.substring(0, hookIndex+scriptStr.length)}\n${sensorsdataSwitchHookCode}\n${fileContent.substring(hookIndex+scriptStr.length)}`;
+                    // 备份源文件
+                    fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
+                    // 重写文件
+                    fs.writeFileSync(onefile, hookedContent, 'utf8');
+                    console.log(`found and modify Switch.js: ${onefile}`);
+                }
+            }
+        }
+    });
+};
+// hook SegmentedControl
+sensorsdataHookSegmentedControlRN = function () {
+    if (fs.existsSync(RNSegmentedControlFilePath)) {
+        // 读取文件内容
+        var fileContent = fs.readFileSync(RNSegmentedControlFilePath, 'utf8');
+        // 已经 hook 过了，不需要再次 hook
+        if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
+            return;
+        }
+        // 获取 hook 的代码插入的位置
+        var scriptStr = "this.props.onValueChange(event.nativeEvent.value);";
+        var hookIndex = fileContent.indexOf(scriptStr);
+        // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
+        if (hookIndex == -1) {
+            throw "Can't not find onValueChange function";
+        };
+        // 插入 hook 代码
+        var hookedContent = `${fileContent.substring(0, hookIndex+scriptStr.length)}\n${sensorsdataSegmentedControlHookCode}\n${fileContent.substring(hookIndex+scriptStr.length)}`;
+        // 备份 Touchable.js 源文件
+        fs.renameSync(RNSegmentedControlFilePath, `${RNSegmentedControlFilePath}_sensorsdata_backup`);
+        // 重写 Touchable.js 文件
+        fs.writeFileSync(RNSegmentedControlFilePath, hookedContent, 'utf8');
+        console.log(`found and modify SegmentedControl.js: ${RNSegmentedControlFilePath}`);
+    }
+};
+// hook GestureButtons
+sensorsdataHookGestureButtonsRN = function () {
+    if (fs.existsSync(RNGestureButtonsFilePath)) {
+        // 读取文件内容
+        var fileContent = fs.readFileSync(RNGestureButtonsFilePath, 'utf8');
+        // 已经 hook 过了，不需要再次 hook
+        if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
+            return;
+        }
+        // 获取 hook 的代码插入的位置
+        var scriptStr = "this.props.onPress(active);";
+        var hookIndex = fileContent.indexOf(scriptStr);
+        // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
+        if (hookIndex == -1) {
+            throw "Can't not find onValueChange function";
+        };
+        // 插入 hook 代码
+        var hookedContent = `${fileContent.substring(0, hookIndex+scriptStr.length)}\n${sensorsdataClickHookCode}\n${fileContent.substring(hookIndex+scriptStr.length)}`;
+        // 备份 Touchable.js 源文件
+        fs.renameSync(RNGestureButtonsFilePath, `${RNGestureButtonsFilePath}_sensorsdata_backup`);
+        // 重写 Touchable.js 文件
+        fs.writeFileSync(RNGestureButtonsFilePath, hookedContent, 'utf8');
+        console.log(`found and modify GestureButtons.js: ${RNGestureButtonsFilePath}`);
+    }
+};
+// hook clickable
+sensorsdataHookClickableRN = function (reset = false) {
+    RNClickableFiles.forEach(function (onefile) {
+        if (fs.existsSync(onefile)) {
+            if (reset) {
+                // 读取文件内容
+                var fileContent = fs.readFileSync(onefile, "utf8");
+                // 未被 hook 过代码，不需要处理
+                if (fileContent.indexOf('SENSORSDATA HOOK') == -1) {
+                    return;
+                }
+                // 检查备份文件是否存在
+                var backFilePath = `${onefile}_sensorsdata_backup`;
+                if (!fs.existsSync(backFilePath)) {
+                    throw `File: ${backFilePath} not found, Please rm -rf node_modules and npm install again`;
+                }
+                // 将备份文件重命名恢复 + 自动覆盖被 hook 过的同名文件
+                fs.renameSync(backFilePath, onefile);
+            } else {
+                // 读取文件内容
+                var content = fs.readFileSync(onefile, 'utf8');
+                // 已经 hook 过了，不需要再次 hook
+                if (content.indexOf('SENSORSDATA HOOK') > -1) {
+                    return;
+                }
+                // 获取 hook 的代码插入的位置
+                var objRe = /UIManager\.createView\([\s\S]{1,60}\.uiViewClassName,[\s\S]*?\)[,;]/
+                var match = objRe.exec(content);
+                if (!match)
+                    throw "can't inject clickable js";
+                var lastParentheses = content.lastIndexOf(')', match.index);
+                var lastCommaIndex = content.lastIndexOf(',', lastParentheses);
+                if (lastCommaIndex == -1)
+                    throw "can't inject clickable js,and lastCommaIndex is -1";
+                var nextCommaIndex = content.indexOf(',', match.index);
+                if (nextCommaIndex == -1)
+                    throw "can't inject clickable js, and nextCommaIndex is -1";
+                var propsName = lastArgumentName(content, lastCommaIndex).trim();
+                var tagName = lastArgumentName(content, nextCommaIndex).trim();
+                var functionBody =
+                    `var clickable = false;
+                        if(${propsName}.onStartShouldSetResponder){
+                            clickable = true;
+                        }
+                        var ReactNative = require('react-native');
+                        var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
+                        dataModule && dataModule.saveViewProperties && dataModule.saveViewProperties(${tagName}, clickable , null);
+                        `;
+                var call = addTryCatch(functionBody);
+                var lastReturn = content.lastIndexOf('return', match.index);
+                var splitIndex = match.index;
+                if (lastReturn > lastParentheses) {
+                    splitIndex = lastReturn;
+                }
+                var hookedContent = `${content.substring(0, splitIndex)}\n${call}\n${content.substring(splitIndex)}`
+
+                // 备份源文件
+                fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
+                // 重写文件
+                fs.writeFileSync(onefile, hookedContent, 'utf8');
+                console.log(`found and modify clickable.js: ${onefile}`);
+            }
+        }
+    });
+
 };
 // 恢复被 hook 过的代码
 sensorsdataResetRN = function (resetFilePath) {
-    // 读取文件内容
+    // 判断需要被恢复的文件是否存在
+    if (!fs.existsSync(resetFilePath)) {
+        return;
+    }
     var fileContent = fs.readFileSync(resetFilePath, "utf8");
     // 未被 hook 过代码，不需要处理
     if (fileContent.indexOf('SENSORSDATA HOOK') == -1) {
@@ -52,7 +293,7 @@ sensorsdataResetRN = function (resetFilePath) {
 };
 
 
-
+// 工具函数- add try catch
 addTryCatch = function (functionBody) {
     functionBody = functionBody.replace(/this/g, 'thatThis');
     return "(function(thatThis){\n" +
@@ -60,11 +301,16 @@ addTryCatch = function (functionBody) {
         "    \n    } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n" +
         "})(this); /* SENSORSDATA HOOK */";
 }
+// 工具函数 - 计算位置
+function lastArgumentName(content, index) {
+    --index;
+    var lastComma = content.lastIndexOf(',', index);
+    var lastParentheses = content.lastIndexOf('(', index);
+    var start = Math.max(lastComma, lastParentheses);
+    return content.substring(start + 1, index + 1);
+}
 
-
-// hook 代码实现 PageView 事件采集;
-
-
+// hook 代码片段实现 PageView 事件采集;
 navigationString3 = function (prevStateVarName, currentStateVarName, actionName) {
     var script = `function $$$getActivePageName$$$(navigationState){
             if(!navigationState)
@@ -77,7 +323,7 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
             if(!route.params["sensorsdataurl"]){
               route.params.sensorsdataurl = route.routeName;
             }
-                    return route.params; 
+                    return route.params;
                 } else {
              route.params = {sensorsdataurl:route.routeName};
           }
@@ -90,7 +336,7 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
         script = `${script}
                                     var type = ${actionName}.type;
                                     var iosOnPageShow = false;
-        
+
                                     if (require('react-native').Platform.OS === 'android') {
                                         if(type == 'Navigation/SET_PARAMS' || type == 'Navigation/COMPLETE_TRANSITION') {
                                             return;
@@ -118,10 +364,14 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
                           return;
                     }
                  }
-                require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);
+                 var ReactNative = require('react-native');
+                 var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
+                 dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);
             } else if (require('react-native').Platform.OS === 'ios') {
                 if (!${actionName} || iosOnPageShow) {
-                    require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);
+                    var ReactNative = require('react-native');
+                    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
+                    dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);
                 }
             }`;
     return script;
@@ -139,7 +389,9 @@ navigationEventString = function () {
                 payload.state.params = {sensorsdataurl:payload.state.routeName};
             }
             if(type == 'didFocus') {
-                require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(payload.state.params);
+                 var ReactNative = require('react-native');
+                 var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
+                 dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(payload.state.params);
             }
           }
           `;
@@ -177,7 +429,9 @@ navigationString = function (currentStateVarName, actionName) {
 
     script = `${script} var params = $$$getActivePageName$$$(${currentStateVarName});
             if (require('react-native').Platform.OS === 'android') {
-            require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);}`;
+             var ReactNative = require('react-native');
+             var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
+             dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);}`;
     return script;
 };
 
@@ -247,6 +501,7 @@ injectReactNavigation = function (dirPath, type, reset = false) {
             fs.renameSync(getChildEventSubscriberJsFilePath, `${getChildEventSubscriberJsFilePath}_sensorsdata_backup`);
             // 重写文件
             fs.writeFileSync(getChildEventSubscriberJsFilePath, content, 'utf8');
+            console.log(`found and modify navigation.js: ${getChildEventSubscriberJsFilePath}`);
         }
 
     } else if (type == 2) {
@@ -287,16 +542,19 @@ injectReactNavigation = function (dirPath, type, reset = false) {
             fs.renameSync(createAppContainerJsFilePath, `${createAppContainerJsFilePath}_sensorsdata_backup`);
             // 重写文件
             fs.writeFileSync(createAppContainerJsFilePath, content, 'utf8');
+            console.log(`found and modify navigation.js: ${createAppContainerJsFilePath}`);
         }
     }
 }
+
+// hook pageview 文件
 sensorsdataHookViewRN = function () {
     injectReactNavigation(reactNavigationPath, 1);
     injectReactNavigation(reactNavigationPath3X, 2);
     injectReactNavigation(reactNavigationPath4X, 2)
 };
 
-// 恢复被 hook 的 view 文件
+// 恢复被 hook 的 pageview 文件
 sensorsdataResetViewRN = function () {
     injectReactNavigation(reactNavigationPath, 1, true);
     injectReactNavigation(reactNavigationPath3X, 2, true);
@@ -307,12 +565,28 @@ sensorsdataResetViewRN = function () {
 resetAllSensorsdataHookRN = function () {
     sensorsdataResetRN(RNClickFilePath);
     sensorsdataResetViewRN();
+    sensorsdataHookClickableRN(true);
+    // 2 期
+    sensorsdataHookSliderRN(true);
+    sensorsdataHookSwitchRN(true);
+    sensorsdataResetRN(RNSegmentedControlFilePath);
+    sensorsdataResetRN(RNGestureButtonsFilePath);
+};
+// 全部 hook 文件
+allSensorsdataHookRN = function () {
+    sensorsdataHookClickRN(RNClickFilePath);
+    sensorsdataHookViewRN();
+    sensorsdataHookClickableRN();
+    // 2 期
+    sensorsdataHookSliderRN();
+    sensorsdataHookSwitchRN();
+    sensorsdataHookSegmentedControlRN();
+    sensorsdataHookGestureButtonsRN();
 };
 // 命令行
 switch (process.argv[2]) {
     case '-run':
-         sensorsdataHookClickRN(RNClickFilePath);
-         sensorsdataHookViewRN();
+        allSensorsdataHookRN();
         break;
     case '-reset':
         resetAllSensorsdataHookRN();

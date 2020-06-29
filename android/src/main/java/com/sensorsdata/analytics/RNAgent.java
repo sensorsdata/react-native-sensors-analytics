@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import com.facebook.react.bridge.ReadableMap;
 import com.sensorsdata.analytics.RNSensorsAnalyticsModule;
 import com.sensorsdata.analytics.utils.RNViewUtils;
+import com.sensorsdata.analytics.data.ViewProperties;
 
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -20,9 +21,11 @@ import java.lang.reflect.Field;
 import java.util.WeakHashMap;
 import java.util.HashMap;
 import org.json.JSONObject;
+import android.util.SparseArray;
 
 public class RNAgent {
     private static final WeakHashMap jsTouchDispatcherViewGroupWeakHashMap = new WeakHashMap();
+    private static SparseArray<ViewProperties> viewPropertiesArray = new SparseArray();
 
     public static void handleTouchEvent(
             JSTouchDispatcher jsTouchDispatcher, MotionEvent event, EventDispatcher eventDispatcher) {
@@ -105,6 +108,35 @@ public class RNAgent {
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
+        }
+    }
+
+    public static void saveViewProperties(int viewId, boolean clickable, ReadableMap viewProperties) {
+        if(clickable){
+            viewPropertiesArray.put(viewId, new ViewProperties(clickable,viewProperties));
+        }
+    }   
+
+    public static void addView(View view,int index){
+        ViewProperties properties = viewPropertiesArray.get(view.getId());
+        if(properties != null){
+            properties.setViewProperty(view);
+        }
+    }
+
+    /**
+     * 忽略 Slider、Switch Android SDK 的采集逻辑，统一通过 Recat Native 采集
+     */
+    static void ignoreView(){
+        try{
+            SensorsDataAPI.sharedInstance().ignoreViewType(Class.forName("com.facebook.react.views.switchview.ReactSwitch"));
+        }catch (Exception e){
+
+        }
+        try{
+            SensorsDataAPI.sharedInstance().ignoreViewType(Class.forName("com.facebook.react.views.slider.ReactSlider"));
+        }catch (Exception e){
+
         }
     }
 }

@@ -36,4 +36,16 @@ RCT_EXPORT_METHOD(trackViewScreen:(NSDictionary *)params) {
     [[SAReactNativeManager sharedInstance] trackViewScreen:url properties:properties autoTrack:YES];
 }
 
+/**
+ * React Native 保存可点击控件列表信息
+ *
+ * @param reactTag  当前控件唯一标识符
+ * @param clickable  当前控件可点击状态
+ * @param paramters  当前控件自定义参数 （预留字段，暂不支持）
+ *
+*/
+RCT_EXPORT_METHOD(saveViewProperties:(NSInteger)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters) {
+    [[SAReactNativeManager sharedInstance] prepareView:@(reactTag) clickable:clickable paramters:paramters];
+}
+
 @end

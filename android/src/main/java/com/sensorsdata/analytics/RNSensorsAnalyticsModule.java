@@ -652,13 +652,13 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * <p>
      * RN 中使用示例：
      * <Button title="Button" onPress={()=>
-     * RNSensorsAnalyticsModule.identify(distinctId)}>
+     * RNSensorsAnalyticsModule.identify(anonymousId)}>
      * </Button>
      */
     @ReactMethod
-    public void identify(String distinctId) {
+    public void identify(String anonymousId) {
         try {
-            SensorsDataAPI.sharedInstance().identify(distinctId);
+            SensorsDataAPI.sharedInstance().identify(anonymousId);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
