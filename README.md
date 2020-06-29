@@ -10,7 +10,7 @@
 
 ## 基本要求
 App 元素点击事件要求 React Native 0.23 ~ 0.61.5；   
-App 页面浏览事件要求 React Navigation ^2.0 ~ ^4.0；
+App 页面浏览事件要求 React Navigation ^2.0 ~ ^4.0；  
 App 可视化全埋点要求 React Native 0.46 ~ 0.60。
 
 ## 集成方式
