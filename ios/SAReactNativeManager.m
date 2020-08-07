@@ -36,10 +36,26 @@
 #import "SAReactNativeswizzler.h"
 #import <objc/runtime.h>
 
+
+@interface UIView(SAReactNative)
+@property (nonatomic, copy) NSDictionary *sa_reactnative_screenProperties;
+@end
+
+@implementation UIView(SAReactNative)
+
+- (NSDictionary *)sa_reactnative_screenProperties {
+    return objc_getAssociatedObject(self, @"SensorsAnalyticsRNScreenProperties");
+}
+
+- (void)setSa_reactnative_screenProperties:(NSDictionary *)sa_reactnative_screenProperties {
+    objc_setAssociatedObject(self, @"SensorsAnalyticsRNScreenProperties", sa_reactnative_screenProperties, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+@end
+
 @interface SAReactNativeManager ()
 
-@property (nonatomic, copy) NSString *currentScreenName;
-@property (nonatomic, copy) NSString *currentTitle;
+@property (nonatomic, copy) NSDictionary *screenProperties;
 @property (nonatomic, strong) NSSet *ignoreClasses;
 @property (nonatomic, strong) NSMutableSet *clickableViewTags;
 @property (nonatomic, assign) BOOL isRootViewVisible;
@@ -167,14 +183,18 @@
 
 #pragma mark - visualize
 - (NSDictionary *)visualizeProperties {
-    return _isRootViewVisible ? [self screenProperties] : nil;
+    return _isRootViewVisible ? self.screenProperties : nil;
 }
 
 - (BOOL)clickableForView:(UIView *)view {
     if ([_ignoreClasses containsObject:NSStringFromClass(view.class)]) {
         return NO;
     }
-    return [_clickableViewTags containsObject:view.reactTag];
+    BOOL clickable = [_clickableViewTags containsObject:view.reactTag];
+    if (clickable) {
+        view.sa_reactnative_screenProperties = self.screenProperties;
+    }
+    return clickable;
 }
 
 - (BOOL)prepareView:(NSNumber *)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters {
@@ -198,8 +218,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         UIView *view = [[SAReactNativeManager sharedInstance] viewForTag:reactTag];
         NSMutableDictionary *properties = [NSMutableDictionary dictionary];
-        NSDictionary *screenProperties = [self screenProperties];
-        [properties addEntriesFromDictionary:screenProperties];
+        [properties addEntriesFromDictionary:self.screenProperties];
         properties[@"$element_content"] = [view.accessibilityLabel stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
         [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:[properties copy]];
@@ -213,8 +232,11 @@
         return;
     }
     NSString *screenName = properties[@"$screen_name"] ?: url;
-    NSString *title = properties[@"$title"];
-    NSDictionary *pageProps = [self viewScreenProperties:screenName title:title];
+    NSString *title = properties[@"$title"] ?: screenName;
+    NSMutableDictionary *pageProps = [NSMutableDictionary dictionary];
+    pageProps[@"$screen_name"] = screenName;
+    pageProps[@"$title"] = title;
+    self.screenProperties = pageProps;
 
     if (autoTrack && ![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
@@ -266,19 +288,6 @@
     RCTRootView *rootView = [SAReactNativeManager rootView];
     RCTUIManager *manager = rootView.bridge.uiManager;
     return [manager viewForReactTag:reactTag];
-}
-
-- (NSDictionary *)viewScreenProperties:(NSString *)screenName title:(NSString *)title {
-    _currentScreenName = screenName;
-    _currentTitle = title ?: screenName;
-    return [self screenProperties];
-}
-
-- (NSDictionary *)screenProperties {
-    NSMutableDictionary *properties = [NSMutableDictionary dictionary];
-    properties[@"$screen_name"] = _currentScreenName;
-    properties[@"$title"] = _currentTitle;
-    return [properties copy];
 }
 
 @end
