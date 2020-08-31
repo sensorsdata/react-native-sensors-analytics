@@ -28,7 +28,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.WritableMap;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.utils.RNUtils;
 
@@ -488,6 +488,9 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getDistinctIdPromise(Promise promise) {
+        if(promise == null){
+            return;
+        }
         try {
             String mLoginId = SensorsDataAPI.sharedInstance().getLoginId();
             if (!TextUtils.isEmpty(mLoginId)) {
@@ -498,7 +501,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
-            promise.reject("getDistinctId fail", e);
+            promise.reject("getDistinctId failed", e);
         }
     }
 
@@ -514,12 +517,15 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getAnonymousIdPromise(Promise promise) {
+        if(promise == null){
+            return;
+        }
         try {
             promise.resolve(SensorsDataAPI.sharedInstance().getAnonymousId());
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
-            promise.reject("getDistinctId fail", e);
+            promise.reject("getAnonymousId failed", e);
         }
     }
 
@@ -662,6 +668,341 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+
+    /**
+     * 导出 trackTimerPause 方法给 RN 使用.
+     *
+     * <p>暂停事件计时器，计时单位为秒。
+     *
+     * @param eventName 事件的名称
+     */
+    @ReactMethod
+    public void trackTimerPause(String eventName) {
+        try {
+            SensorsDataAPI.sharedInstance().trackTimerPause(eventName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+    * 导出 trackTimerResume 方法给 RN 使用.
+    *
+    * <p>恢复事件计时器，计时单位为秒。
+    *
+    * @param eventName 事件的名称
+    */
+    @ReactMethod
+    public void trackTimerResume(String eventName) {
+        try {
+            SensorsDataAPI.sharedInstance().trackTimerResume(eventName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+    * 保存用户推送 ID 到用户表
+    *
+    * @param pushTypeKey 属性名称（例如 jgId）
+    * @param pushId 推送 ID
+    *     <p>使用 profilePushId("jgId", pushId) 例如极光 pushId
+    *     获取方式：JPushModule.getRegistrationID(callback)
+    */
+    @ReactMethod
+    public void profilePushId(String pushTypeKey, String pushId) {
+        try {
+            SensorsDataAPI.sharedInstance().profilePushId(pushTypeKey, pushId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+    * 删除用户设置的 pushId
+    *
+    * @param pushTypeKey 属性名称（例如 jgId）
+    */
+    @ReactMethod
+    public void profileUnsetPushId(String pushTypeKey) {
+        try {
+            SensorsDataAPI.sharedInstance().profileUnsetPushId(pushTypeKey);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 重置默认匿名 id
+     */
+    @ReactMethod
+    public void resetAnonymousId() {
+        try {
+            SensorsDataAPI.sharedInstance().resetAnonymousId();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+    * 设置当前 serverUrl
+    *
+    * @param serverUrl 当前 serverUrl
+    */
+    @ReactMethod
+    public void setServerUrl(String serverUrl) {
+        try {
+            SensorsDataAPI.sharedInstance().setServerUrl(serverUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+    * 设置 item
+    *
+    * @param itemType item 类型
+    * @param itemId item ID
+    * @param properties item 相关属性
+    */
+    @ReactMethod
+    public void itemSet(final String itemType, final String itemId, ReadableMap properties) {
+        try {
+            SensorsDataAPI.sharedInstance().itemSet(itemType, itemId, RNUtils.convertToJSONObject(properties));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+    * 删除 item
+    *
+    * @param itemType item 类型
+    * @param itemId item ID
+    */
+    @ReactMethod
+    public void itemDelete(final String itemType, final String itemId) {
+        try {
+            SensorsDataAPI.sharedInstance().itemDelete(itemType, itemId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 获取事件公共属性
+     */
+    @ReactMethod
+    public void getSuperPropertiesPromise(Promise promise) {
+        if(promise == null){
+            return;
+        }
+        try {
+            JSONObject properties = SensorsDataAPI.sharedInstance().getSuperProperties();
+            WritableMap map = RNUtils.convertToMap(properties);
+            if (map != null) {
+                promise.resolve(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("getSuperProperties failed", e);
+        }
+    }
+
+    /**
+     * 返回预置属性
+     */
+    @ReactMethod
+    public void getPresetPropertiesPromise(Promise promise) {
+        if(promise == null){
+            return;
+        }
+        try {
+            JSONObject properties = SensorsDataAPI.sharedInstance().getPresetProperties();
+            WritableMap map = RNUtils.convertToMap(properties);
+            if (map != null) {
+                promise.resolve(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("getPresetProperties failed", e);
+        }
+    }
+
+    /**
+    * 获取当前用户的 loginId 若调用前未调用 {@link #login(String)} 设置用户的 loginId，会返回 null
+    *
+    * @return 当前用户的 loginId
+    */
+    @ReactMethod
+    public void getLoginIdPromise(Promise promise) {
+        if (promise == null) {
+            return;
+        }
+        try {
+            promise.resolve(SensorsDataAPI.sharedInstance().getLoginId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("getLoginId failed", e);
+        }
+    }
+
+    /**
+    * 设置 App 切换到后台与下次事件的事件间隔
+    * 默认值为 30*1000 毫秒
+    * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
+    *
+    * @param sessionIntervalTime int
+    */
+    @ReactMethod
+    public void setSessionIntervalTime(int sessionIntervalTime) {
+        SensorsDataAPI.sharedInstance().setSessionIntervalTime(sessionIntervalTime);
+    }
+
+    /**
+     * 获取 App 切换到后台与下次事件的事件间隔时长设置
+     * 默认值为 30*1000 毫秒
+     * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
+     *
+     * @return 返回设置的 SessionIntervalTime ，默认是 30s
+     */
+    @ReactMethod
+    public void getSessionIntervalTimePromise(Promise promise) {
+        if (promise == null) {
+            return;
+        }
+        try {
+            promise.resolve(SensorsDataAPI.sharedInstance().getSessionIntervalTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("getSessionIntervalTime failed", e);
+        }
+    }
+
+    /**
+     * 是否开启 AutoTrack
+     *
+     * @return true: 开启 AutoTrack; false：没有开启 AutoTrack
+     */
+    @ReactMethod
+    public void isAutoTrackEnabledPromise(Promise promise){
+        if (promise == null) {
+            return;
+        }
+        try {
+            promise.resolve(SensorsDataAPI.sharedInstance().isAutoTrackEnabled());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("isAutoTrackEnabled failed", e);
+        }
+    }
+
+    /**
+     * 是否开启可视化全埋点
+     *
+     * @return true 代表开启了可视化全埋点， false 代表关闭了可视化全埋点
+     */
+    @ReactMethod
+    public void isVisualizedAutoTrackEnabledPromise(Promise promise){
+        if (promise == null) {
+            return;
+        }
+        try {
+            promise.resolve(SensorsDataAPI.sharedInstance().isVisualizedAutoTrackEnabled());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("isVisualizedAutoTrackEnabled failed", e);
+        }
+    }
+
+    /**
+     * 是否开启点击图
+     *
+     * @return true 代表开启了点击图，false 代表关闭了点击图
+     */
+    @ReactMethod
+    public void isHeatMapEnabledPromise(Promise promise){
+        if (promise == null) {
+            return;
+        }
+        try {
+            promise.resolve(SensorsDataAPI.sharedInstance().isHeatMapEnabled());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("isHeatMapEnabled failed", e);
+        }
+    }
+
+    /**
+     * 设置 flush 时网络发送策略，默认 3G、4G、WI-FI 环境下都会尝试 flush
+     * TYPE_NONE = 0;//NULL
+     * TYPE_2G = 1;//2G
+     * TYPE_3G = 1 << 1;//3G 2
+     * TYPE_4G = 1 << 2;//4G 4
+     * TYPE_WIFI = 1 << 3;//WIFI 8
+     * TYPE_5G = 1 << 4;//5G 16
+     * TYPE_ALL = 0xFF;//ALL 255
+     * 例：若需要开启 4G 5G 发送数据，则需要设置 4 + 16 = 20
+     */
+    @ReactMethod
+    public void setFlushNetworkPolicy(int networkType){
+        try {
+            SensorsDataAPI.sharedInstance().setFlushNetworkPolicy(networkType);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 设置是否允许请求网络，默认是 true
+     *
+     * @param isRequest boolean
+     */
+    @ReactMethod
+    public void enableNetworkRequest(boolean isRequest){
+        try {
+            SensorsDataAPI.sharedInstance().enableNetworkRequest(isRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 是否允许请求网络，默认是 true
+     *
+     * @return 是否允许请求网络
+     */
+    @ReactMethod
+    public void isNetworkRequestEnablePromise(Promise promise){
+        if (promise == null) {
+            return;
+        }
+        try {
+            promise.resolve(SensorsDataAPI.sharedInstance().isNetworkRequestEnable());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+            promise.reject("isNetworkRequestEnable failed", e);
         }
     }
 }

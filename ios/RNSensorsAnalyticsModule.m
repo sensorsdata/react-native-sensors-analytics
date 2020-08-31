@@ -700,11 +700,11 @@ RCT_EXPORT_METHOD(identify:(NSString *)anonymousId) {
  *
  * RN 中使用示例：（调用 track 接口并附加渠道信息）
  *
- *                   <Button
- *                   title="Button"
- *                   onPress={()=>
- *                   RNSensorsAnalyticsModule.trackChannelEvent("channelEvent",{"ProductID":123456,"UserLevel":"VIP"})}>
- *                   </Button>
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.trackChannelEvent("channelEvent",{"ProductID":123456,"UserLevel":"VIP"})}>
+ *  </Button>
 */
 RCT_EXPORT_METHOD(trackChannelEvent:(NSString *)event properties:(nullable NSDictionary *)propertyDict) {
     @try {
@@ -721,6 +721,352 @@ RCT_EXPORT_METHOD(trackChannelEvent:(NSString *)event properties:(nullable NSDic
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
+}
+
+/**
+暂停事件计时
+ * @discussion
+ * 多次调用 trackTimerPause: 时，以首次调用为准。
+ * @param event 事件名称或事件的 eventId
+ *
+ * RN 中使用示例：
+ *
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.trackTimerPause("event")}>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(trackTimerPause:(NSString *)event){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] trackTimerPause:event];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+恢复事件计时
+
+@discussion
+ * 多次调用 trackTimerResume: 时，以首次调用为准。
+ * @param event 事件名称或事件的 eventId
+ *
+ * RN 中使用示例：
+ *
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.trackTimerResume("event")}>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(trackTimerResume:(NSString *)event){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] trackTimerResume:event];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * @abstract
+ * 直接设置用户的pushId
+ *
+ * @discussion
+ * 设置用户的 pushId 比如 @{@"jgId":pushId}，并触发 profileSet 设置对应的用户属性。
+ * 当 disctinct_id 或者 pushId 没有发生改变的时,不会触发 profileSet。
+ * @param pushTypeKey  pushId 的 key
+ * @param pushId  pushId 的值
+ *
+ *  RN 中使用示例：
+ *
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.profilePushId("pushTypeKey", "pushId")}>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(profilePushId:(NSString *)pushTypeKey pushId:(NSString *)pushId){
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] profilePushKey:pushTypeKey pushId:pushId];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * @abstract
+ * 删除用户设置的 pushId
+ *
+ * @discussion
+ * 删除用户设置的 pushId 比如 @{@"jgId":pushId}，并触发 profileUnset 删除对应的用户属性。
+ * 当 disctinct_id 未找到本地缓存记录时, 不会触发 profileUnset。
+ * @param pushTypeKey  pushId 的 key
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.profileUnsetPushId("pushTypeKey")}>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(profileUnsetPushId:(NSString *)pushTypeKey) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] profileUnsetPushKey:pushTypeKey];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * @abstract
+ * 重置默认匿名 id
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.resetAnonymousId()}>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(resetAnonymousId) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] resetAnonymousId];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * @abstract
+ * 拿到当前的 superProperty 的副本
+ *
+ * @return 当前的 superProperty 的副本
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.getSuperPropertiesPromise().then((value) => { // value 为获取到的公共属性  })}>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(getSuperPropertiesPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    @try {
+        NSDictionary *superProperties = [[SensorsAnalyticsSDK sharedInstance] currentSuperProperties];
+        resolve(superProperties);
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * @abstract
+ * 设置当前 serverUrl
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.setServerUrl("https://www.sensorsdata.cn") }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(setServerUrl:(NSString *)serverUrl) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] setServerUrl:serverUrl];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+设置 item
+ * @param itemType item 类型
+ * @param itemId item Id
+ * @param propertyDict item 相关属性
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.itemSet('itemType', 'itemId', { 'key' : 'value' }) }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(itemSet:(NSString *)itemType itemId:(NSString *)itemId properties:(nullable NSDictionary <NSString *, id> *)propertyDict) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] itemSetWithType:itemType itemId:itemId properties:propertyDict];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+删除 item
+ *
+ * @param itemType item 类型
+ * @param itemId item Id
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.itemDelete('itemType', 'itemId') }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(itemDelete:(NSString *)itemType itemId:(NSString *)itemId) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] itemDeleteWithType:itemType itemId:itemId];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * @abstract
+ * 返回预置的属性
+ *
+ * @return NSDictionary 返回预置的属性
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.getPresetPropertiesPromise().then((value) => { // value 为获取到的预置属性  }) }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(getPresetPropertiesPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    @try {
+        NSDictionary *presetProperties = [[SensorsAnalyticsSDK sharedInstance] getPresetProperties];
+        resolve(presetProperties);
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 设置 flush 时网络发送策略，默认 3G、4G、WI-FI 环境下都会尝试 flush
+ * TYPE_NONE = 0;         //NULL    0
+ * TYPE_2G = 1;              // 2G        1
+ * TYPE_3G = 1 << 1;     // 3G        2
+ * TYPE_4G = 1 << 2;     // 4G        4
+ * TYPE_WIFI = 1 << 3;  // WIFI     8
+ * TYPE_ALL = 0xFF;     // ALL       255
+ * 例：若需要开启 4G WIFI 发送数据，则需要设置 4 + 8 = 12
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.setFlushNetworkPolicy( 20 ) }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(setFlushNetworkPolicy:(NSInteger)networkType) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] setFlushNetworkPolicy:networkType];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * @abstract
+ * 用户登录唯一标识符
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.getLoginIdPromise().then((value) => { // value 为获取到的登录 ID  }) }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(getLoginIdPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    @try {
+        resolve([[SensorsAnalyticsSDK sharedInstance] loginId]);
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * @abstract
+ * 是否开启 AutoTrack
+ *
+ * @return YES: 开启 AutoTrack; NO: 关闭 AutoTrack
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.isAutoTrackEnabledPromise().then((value) => { // value 为获取到的全埋点开启状态  }) }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(isAutoTrackEnabledPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    @try {
+        resolve(@([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]));
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 是否开启 可视化全埋点 分析，默认不
+ *
+ * @return YES/NO
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.isVisualizedAutoTrackEnabledPromise().then((value) => { // value 为获取到的可视化埋点开启状态  }) }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(isVisualizedAutoTrackEnabledPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    @try {
+        resolve(@([[SensorsAnalyticsSDK sharedInstance] isVisualizedAutoTrackEnabled]));
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 是否开启点击图
+ *
+ * @return YES/NO 是否开启了点击图
+ *
+ *  RN 中使用示例：
+ *  <Button
+ *  title="Button"
+ *  onPress={()=>
+ *  RNSensorsAnalyticsModule.isHeatMapEnabledPromise().then((value) => { // value 为获取到的热力图开启状态  }) }>
+ *  </Button>
+*/
+RCT_EXPORT_METHOD(isHeatMapEnabledPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    @try {
+        resolve(@([[SensorsAnalyticsSDK sharedInstance] isHeatMapEnabled]));
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * Android Only
+ *
+ * Android 独有的方法，iOS 添加对应的空实现，避免客户使用 API 时 iOS 报错
+ *
+*/
+RCT_EXPORT_METHOD(setSessionIntervalTime:(NSInteger)interval) {
+
+}
+
+RCT_EXPORT_METHOD(getSessionIntervalTimePromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+
+}
+
+RCT_EXPORT_METHOD(enableNetworkRequest:(BOOL)enable) {
+
+}
+
+RCT_EXPORT_METHOD(isNetworkRequestEnablePromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+
 }
 
 @end

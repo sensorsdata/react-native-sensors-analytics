@@ -138,5 +138,10 @@ public class RNAgent {
         }catch (Exception e){
 
         }
+        try{
+            SensorsDataAPI.sharedInstance().ignoreViewType(Class.forName("com.reactnativecommunity.slider.ReactSlider"));
+        }catch (Exception e){
+
+        }
     }
 }

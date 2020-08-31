@@ -1,6 +1,6 @@
 {
   "name": "sensorsdata-analytics-react-native",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": false,
   "description": "神策分析 RN 组件",
   "main": "index.js",

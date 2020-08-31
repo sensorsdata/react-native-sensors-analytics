@@ -168,7 +168,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        NSSet *ignoreClasses = [NSSet setWithObjects:@"RCTSwitch", @"RCTSlider", @"RCTSegmentedControl", @"RNGestureHandlerButton", nil];
+        NSSet *ignoreClasses = [NSSet setWithObjects:@"RCTSwitch", @"RCTSlider", @"RCTSegmentedControl", @"RNGestureHandlerButton", @"RNCSlider", @"RNCSegmentedControl", nil];
         for (NSString *className in ignoreClasses) {
             if (NSClassFromString(className)) {
                 [[SensorsAnalyticsSDK sharedInstance] ignoreViewType:NSClassFromString(className)];
