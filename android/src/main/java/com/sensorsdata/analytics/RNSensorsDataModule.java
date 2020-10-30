@@ -18,27 +18,18 @@
 package com.sensorsdata.analytics;
 
 
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.RNAgent;
 import com.sensorsdata.analytics.utils.RNUtils;
 import com.sensorsdata.analytics.utils.RNViewUtils;
 
 import org.json.JSONObject;
-
-import java.util.HashSet;
 
 
 /**
@@ -80,15 +71,6 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule{
 
     @ReactMethod
     public void trackViewClick(int viewId) {
-        //关闭 AutoTrack
-        if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
-            return;
-        }
-        //$AppClick 被过滤
-        if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_CLICK)) {
-            return;
-        }
-
         RNAgent.trackViewClick(viewId);
     }
 
@@ -123,10 +105,12 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule{
     class SensorsDataLifecycleListener implements LifecycleEventListener {
         public void onHostResume() {
             RNViewUtils.setScreenVisiable(true);
+            RNViewUtils.setCurrentActivity(getCurrentActivity());
         }
 
         public void onHostPause() {
             RNViewUtils.setScreenVisiable(false);
+            RNViewUtils.clearCurrentActivityReference();
         }
 
         public void onHostDestroy() {

@@ -1,13 +1,13 @@
 package com.sensorsdata.analytics.utils;
 
+import android.app.Activity;
 import android.view.View;
 
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIViewOperationQueue;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import java.lang.reflect.Field;
 import android.view.ViewGroup;
@@ -17,97 +17,22 @@ import org.json.JSONObject;
 
 public class RNViewUtils {
 
-    private static WeakReference onTouchViewReference;
+    private static SoftReference mSoftCurrentActivityReference;
     private static String currentTitle;
     private static String currentScreenName;
     public static boolean isScreenVisiable = false;
     private static JSONObject properties = new JSONObject();
 
-    public static void setOnTouchView(View nativeTargetView) {
-        onTouchViewReference = new WeakReference(nativeTargetView);
-    }
-
-    public static View getViewByTag(ReactContext reactContext, int viewTag) {
-        NativeViewHierarchyManager manager = getNativeViewHierarchyManager(reactContext);
-        if (manager == null) {
-            return null;
-        }
-        return manager.resolveView(viewTag);
-    }
-
     public static View getTouchViewByTag(int viewTag) {
-        if (onTouchViewReference != null) {
-            View onTouchView = (View) onTouchViewReference.get();
-            if (onTouchView != null) {
-                View clickView = getClickView(viewTag, onTouchView);
-                if (clickView == null && (onTouchView instanceof ViewGroup)) {
-                    clickView = getClickViewInChild(viewTag, (ViewGroup) onTouchView);
-                }
-                return clickView;
+        try{
+            Activity currentActivity = getCurrentActivity();
+            if(currentActivity!=null){
+                return currentActivity.findViewById(viewTag);
             }
+        }catch (Exception ignored){
+
         }
         return null;
-    }
-
-    public static View getClickView(int viewId, View onTouchView) {
-        View currentView = onTouchView;
-        while (currentView.getId() != viewId) {
-            ViewParent parent = currentView.getParent();
-            if (parent == null || !(parent instanceof View)) {
-                return null;
-            }
-            currentView = (View) parent;
-        }
-        return currentView;
-    }
-
-    public static View getClickViewInChild(int viewId, ViewGroup currentView) {
-        int currentViewCount = currentView.getChildCount();
-        for (int i = 0; i < currentViewCount; i++) {
-            View childView = currentView.getChildAt(i);
-            if (childView != null) {
-                if (childView.getId() == viewId) {
-                    return childView;
-                }
-                if (childView instanceof ViewGroup) {
-                    View clickView = getClickViewInChild(viewId, (ViewGroup) childView);
-                    if (clickView != null) {
-                        return clickView;
-                    }
-                } else {
-                    continue;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static NativeViewHierarchyManager getNativeViewHierarchyManager(
-            ReactContext reactContext) {
-        try {
-            // 获取 UIImplementation
-            UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-            UIImplementation uiImplementation = uiManager.getUIImplementation();
-            // 获取 UIImplementation#mOperationsQueue
-            Field mOperationsQueueField =
-                    uiImplementation.getClass().getDeclaredField("mOperationsQueue");
-            mOperationsQueueField.setAccessible(true);
-            UIViewOperationQueue uiViewOperationQueue =
-                    (UIViewOperationQueue) mOperationsQueueField.get(uiImplementation);
-            // 获取 UIViewOperationQueue#NativeViewHierarchyManager
-            Field mNativeViewHierarchyManagerField =
-                    UIViewOperationQueue.class.getDeclaredField("mNativeViewHierarchyManager");
-            mNativeViewHierarchyManagerField.setAccessible(true);
-            NativeViewHierarchyManager mNativeViewHierarchyManager =
-                    (NativeViewHierarchyManager) mNativeViewHierarchyManagerField.get(uiViewOperationQueue);
-            return mNativeViewHierarchyManager;
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            return null;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     public static void saveScreenAndTitle(String screenName,String title){
@@ -119,7 +44,6 @@ public class RNViewUtils {
         }catch (Exception e){
 
         }
-
     }
 
     public static String getTitle(){
@@ -143,5 +67,24 @@ public class RNViewUtils {
 
     public static void setScreenVisiable(boolean isVisiable){
         isScreenVisiable = isVisiable;
+    }
+
+    public static void setCurrentActivity(Activity currentActivity) {
+        clearCurrentActivityReference();
+        mSoftCurrentActivityReference = new SoftReference(currentActivity);
+    }
+
+    public static Activity getCurrentActivity(){
+        if(mSoftCurrentActivityReference == null){
+            return null;
+        }
+        return (Activity)mSoftCurrentActivityReference.get();
+    }
+
+    public static void clearCurrentActivityReference() {
+        if(mSoftCurrentActivityReference != null){
+            mSoftCurrentActivityReference.clear();
+            mSoftCurrentActivityReference = null;
+        }
     }
 }

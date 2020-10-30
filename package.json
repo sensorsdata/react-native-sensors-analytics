@@ -1,6 +1,6 @@
 {
   "name": "sensorsdata-analytics-react-native",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "private": false,
   "description": "神策分析 RN 组件",
   "main": "index.js",
@@ -13,7 +13,7 @@
     "神策",
     "神策分析"
   ],
-  "author": "yangzhankun",
+  "author": "chenru",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

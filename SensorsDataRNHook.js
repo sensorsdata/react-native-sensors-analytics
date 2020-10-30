@@ -669,22 +669,83 @@ sensorsdataHookClickableRN = function (reset = false) {
           throw "can't inject clickable js";
         }
         var lastParentheses = content.lastIndexOf(')', match.index);
-        var lastCommaIndex = content.lastIndexOf(',', lastParentheses);
-        if (lastCommaIndex == -1)
-          throw "can't inject clickable js,and lastCommaIndex is -1";
         var nextCommaIndex = content.indexOf(',', match.index);
         if (nextCommaIndex == -1)
           throw "can't inject clickable js, and nextCommaIndex is -1";
-        var propsName = lastArgumentName(content, lastCommaIndex).trim();
         var tagName = lastArgumentName(content, nextCommaIndex).trim();
-        var functionBody = `var clickable = false;
-                        if(${propsName}.onStartShouldSetResponder){
-                            clickable = true;
-                        }
-                        var ReactNative = require('react-native');
-                        var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
-                        dataModule && dataModule.saveViewProperties && dataModule.saveViewProperties(${tagName}, clickable , null);
-                        `;
+        var functionBody = `
+         var saElement;
+         if(typeof internalInstanceHandle !== 'undefined'){
+             saElement = internalInstanceHandle;
+         }else if(typeof workInProgress !== 'undefined'){
+             saElement = workInProgress;
+         }else if(typeof thatThis._currentElement !== 'undefined'){
+             saElement = thatThis._currentElement;
+         }
+         var eachProgress = function (workInProgress){
+           if(workInProgress == null){
+             return;
+           }
+           var props;
+           if(workInProgress.memoizedProps){
+             props = workInProgress.memoizedProps;
+           }else if(workInProgress.props){
+             props = workInProgress.props;
+           }
+           if(props && props.sensorsdataparams){
+             return props.sensorsdataparams;
+           }else {
+             if(!props ||
+                !workInProgress.type ||
+                workInProgress.type.displayName === 'TouchableOpacity' ||
+                workInProgress.type.displayName === 'TouchableHighlight' ||
+                workInProgress.type.displayName === 'TouchableWithoutFeedback'||
+                workInProgress.type.displayName === 'TouchableNativeFeedback'||
+                workInProgress.type.displayName === 'Pressable'||
+                workInProgress.type.name === 'TouchableOpacity' ||
+                workInProgress.type.name === 'TouchableHighlight' ||
+                workInProgress.type.name === 'TouchableNativeFeedback'||
+                workInProgress.type.name === 'TouchableWithoutFeedback'||
+                workInProgress.type.displayName === undefined||
+                workInProgress.type.name === undefined ||
+                !props.onPress){
+	                 if(workInProgress.return){
+	                   return eachProgress(workInProgress.return);
+	                 }else{
+	                   if(workInProgress._owner && workInProgress._owner._currentElement){
+	                     return eachProgress(workInProgress._owner._currentElement);
+	                   }else{
+	                     return eachProgress(workInProgress._owner);
+	                   }
+	                 }
+	              }
+           }
+         };
+         var elementProps;
+         if(saElement && saElement.memoizedProps){
+	        elementProps = saElement.memoizedProps;
+	     }else if(saElement && saElement.props){
+	        elementProps = saElement.props;
+	     }
+	     if(elementProps){
+	         // iOS 兼容 SegmentedControl 逻辑
+	        var isSegmentedControl = (saElement &&
+	                                    (saElement.type === 'RNCSegmentedControl' ||
+	                                    saElement.type === 'RCTSegmentedControl' ||
+	                                    saElement.type.name === 'RNCSegmentedControl' ||
+	                                    saElement.type.name === 'RCTSegmentedControl' ||
+	                                    saElement.type.displayName === 'RNCSegmentedControl' ||
+	                                    saElement.type.displayName === 'RCTSegmentedControl'));
+	         if(elementProps.onStartShouldSetResponder || isSegmentedControl) {
+		         var saProps = eachProgress(saElement);
+		         if(saProps){
+		           console.log(saProps);
+		         }
+		         var ReactNative = require('react-native');
+		         var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
+		         dataModule && dataModule.saveViewProperties && dataModule.saveViewProperties(${tagName}, true , saProps);
+	     }
+     }`;
         var call = addTryCatch(functionBody);
         var lastReturn = content.lastIndexOf('return', match.index);
         var splitIndex = match.index;
@@ -778,47 +839,46 @@ navigationString3 = function (
             }`;
 
   if (actionName) {
-    script = `${script}
-                                    var type = ${actionName}.type;
-                                    var iosOnPageShow = false;
+    script = `
+    ${script}
+    var type = ${actionName}.type;
+    var iosOnPageShow = false;
 
-                                    if (require('react-native').Platform.OS === 'android') {
-                                        if(type == 'Navigation/SET_PARAMS' || type == 'Navigation/COMPLETE_TRANSITION') {
-                                            return;
-                                        }
-                                    } else if (require('react-native').Platform.OS === 'ios') {
-                                        if(type == 'Navigation/BACK' && (${currentStateVarName} && !${currentStateVarName}.isTransitioning)) {
-                                            iosOnPageShow = true;
-                                        } else if (!(type == 'Navigation/SET_PARAMS' || type == 'Navigation/COMPLETE_TRANSITION')) {
-                                            iosOnPageShow = true;
-                                        }
-                                        if (!iosOnPageShow) {
-                                            return;
-                                        }
-                                    }
-
-
-                                            `;
+    if (require('react-native').Platform.OS === 'android') {
+        if(type == 'Navigation/SET_PARAMS' || type == 'Navigation/COMPLETE_TRANSITION') {
+            return;
+        }
+    } else if (require('react-native').Platform.OS === 'ios') {
+        if(type == 'Navigation/BACK' && (${currentStateVarName} && !${currentStateVarName}.isTransitioning)) {
+            iosOnPageShow = true;
+        } else if (!(type == 'Navigation/SET_PARAMS' || type == 'Navigation/COMPLETE_TRANSITION')) {
+            iosOnPageShow = true;
+        }
+        if (!iosOnPageShow) {
+            return;
+        }
+    }`;
   }
 
-  script = `${script} var params = $$$getActivePageName$$$(${currentStateVarName});
-            if (require('react-native').Platform.OS === 'android') {
-                if (${prevStateVarName}){
-                    var prevParams = $$$getActivePageName$$$(${prevStateVarName});
-                    if (params.sensorsdataurl == prevParams.sensorsdataurl){
-                          return;
-                    }
-                 }
-                 var ReactNative = require('react-native');
-                 var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
-                 dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);
-            } else if (require('react-native').Platform.OS === 'ios') {
-                if (!${actionName} || iosOnPageShow) {
-                    var ReactNative = require('react-native');
-                    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
-                    dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);
-                }
-            }`;
+  script = `
+  ${script} var params = $$$getActivePageName$$$(${currentStateVarName});
+    if (require('react-native').Platform.OS === 'android') {
+        if (${prevStateVarName}){
+            var prevParams = $$$getActivePageName$$$(${prevStateVarName});
+            if (params.sensorsdataurl == prevParams.sensorsdataurl){
+                  return;
+            }
+         }
+         var ReactNative = require('react-native');
+         var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
+         dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);
+    } else if (require('react-native').Platform.OS === 'ios') {
+        if (!${actionName} || iosOnPageShow) {
+            var ReactNative = require('react-native');
+            var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
+            dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);
+        }
+    }`;
   return script;
 };
 navigationEventString = function () {
@@ -1089,6 +1149,7 @@ allSensorsdataHookRN = function () {
 // 命令行
 switch (process.argv[2]) {
   case '-run':
+    resetAllSensorsdataHookRN();
     allSensorsdataHookRN();
     break;
   case '-reset':

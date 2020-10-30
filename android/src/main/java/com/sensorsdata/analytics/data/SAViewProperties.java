@@ -20,26 +20,29 @@ package com.sensorsdata.analytics.data;
 import android.view.View;
 import android.widget.ScrollView;
 import com.facebook.react.bridge.ReadableMap;
+import com.sensorsdata.analytics.utils.RNUtils;
+import android.util.Log;
 
-public class ViewProperties {
+import org.json.JSONObject;
+
+public class SAViewProperties {
     private  boolean clickable;
-    private ReadableMap properties;
+    public JSONObject properties;
 
-    public ViewProperties(boolean clickable, ReadableMap params){
+    public SAViewProperties(boolean clickable, ReadableMap params){
         this.clickable = clickable;
-        this.properties = properties;
+        this.properties = RNUtils.convertToJSONObject(params);
     }
 
-    public void setViewProperty(View view){
+    public void setViewClickable(View view){
         try{
             if(view != null){
                 if(!(view instanceof ScrollView)){
-                    view.setClickable(true);
+                    view.setClickable(clickable);
                 }
             }
         }catch (Exception e){
-
+            Log.d("SAViewProperties clickable error:", e.getMessage());
         }
-
     }
 }

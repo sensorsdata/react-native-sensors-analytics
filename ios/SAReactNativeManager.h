@@ -1,6 +1,6 @@
 //
 // SAReactNativeManager.h
-// SensorsAnalyticsSDK
+// RNSensorsAnalyticsModule
 //
 // Created by 彭远洋 on 2020/3/16.
 // Copyright © 2020 Sensors Data Co., Ltd. All rights reserved.
@@ -24,6 +24,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SAReactNativeManager : NSObject
+
+@property (nonatomic, assign) BOOL isRootViewVisible;
 
 + (instancetype)sharedInstance;
 

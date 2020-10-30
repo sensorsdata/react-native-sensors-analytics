@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import com.facebook.react.bridge.ReadableMap;
 import com.sensorsdata.analytics.RNSensorsAnalyticsModule;
 import com.sensorsdata.analytics.utils.RNViewUtils;
-import com.sensorsdata.analytics.data.ViewProperties;
+import com.sensorsdata.analytics.data.SAViewProperties;
 
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -15,7 +15,6 @@ import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackHelper;
-import com.sensorsdata.analytics.utils.RNTouchTargetHelper;
 
 import java.lang.reflect.Field;
 import java.util.WeakHashMap;
@@ -25,38 +24,10 @@ import android.util.SparseArray;
 
 public class RNAgent {
     private static final WeakHashMap jsTouchDispatcherViewGroupWeakHashMap = new WeakHashMap();
-    private static SparseArray<ViewProperties> viewPropertiesArray = new SparseArray();
+    private static SparseArray<SAViewProperties> viewPropertiesArray = new SparseArray();
 
     public static void handleTouchEvent(
             JSTouchDispatcher jsTouchDispatcher, MotionEvent event, EventDispatcher eventDispatcher) {
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) { // ActionDown
-            ViewGroup viewGroup = (ViewGroup)jsTouchDispatcherViewGroupWeakHashMap.get(jsTouchDispatcher);
-            if (viewGroup == null) {
-                try {
-                    Field viewGroupField = jsTouchDispatcher.getClass().getDeclaredField("mRootViewGroup");
-                    viewGroupField.setAccessible(true);
-                    viewGroup = (ViewGroup) viewGroupField.get(jsTouchDispatcher);
-                    jsTouchDispatcherViewGroupWeakHashMap.put(jsTouchDispatcher, viewGroup);
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
-            if (viewGroup != null) {
-                View nativeTargetView =
-                        RNTouchTargetHelper.findTouchTargetView(
-                                new float[] {event.getX(), event.getY()}, viewGroup);
-                if (nativeTargetView != null) {
-                    View reactTargetView = RNTouchTargetHelper.findClosestReactAncestor(nativeTargetView);
-                    if (reactTargetView != null) {
-                        nativeTargetView = reactTargetView;
-                    }
-                }
-                if (nativeTargetView != null) {
-                    RNViewUtils.setOnTouchView(nativeTargetView);
-                }
-            }
-        }
     }
 
     public static void trackViewScreen(String url, JSONObject properties, boolean isAuto){
@@ -95,6 +66,14 @@ public class RNAgent {
 
     public static void trackViewClick(int viewId){
         try {
+            //关闭 AutoTrack
+            if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
+                return;
+            }
+            //$AppClick 被过滤
+            if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_CLICK)) {
+                return;
+            }
             View clickView = RNViewUtils.getTouchViewByTag(viewId);
             if (clickView != null) {
                 JSONObject properties = new JSONObject();
@@ -104,7 +83,15 @@ public class RNAgent {
                 if(RNViewUtils.getScreenName() != null){
                     properties.put("$screen_name",RNViewUtils.getScreenName());
                 }
-                SensorsDataAPI.sharedInstance().trackViewAppClick(clickView,properties);
+                SAViewProperties viewProperties = viewPropertiesArray.get(viewId);
+                if(viewProperties != null && viewProperties.properties != null && viewProperties.properties.length() > 0){
+                    if(viewProperties.properties.optBoolean("ignore", false)){
+                        return;
+                    }
+                    viewProperties.properties.remove("ignore");
+                    SensorsDataUtils.mergeJSONObject(viewProperties.properties, properties);
+                }
+                SensorsDataAPI.sharedInstance().trackViewAppClick(clickView, properties);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
@@ -113,14 +100,14 @@ public class RNAgent {
 
     public static void saveViewProperties(int viewId, boolean clickable, ReadableMap viewProperties) {
         if(clickable){
-            viewPropertiesArray.put(viewId, new ViewProperties(clickable,viewProperties));
+            viewPropertiesArray.put(viewId, new SAViewProperties(clickable, viewProperties));
         }
-    }   
+    }
 
     public static void addView(View view,int index){
-        ViewProperties properties = viewPropertiesArray.get(view.getId());
+        SAViewProperties properties = viewPropertiesArray.get(view.getId());
         if(properties != null){
-            properties.setViewProperty(view);
+            properties.setViewClickable(view);
         }
     }
 

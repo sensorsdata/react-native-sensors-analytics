@@ -11,6 +11,7 @@
 		FC045CC2246D191C007117C1 /* SAReactNativeswizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = FC045CC1246D191C007117C1 /* SAReactNativeswizzler.m */; };
 		FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC39004B244715AE00F486A7 /* SAReactNativeManager.m */; };
 		FC9EE671243731C000C45D16 /* RNSensorsDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */; };
+		FCD3CF2B25466B7800758260 /* SAReactNativeCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD3CF2A25466B7800758260 /* SAReactNativeCategory.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +36,8 @@
 		FC39004B244715AE00F486A7 /* SAReactNativeManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeManager.m; sourceTree = "<group>"; };
 		FC9EE66F243731C000C45D16 /* RNSensorsDataModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNSensorsDataModule.h; sourceTree = "<group>"; };
 		FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNSensorsDataModule.m; sourceTree = "<group>"; };
+		FCD3CF2925466B7800758260 /* SAReactNativeCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAReactNativeCategory.h; sourceTree = "<group>"; };
+		FCD3CF2A25466B7800758260 /* SAReactNativeCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeCategory.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +60,8 @@
 				FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */,
 				FC39004A244715AE00F486A7 /* SAReactNativeManager.h */,
 				FC39004B244715AE00F486A7 /* SAReactNativeManager.m */,
+				FCD3CF2925466B7800758260 /* SAReactNativeCategory.h */,
+				FCD3CF2A25466B7800758260 /* SAReactNativeCategory.m */,
 				FC045CC0246D191C007117C1 /* SAReactNativeswizzler.h */,
 				FC045CC1246D191C007117C1 /* SAReactNativeswizzler.m */,
 				A18E9FA721A6AB4300A66E41 /* Products */,
@@ -130,6 +135,7 @@
 				A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */,
 				FC045CC2246D191C007117C1 /* SAReactNativeswizzler.m in Sources */,
 				FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */,
+				FCD3CF2B25466B7800758260 /* SAReactNativeCategory.m in Sources */,
 				FC9EE671243731C000C45D16 /* RNSensorsDataModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
