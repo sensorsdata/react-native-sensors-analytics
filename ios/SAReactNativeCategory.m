@@ -79,7 +79,7 @@
         return;
     }
     // 当前 Controller 为 React Native 根视图时，设置标志位为 YES
-    if ([self.view isReactRootView]) {
+    if ([self isReactRootView:self.view]) {
         [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
         return;
     }
@@ -108,7 +108,7 @@
             self.sa_reactnative_isReferrerRootView = YES;
         }
     } else if ([controler isKindOfClass:UIViewController.class]) {
-        if ([controler.view isReactRootView]) {
+        if ([self isReactRootView:controler.view]) {
             self.sa_reactnative_isReferrerRootView = YES;
         }
     }
@@ -118,7 +118,7 @@
     [self sa_reactnative_viewDidDisappear:animated];
 
     // 当前 Controller 为 React Native 根视图时，消失时将标志位设置为 NO
-    if ([self.view isReactRootView]) {
+    if ([self isReactRootView:self.view]) {
         [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
         return;
     }
@@ -128,6 +128,18 @@
         [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
         return;
     }
+}
+
+- (BOOL)isReactRootView:(UIView *)view {
+    if ([view isReactRootView]) {
+        return YES;
+    }
+    for (UIView *subview in view.subviews) {
+        if ([subview isReactRootView]) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 @end

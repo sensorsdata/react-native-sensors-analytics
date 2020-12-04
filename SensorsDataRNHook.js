@@ -8,7 +8,6 @@ var reactNavigationPath = dir + '/react-navigation',
     reactNavigationPath4X = dir + '/@react-navigation/native/lib/module',
     reactNavigationPath5X = dir + '/@react-navigation/core/src/BaseNavigationContainer.tsx';
 // 自定义变量
-// RN 控制点击事件 Touchable.js 源码文件
 
 var reactNavigationReduxCreatePath =[dir +'/react-navigation-redux-helpers/src/reduxify-navigator.js',
 dir + '/react-navigation-redux-helpers/src/create-redux-container.js'];
@@ -198,7 +197,17 @@ var sensorsDataHookReduxCreateCode =
 var sensorsDataHookReduxMiddleCode = `
     if(oldState !== newState){
       var type = action.type;
-      if(!(type == 'Navigation/SET_PARAMS' || type == 'Navigation/COMPLETE_TRANSITION')){
+      if(type === 'Navigation/BACK' ||
+          type === 'Navigation/NAVIGATE' ||
+           type === 'Navigation/POP' ||
+           type === 'Navigation/POP_TO_TOP' ||
+           type === 'Navigation/PUSH' ||
+           type === 'Navigation/RESET' ||
+           type === 'Navigation/REPLACE' ||
+           type === 'Navigation/GO_BACK' ||
+           type === 'Navigation/JUMP_TO' ||
+           type === 'Navigation/OPEN_DRAWER' ||
+           type === 'Navigation/CLOSE_DRAWER'){
         function getParams(route){
           if(!route){
             return null;
@@ -254,7 +263,7 @@ var sensorsDataHookReduxMiddleCode = `
 		  var dataModule = ReactNative?.NativeModules?.RNSensorsDataModule;
 		  dataModule?.trackViewScreen && dataModule.trackViewScreen(saProperties);
         }
-        trackViewScreen(newState.nav);
+        trackViewScreen(navStateSelector(newState));
         /* SENSORSDATA HOOK */
       }
     }
@@ -304,9 +313,9 @@ sensorsdataHookPressabilityClickRN = function () {
         // 插入 hook 代码
         var hookedContent = `${fileContent.substring(
           0,
-          hookIndex + scriptStr.length
+          hookIndex
         )}\n${sensorsdataClickHookPressabilityCode}\n${fileContent.substring(
-          hookIndex + scriptStr.length
+          hookIndex
         )}`;
         // 备份 Pressability.js 源文件
         fs.renameSync(RNClickPressabilityFilePath, `${RNClickPressabilityFilePath}_sensorsdata_backup`);
@@ -738,9 +747,6 @@ sensorsdataHookClickableRN = function (reset = false) {
 	                                    saElement.type.displayName === 'RCTSegmentedControl'));
 	         if(elementProps.onStartShouldSetResponder || isSegmentedControl) {
 		         var saProps = eachProgress(saElement);
-		         if(saProps){
-		           console.log(saProps);
-		         }
 		         var ReactNative = require('react-native');
 		         var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
 		         dataModule && dataModule.saveViewProperties && dataModule.saveViewProperties(${tagName}, true , saProps);

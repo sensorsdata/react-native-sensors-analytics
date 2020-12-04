@@ -236,18 +236,6 @@ function deleteAll () {
 }
 
 /**
- * 调用 track 接口，并附加渠道信息.
- *
- * @param eventName 事件名称，类型 String
- * @param properties 事件属性，类型 {}
- */
-function trackChannelEvent (eventName, properties) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.trackChannelEvent &&
-    RNSensorsAnalyticsModule.trackChannelEvent(eventName, properties);
-}
-
-/**
  * 替换“匿名 ID”
  *
  * @param anonymousId 传入的的匿名 ID，仅接受数字、下划线和大小写字母，类型 String
@@ -457,6 +445,18 @@ function setFlushNetworkPolicy(networkType) {
     RNSensorsAnalyticsModule.setFlushNetworkPolicy(networkType);
 }
 
+/**
+ * 记录 $AppInstall 事件，用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
+ * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
+ *
+ * @param properties 渠道追踪事件的属性
+ */
+function trackAppInstall(properties) {
+  RNSensorsAnalyticsModule &&
+    RNSensorsAnalyticsModule.trackAppInstall &&
+    RNSensorsAnalyticsModule.trackAppInstall(properties);
+}
+
 /************** Android only start *****************/
 /**
  * 设置 App 切换到后台与下次事件的事件间隔
@@ -539,7 +539,6 @@ export default {
   clearSuperProperties,
   flush,
   deleteAll,
-  trackChannelEvent,
   identify,
   trackTimerPause,
   trackTimerResume,
@@ -560,5 +559,6 @@ export default {
   setFlushNetworkPolicy,
   enableNetworkRequest,
   isNetworkRequestEnablePromise,
+  trackAppInstall,
   sa: RNSensorsAnalyticsModule,
 };

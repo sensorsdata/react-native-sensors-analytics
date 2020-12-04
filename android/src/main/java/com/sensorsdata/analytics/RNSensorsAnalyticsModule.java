@@ -634,26 +634,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 导出 trackChannelEvent 方法给 RN 使用.
-     *
-     * @param eventName 事件名称
-     * @param properties 事件的具体属性 RN 中使用示例：（记录 RN_AddToFav 事件，事件属性
-     * "ProductID":123456,"UserLevel":"VIP"）
-     * <Button title="Button" onPress={()=>
-     * RNSensorsAnalyticsModule.trackChannelEvent("RN_AddToFav",{"ProductID":123456,"UserLevel":"VIP"})}>
-     * </Button>
-     */
-    @ReactMethod
-    public void trackChannelEvent(String eventName, ReadableMap properties) {
-        try {
-            SensorsDataAPI.sharedInstance().trackChannelEvent(eventName, RNUtils.convertToJSONObject(properties));
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(LOGTAG, e.toString() + "");
-        }
-    }
-
-    /**
      * 导出 identify 方法给 RN 使用.
      * <p>
      * RN 中使用示例：
@@ -866,6 +846,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     * 默认值为 30*1000 毫秒
     * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
     *
+    * @platform Android
     * @param sessionIntervalTime int
     */
     @ReactMethod
@@ -878,6 +859,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * 默认值为 30*1000 毫秒
      * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
      *
+     * @platform Android
      * @return 返回设置的 SessionIntervalTime ，默认是 30s
      */
     @ReactMethod
@@ -975,6 +957,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     /**
      * 设置是否允许请求网络，默认是 true
      *
+     * @platform Android
      * @param isRequest boolean
      */
     @ReactMethod
@@ -990,6 +973,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     /**
      * 是否允许请求网络，默认是 true
      *
+     * @platform Android
      * @return 是否允许请求网络
      */
     @ReactMethod
@@ -1003,6 +987,23 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
             promise.reject("isNetworkRequestEnable failed", e);
+        }
+    }
+
+    /**
+     * 记录 $AppInstall 事件，用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
+     * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
+     *
+     * @param properties 渠道追踪事件的属性
+     */
+    @ReactMethod
+    public void trackAppInstall(ReadableMap properties) {
+        try {
+            //解决版本限制,防止集成旧版本 SDK 没有 trackAppInstall() 方法.
+            SensorsDataAPI.sharedInstance().trackInstallation("$AppInstall", RNUtils.convertToJSONObject(properties));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
         }
     }
 }

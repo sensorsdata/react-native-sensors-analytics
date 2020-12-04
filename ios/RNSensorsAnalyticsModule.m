@@ -692,38 +692,6 @@ RCT_EXPORT_METHOD(identify:(NSString *)anonymousId) {
 }
 
 /**
- * 导出 trackChannelEvent:properties 方法给 RN 使用.
- * 需要 iOS SensorsAnalytics SDK 升级至 v1.11.15 及以上版本
- *
- * @param event  事件名称
- * @param propertyDict 事件的具体属性
- *
- * RN 中使用示例：（调用 track 接口并附加渠道信息）
- *
- *  <Button
- *  title="Button"
- *  onPress={()=>
- *  RNSensorsAnalyticsModule.trackChannelEvent("channelEvent",{"ProductID":123456,"UserLevel":"VIP"})}>
- *  </Button>
-*/
-RCT_EXPORT_METHOD(trackChannelEvent:(NSString *)event properties:(nullable NSDictionary *)propertyDict) {
-    @try {
-        SEL sel = NSSelectorFromString(@"trackChannelEvent:properties:");
-        SensorsAnalyticsSDK *sdk = [SensorsAnalyticsSDK sharedInstance];
-        if (![sdk respondsToSelector:sel]) {
-            NSLog(@"[RNSensorsAnalytics] error: trackChannelEvent:properties: 方法只在 iOS SensorsAnalytics SDK v1.11.15 及以上版本存在，请升级 SDK 版本至最新后再使用该功能！！！");
-            return;
-        }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [sdk performSelector:sel withObject:event withObject:propertyDict];
-#pragma clang diagnostic pop
-    } @catch (NSException *exception) {
-        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
-    }
-}
-
-/**
 暂停事件计时
  * @discussion
  * 多次调用 trackTimerPause: 时，以首次调用为准。
@@ -1042,6 +1010,20 @@ RCT_EXPORT_METHOD(isVisualizedAutoTrackEnabledPromise:(RCTPromiseResolveBlock)re
 RCT_EXPORT_METHOD(isHeatMapEnabledPromise:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     @try {
         resolve(@([[SensorsAnalyticsSDK sharedInstance] isHeatMapEnabled]));
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * 记录 $AppInstall 事件，用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
+ * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
+ *
+ * @param properties 渠道追踪事件的属性
+*/
+RCT_EXPORT_METHOD(trackAppInstall:(NSDictionary *)property) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] trackInstallation:@"$AppInstall" withProperties:property];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }

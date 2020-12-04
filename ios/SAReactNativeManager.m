@@ -203,7 +203,9 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
     NSMutableDictionary *pageProps = [NSMutableDictionary dictionary];
     pageProps[kSAEventScreenNameProperty] = screenName;
     pageProps[kSAEventTitleProperty] = title;
-    _screenProperties = pageProps;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.screenProperties = pageProps;
+    });
 
     if (autoTrack && ![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
@@ -217,41 +219,40 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
     [eventProps addEntriesFromDictionary:pageProps];
     [eventProps addEntriesFromDictionary:properties];
 
+    dispatch_async(dispatch_get_main_queue(), ^{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:[eventProps copy]];
+        [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:[eventProps copy]];
 #pragma clang diagnostic pop
-
+    });
 }
 
-#pragma mark - SDK Method
+#pragma mark - Find RCTRootView
 - (RCTRootView *)rootView {
-    // RCTRootView 只能是 UIViewController 的 view，不能作为其他 View 的 SubView 使用
     UIViewController *root = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    UIView *view = [root view];
-    // 不是混编 React Native 项目时直接获取 RootViewController 的 view
-    if ([view isKindOfClass:RCTRootView.class]) {
-        return (RCTRootView *)view;
+    RCTRootView *rootView = [self findRootViewFromController:root];
+    // 如果当前 RootViewController 中有 RCTRootView，就直接返回查找到的 RCTRootView
+    if (rootView) {
+        return rootView;
     }
-    Class utils = NSClassFromString(@"SAAutoTrackUtils");
-    if (!utils) {
-        return nil;
-    }
-    SEL currentCallerSEL = NSSelectorFromString(@"currentViewController");
-    if (![utils respondsToSelector:currentCallerSEL]) {
-        return nil;
-    }
+    // 混编 React Native 项目时获取当前显示的 UIViewController 中的 RCTRootView
+    UIViewController *current = [[SensorsAnalyticsSDK sharedInstance] currentViewController];
+    return [self findRootViewFromController:current];
+}
 
-    // 混编 React Native 项目时获取当前显示的 UIViewController 的 view
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    UIViewController *caller = [utils performSelector:currentCallerSEL];
-#pragma clang diagnostic pop
-
-    if (![caller.view isKindOfClass:RCTRootView.class]) {
+- (RCTRootView *)findRootViewFromController:(UIViewController *)controller {
+    if (!controller) {
         return nil;
     }
-    return (RCTRootView *)caller.view;
+    if ([controller.view isKindOfClass:RCTRootView.class]) {
+        return (RCTRootView *)controller.view;
+    }
+    for (UIView *subview in controller.view.subviews) {
+        if ([subview isKindOfClass:RCTRootView.class]) {
+            return (RCTRootView *)subview;
+        }
+    }
+    return nil;
 }
 
 @end
