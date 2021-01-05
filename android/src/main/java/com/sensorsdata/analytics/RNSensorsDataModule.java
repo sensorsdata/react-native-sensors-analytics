@@ -1,6 +1,6 @@
 /*
- * Created by chenru on 2019/08/27.
- * Copyright 2015－2020 Sensors Data Inc.
+ * Created by yang on 2017/4/5
+ * Copyright 2015－2021 Sensors Data Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,6 @@ import org.json.JSONObject;
 
 
 /**
- * Created by yang on 2017/4/5
- * <p>
  * 参数类型在@ReactMethod注明的方法中，会被直接映射到它们对应的JavaScript类型
  * String -> String
  * ReadableMap -> Object
