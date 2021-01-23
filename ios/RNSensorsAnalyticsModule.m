@@ -36,13 +36,7 @@ RCT_EXPORT_MODULE(RNSensorsAnalyticsModule)
 
 RCT_EXPORT_METHOD(track:(NSString *)event withProperties:(NSDictionary *)propertyDict){
     @try {
-        NSMutableDictionary *mutDict = [NSMutableDictionary dictionaryWithDictionary:propertyDict];
-        [propertyDict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-            if ([obj isKindOfClass:NSArray.class]) {
-                [mutDict setObject:[NSSet setWithArray:obj] forKey:key];
-            }
-        }];
-        [[SensorsAnalyticsSDK sharedInstance] track:event withProperties:mutDict];
+        [[SensorsAnalyticsSDK sharedInstance] track:event withProperties:propertyDict];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }

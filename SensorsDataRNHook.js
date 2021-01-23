@@ -905,7 +905,7 @@ navigationEventString = function () {
             if(type == 'didFocus') {
                  var ReactNative = require('react-native');
                  var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
-                 dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(payload.state.params);
+                 dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(saProperties);
             }
           }
           `;

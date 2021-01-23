@@ -51,6 +51,10 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
 
 @implementation SAReactNativeViewProperty
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@; reactTag: %@; clickable: %@; properties: %@", [super description], self.reactTag, @(self.clickable), self.properties];
+}
+
 @end
 
 #pragma mark - React Native Manager
