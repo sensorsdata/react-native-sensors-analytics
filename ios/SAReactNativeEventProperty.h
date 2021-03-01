@@ -1,8 +1,8 @@
 //
-//  RNSensorsDataModule.h
+//  SAReactNativeEventProperty.h
 //  RNSensorsAnalyticsModule
 //
-//  Created by 彭远洋 on 2020/4/3.
+//  Created by 彭远洋 on 2020/12/31.
 //  Copyright © 2020-2021 Sensors Data Co., Ltd. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,15 +20,18 @@
 
 #import <Foundation/Foundation.h>
 
-#if __has_include(<React/RCTBridgeModule.h>)
-#import <React/RCTBridgeModule.h>
-#else
-#import "RCTBridgeModule.h"
-#endif
-
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RNSensorsDataModule : NSObject <RCTBridgeModule>
+@interface SAReactNativeEventProperty : NSObject
+
+/// 事件属性中添加 $lib_method 和 $lib_plugin_version 属性，$lib_method 默认为 code
+/// @param properties 事件自定义属性
++ (NSDictionary *)eventProperties:(nullable NSDictionary *)properties;
+
+/// 事件属性中添加 $lib_method 和 $lib_plugin_version 属性
+/// @param properties 事件自定义属性
+/// @param isAuto 设置为 YES 时 $lib_method 为 autoTrack，为 NO 时 $lib_method 为 code
++ (NSDictionary *)eventProperties:(nullable NSDictionary *)properties isAuto:(BOOL)isAuto;
 
 @end
 

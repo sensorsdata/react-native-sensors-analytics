@@ -3,18 +3,36 @@
 //  RNSensorsAnalyticsModule
 //
 //  Created by 肖彦敏 on 2017/4/14.
-//  Copyright © 2017年 Facebook. All rights reserved.
+//  Copyright © 2017-2021 Sensors Data Co., Ltd. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
+#if ! __has_feature(objc_arc)
+#error This file must be compiled with ARC. Either turn on ARC for the project or use -fobjc-arc flag on this file.
+#endif
+
+#if __has_include(<SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>)
+#import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
+#else
+#import "SensorsAnalyticsSDK.h"
+#endif
 
 #import "RNSensorsAnalyticsModule.h"
 #import "SAReactNativeManager.h"
+#import "SAReactNativeEventProperty.h"
 
-#if __has_include("SensorsAnalyticsSDK.h")
-#import "SensorsAnalyticsSDK.h"
-#else
-#import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
-#endif
-
+NSString *const kSAReactNativePluginVersion = @"react_native:2.0.8";
 
 @implementation RNSensorsAnalyticsModule
 
@@ -36,7 +54,8 @@ RCT_EXPORT_MODULE(RNSensorsAnalyticsModule)
 
 RCT_EXPORT_METHOD(track:(NSString *)event withProperties:(NSDictionary *)propertyDict){
     @try {
-        [[SensorsAnalyticsSDK sharedInstance] track:event withProperties:propertyDict];
+        NSDictionary *properties = [SAReactNativeEventProperty eventProperties:propertyDict];
+        [[SensorsAnalyticsSDK sharedInstance] track:event withProperties:properties];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -97,7 +116,8 @@ RCT_EXPORT_METHOD(trackTimerStart:(NSString *)event){
  */
 RCT_EXPORT_METHOD(trackTimerEnd:(NSString *)event withProperties:(NSDictionary *)propertyDict){
     @try {
-        [[SensorsAnalyticsSDK sharedInstance] trackTimerEnd:event withProperties:propertyDict];
+        NSDictionary *properties = [SAReactNativeEventProperty eventProperties:propertyDict];
+        [[SensorsAnalyticsSDK sharedInstance] trackTimerEnd:event withProperties:properties];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -165,7 +185,8 @@ RCT_EXPORT_METHOD(trackInstallation:(NSString *)event withProperties:(NSDictiona
  */
 RCT_EXPORT_METHOD(login:(NSString *)loginId){
     @try {
-        [[SensorsAnalyticsSDK sharedInstance] login:loginId];
+        NSDictionary *properties = [SAReactNativeEventProperty eventProperties:nil];
+        [[SensorsAnalyticsSDK sharedInstance] login:loginId withProperties:properties];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }

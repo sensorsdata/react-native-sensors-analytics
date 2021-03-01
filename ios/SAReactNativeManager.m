@@ -3,7 +3,7 @@
 // RNSensorsAnalyticsModule
 //
 // Created by 彭远洋 on 2020/3/16.
-// Copyright © 2020 Sensors Data Co., Ltd. All rights reserved.
+// Copyright © 2020-2021 Sensors Data Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,12 +24,13 @@
 
 #import "SAReactNativeManager.h"
 #import "SAReactNativeCategory.h"
+#import "SAReactNativeEventProperty.h"
 #import <React/RCTUIManager.h>
 
-#if __has_include("SensorsAnalyticsSDK.h")
-#import "SensorsAnalyticsSDK.h"
-#else
+#if __has_include(<SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>)
 #import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
+#else
+#import "SensorsAnalyticsSDK.h"
 #endif
 
 #pragma mark - Constants
@@ -191,7 +192,8 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
         properties[kSAEventElementContentProperty] = content;
         [properties addEntriesFromDictionary:self.screenProperties];
         [properties addEntriesFromDictionary:viewProperties.properties];
-        [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:[properties copy]];
+        NSDictionary *newProps = [SAReactNativeEventProperty eventProperties:properties isAuto:YES];
+        [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:newProps];
     });
 }
 
@@ -226,7 +228,8 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
     dispatch_async(dispatch_get_main_queue(), ^{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:[eventProps copy]];
+        NSDictionary *properties = [SAReactNativeEventProperty eventProperties:eventProps isAuto:autoTrack];
+        [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:properties];
 #pragma clang diagnostic pop
     });
 }

@@ -10,6 +10,7 @@
 		A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */; };
 		FC045CC2246D191C007117C1 /* SAReactNativeswizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = FC045CC1246D191C007117C1 /* SAReactNativeswizzler.m */; };
 		FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC39004B244715AE00F486A7 /* SAReactNativeManager.m */; };
+		FC6EF7A9259DA6A40099EEB5 /* SAReactNativeEventProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = FC6EF7A8259DA6A40099EEB5 /* SAReactNativeEventProperty.m */; };
 		FC9EE671243731C000C45D16 /* RNSensorsDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */; };
 		FCD3CF2B25466B7800758260 /* SAReactNativeCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD3CF2A25466B7800758260 /* SAReactNativeCategory.m */; };
 /* End PBXBuildFile section */
@@ -34,6 +35,8 @@
 		FC045CC1246D191C007117C1 /* SAReactNativeswizzler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeswizzler.m; sourceTree = "<group>"; };
 		FC39004A244715AE00F486A7 /* SAReactNativeManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAReactNativeManager.h; sourceTree = "<group>"; };
 		FC39004B244715AE00F486A7 /* SAReactNativeManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeManager.m; sourceTree = "<group>"; };
+		FC6EF7A7259DA6A40099EEB5 /* SAReactNativeEventProperty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAReactNativeEventProperty.h; sourceTree = "<group>"; };
+		FC6EF7A8259DA6A40099EEB5 /* SAReactNativeEventProperty.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeEventProperty.m; sourceTree = "<group>"; };
 		FC9EE66F243731C000C45D16 /* RNSensorsDataModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNSensorsDataModule.h; sourceTree = "<group>"; };
 		FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNSensorsDataModule.m; sourceTree = "<group>"; };
 		FCD3CF2925466B7800758260 /* SAReactNativeCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAReactNativeCategory.h; sourceTree = "<group>"; };
@@ -60,6 +63,8 @@
 				FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */,
 				FC39004A244715AE00F486A7 /* SAReactNativeManager.h */,
 				FC39004B244715AE00F486A7 /* SAReactNativeManager.m */,
+				FC6EF7A7259DA6A40099EEB5 /* SAReactNativeEventProperty.h */,
+				FC6EF7A8259DA6A40099EEB5 /* SAReactNativeEventProperty.m */,
 				FCD3CF2925466B7800758260 /* SAReactNativeCategory.h */,
 				FCD3CF2A25466B7800758260 /* SAReactNativeCategory.m */,
 				FC045CC0246D191C007117C1 /* SAReactNativeswizzler.h */,
@@ -135,6 +140,7 @@
 				A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */,
 				FC045CC2246D191C007117C1 /* SAReactNativeswizzler.m in Sources */,
 				FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */,
+				FC6EF7A9259DA6A40099EEB5 /* SAReactNativeEventProperty.m in Sources */,
 				FCD3CF2B25466B7800758260 /* SAReactNativeCategory.m in Sources */,
 				FC9EE671243731C000C45D16 /* RNSensorsDataModule.m in Sources */,
 			);

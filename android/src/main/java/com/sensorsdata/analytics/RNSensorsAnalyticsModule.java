@@ -30,6 +30,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
+import com.sensorsdata.analytics.property.RNPropertyManager;
 import com.sensorsdata.analytics.utils.RNUtils;
 
 import org.json.JSONObject;
@@ -95,7 +96,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void track(String eventName, ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().track(eventName, RNUtils.convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().track(eventName, RNPropertyManager.mergeProperty(RNUtils.convertToJSONObject(properties)));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -167,7 +168,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void trackTimerEnd(String eventName, ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().trackTimerEnd(eventName, RNUtils.convertToJSONObject(properties));
+            SensorsDataAPI.sharedInstance().trackTimerEnd(eventName, RNPropertyManager.mergeProperty(RNUtils.convertToJSONObject(properties)));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -211,7 +212,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void login(String loginId) {
         try {
-            SensorsDataAPI.sharedInstance().login(loginId);
+            SensorsDataAPI.sharedInstance().login(loginId, RNPropertyManager.mergeProperty(null));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");

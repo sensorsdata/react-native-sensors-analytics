@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.sensorsdata.analytics.RNSensorsAnalyticsModule;
 import com.sensorsdata.analytics.utils.RNViewUtils;
 import com.sensorsdata.analytics.data.SAViewProperties;
+import com.sensorsdata.analytics.property.RNPropertyManager;
 
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -75,7 +76,7 @@ public class RNAgent {
             if (isAuto && SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
                 return;
             }
-            SensorsDataAPI.sharedInstance().trackViewScreen(url, properties);
+            SensorsDataAPI.sharedInstance().trackViewScreen(url, RNPropertyManager.mergeProperty(properties, isAuto));
         }catch(Exception e){
             SALog.printStackTrace(e);
         }
@@ -108,7 +109,7 @@ public class RNAgent {
                     viewProperties.properties.remove("ignore");
                     SensorsDataUtils.mergeJSONObject(viewProperties.properties, properties);
                 }
-                SensorsDataAPI.sharedInstance().trackViewAppClick(clickView, properties);
+                SensorsDataAPI.sharedInstance().trackViewAppClick(clickView, RNPropertyManager.mergeProperty(properties ,true));
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);

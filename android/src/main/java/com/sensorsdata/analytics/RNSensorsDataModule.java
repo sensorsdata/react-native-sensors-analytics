@@ -26,8 +26,11 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SALog;
+import com.sensorsdata.analytics.property.LibMethodInterceptor;
 import com.sensorsdata.analytics.utils.RNUtils;
 import com.sensorsdata.analytics.utils.RNViewUtils;
+import com.sensorsdata.analytics.property.RNPropertyManager;
+import com.sensorsdata.analytics.property.PluginVersionInterceptor;
 
 import org.json.JSONObject;
 
@@ -54,6 +57,8 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule{
 
         }
         RNAgent.ignoreView();
+        RNPropertyManager.addInterceptor(new PluginVersionInterceptor());
+        RNPropertyManager.addInterceptor(new LibMethodInterceptor());
     }
 
     private static final String MODULE_NAME = "RNSensorsDataModule";

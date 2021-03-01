@@ -90,6 +90,17 @@ var sensorsdataSwitchHookCode = "if(this.props.onChange != null || this.props.on
                                +"  })(this); /* SENSORSDATA HOOK */}";
 var sensorsdataImportReactNativeHookCode ="import ReactNative from 'react-native';\n";
 var sensorsdataNavigation5HookCode = `
+
+	  function getCurrentRouteName(){
+        let state = getRootState();
+          if (state === undefined) {
+            return undefined;
+          }
+        while (state.routes[state.index].state !== undefined) {
+            state = state.routes[state.index].state as NavigationState;
+          }
+          return state.routes[state.index].name;
+      }
 	function getParams(state:any):any{
 		if(!state){
 		   return null;
@@ -113,7 +124,7 @@ var sensorsdataNavigation5HookCode = `
 		  trackViewScreen(route.state);
 		  return;
 		}
-		var screenName = getCurrentRoute()?.name;
+		var screenName = getCurrentRouteName();
 		var params = getParams(state);
 		var saProperties = {};
 		if (params) {
