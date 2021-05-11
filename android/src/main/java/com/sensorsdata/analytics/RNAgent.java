@@ -17,28 +17,26 @@
 
 package com.sensorsdata.analytics;
 
+import android.util.SparseArray;
 import android.view.MotionEvent;
-import android.view.MotionEvent.*;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.react.bridge.ReadableMap;
-import com.sensorsdata.analytics.RNSensorsAnalyticsModule;
-import com.sensorsdata.analytics.utils.RNViewUtils;
-import com.sensorsdata.analytics.data.SAViewProperties;
-import com.sensorsdata.analytics.property.RNPropertyManager;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
-import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackHelper;
+import com.sensorsdata.analytics.data.SAViewProperties;
+import com.sensorsdata.analytics.property.RNPropertyManager;
+import com.sensorsdata.analytics.utils.RNTouchTargetHelper;
+import com.sensorsdata.analytics.utils.RNViewUtils;
+
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.WeakHashMap;
-import java.util.HashMap;
-import org.json.JSONObject;
-import android.util.SparseArray;
 
 public class RNAgent {
     private static final WeakHashMap jsTouchDispatcherViewGroupWeakHashMap = new WeakHashMap();
@@ -46,28 +44,59 @@ public class RNAgent {
 
     public static void handleTouchEvent(
             JSTouchDispatcher jsTouchDispatcher, MotionEvent event, EventDispatcher eventDispatcher) {
+        try {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) { // ActionDown
+                ViewGroup viewGroup = (ViewGroup) jsTouchDispatcherViewGroupWeakHashMap.get(jsTouchDispatcher);
+                if (viewGroup == null) {
+                    try {
+                        Field viewGroupField = jsTouchDispatcher.getClass().getDeclaredField("mRootViewGroup");
+                        viewGroupField.setAccessible(true);
+                        viewGroup = (ViewGroup) viewGroupField.get(jsTouchDispatcher);
+                        jsTouchDispatcherViewGroupWeakHashMap.put(jsTouchDispatcher, viewGroup);
+                    } catch (Exception e) {
+                        SALog.printStackTrace(e);
+                    }
+                }
+                if (viewGroup != null) {
+                    View nativeTargetView =
+                            RNTouchTargetHelper.findTouchTargetView(
+                                    new float[]{event.getX(), event.getY()}, viewGroup);
+                    if (nativeTargetView != null) {
+                        View reactTargetView = RNTouchTargetHelper.findClosestReactAncestor(nativeTargetView);
+                        if (reactTargetView != null) {
+                            nativeTargetView = reactTargetView;
+                        }
+                    }
+                    if (nativeTargetView != null) {
+                        RNViewUtils.setOnTouchView(nativeTargetView);
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+
+        }
     }
 
-    public static void trackViewScreen(String url, JSONObject properties, boolean isAuto){
-        try{
+    static void trackViewScreen(String url, JSONObject properties, boolean isAuto) {
+        try {
             String screenName = url;
-            if(properties == null){
+            if (properties == null) {
                 properties = new JSONObject();
             }
-            if(properties.has("$screen_name")){
+            if (properties.has("$screen_name")) {
                 screenName = properties.getString("$screen_name");
             }
             String title = screenName;
-            if(properties.has("$title")){
+            if (properties.has("$title")) {
                 title = properties.getString("$title");
             }
-            if(screenName != null){
-                properties.put("$screen_name",screenName);
+            if (screenName != null) {
+                properties.put("$screen_name", screenName);
             }
-            if(title != null){
-                properties.put("$title",title);
+            if (title != null) {
+                properties.put("$title", title);
             }
-            RNViewUtils.saveScreenAndTitle(screenName,title);
+            RNViewUtils.saveScreenAndTitle(screenName, title);
             //关闭 AutoTrack
             if (isAuto && !SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
                 return;
@@ -77,12 +106,12 @@ public class RNAgent {
                 return;
             }
             SensorsDataAPI.sharedInstance().trackViewScreen(url, RNPropertyManager.mergeProperty(properties, isAuto));
-        }catch(Exception e){
+        } catch (Exception e) {
             SALog.printStackTrace(e);
         }
     }
 
-    public static void trackViewClick(int viewId){
+    static void trackViewClick(int viewId) {
         try {
             //关闭 AutoTrack
             if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
@@ -92,39 +121,44 @@ public class RNAgent {
             if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_CLICK)) {
                 return;
             }
-            View clickView = RNViewUtils.getTouchViewByTag(viewId);
+            View clickView = RNViewUtils.getViewByTag(viewId);
             if (clickView != null) {
                 JSONObject properties = new JSONObject();
-                if(RNViewUtils.getTitle() != null){
-                    properties.put("$title",RNViewUtils.getTitle());
+                if (RNViewUtils.getTitle() != null) {
+                    properties.put("$title", RNViewUtils.getTitle());
                 }
-                if(RNViewUtils.getScreenName() != null){
-                    properties.put("$screen_name",RNViewUtils.getScreenName());
+                if (RNViewUtils.getScreenName() != null) {
+                    properties.put("$screen_name", RNViewUtils.getScreenName());
                 }
                 SAViewProperties viewProperties = viewPropertiesArray.get(viewId);
-                if(viewProperties != null && viewProperties.properties != null && viewProperties.properties.length() > 0){
-                    if(viewProperties.properties.optBoolean("ignore", false)){
+                if (viewProperties != null && viewProperties.properties != null && viewProperties.properties.length() > 0) {
+                    if (viewProperties.properties.optBoolean("ignore", false)) {
                         return;
                     }
                     viewProperties.properties.remove("ignore");
                     SensorsDataUtils.mergeJSONObject(viewProperties.properties, properties);
                 }
-                SensorsDataAPI.sharedInstance().trackViewAppClick(clickView, RNPropertyManager.mergeProperty(properties ,true));
+                SensorsDataAPI.sharedInstance().trackViewAppClick(clickView, RNPropertyManager.mergeProperty(properties, true));
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
     }
 
-    public static void saveViewProperties(int viewId, boolean clickable, ReadableMap viewProperties) {
-        if(clickable){
+    static void saveViewProperties(int viewId, boolean clickable, ReadableMap viewProperties) {
+        if (clickable) {
             viewPropertiesArray.put(viewId, new SAViewProperties(clickable, viewProperties));
         }
     }
 
-    public static void addView(View view,int index){
+    /**
+     * 添加 View 调用,Android 插件调用,勿删
+     * @param view View
+     * @param index  index
+     */
+    public static void addView(View view, int index) {
         SAViewProperties properties = viewPropertiesArray.get(view.getId());
-        if(properties != null){
+        if (properties != null) {
             properties.setViewClickable(view);
         }
     }
@@ -132,21 +166,21 @@ public class RNAgent {
     /**
      * 忽略 Slider、Switch Android SDK 的采集逻辑，统一通过 Recat Native 采集
      */
-    static void ignoreView(){
-        try{
+    static void ignoreView() {
+        try {
             SensorsDataAPI.sharedInstance().ignoreViewType(Class.forName("com.facebook.react.views.switchview.ReactSwitch"));
-        }catch (Exception e){
-
+        } catch (Exception e) {
+            //ignored
         }
-        try{
+        try {
             SensorsDataAPI.sharedInstance().ignoreViewType(Class.forName("com.facebook.react.views.slider.ReactSlider"));
-        }catch (Exception e){
-
+        } catch (Exception e) {
+            //ignored
         }
-        try{
+        try {
             SensorsDataAPI.sharedInstance().ignoreViewType(Class.forName("com.reactnativecommunity.slider.ReactSlider"));
-        }catch (Exception e){
-
+        } catch (Exception e) {
+            //ignored
         }
     }
 }

@@ -62,15 +62,15 @@ public class RNUtils {
             return null;
         }
         WritableMap writableMap = Arguments.createMap();
-            Iterator<String> it = json.keys();
-            while(it.hasNext()){
-                try {
-                    String key = it.next();
-                    writableMap.putString(key, json.optString(key));
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
+        Iterator<String> it = json.keys();
+        while(it.hasNext()){
+            try {
+                String key = it.next();
+                writableMap.putString(key, json.optString(key));
+            } catch (Exception e) {
+                SALog.printStackTrace(e);
             }
+        }
         return writableMap;
     }
 }

@@ -314,5 +314,10 @@ declare module 'sensorsdata-analytics-react-native'{
    */
    export function isNetworkRequestEnablePromise(): Promise<boolean>;
 
+  /**
+   * 开启数据采集
+   */
+   export function enableDataCollect(): void;
+
   /************** Android only end *****************/
 }

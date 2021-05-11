@@ -32,7 +32,7 @@
 #import "SAReactNativeManager.h"
 #import "SAReactNativeEventProperty.h"
 
-NSString *const kSAReactNativePluginVersion = @"react_native:2.0.9";
+NSString *const kSAReactNativePluginVersion = @"react_native:2.1.0";
 
 @implementation RNSensorsAnalyticsModule
 
@@ -1059,6 +1059,10 @@ RCT_EXPORT_METHOD(getSessionIntervalTimePromise:(RCTPromiseResolveBlock)resolve 
 }
 
 RCT_EXPORT_METHOD(enableNetworkRequest:(BOOL)enable) {
+
+}
+
+RCT_EXPORT_METHOD(enableDataCollect) {
 
 }
 

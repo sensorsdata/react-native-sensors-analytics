@@ -1007,4 +1007,17 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             Log.e(LOGTAG, e.toString() + "");
         }
     }
+
+    /**
+     * 开启数据采集
+     */
+    @ReactMethod
+    public void enableDataCollect() {
+        try {
+            SensorsDataAPI.sharedInstance().enableDataCollect();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
 }

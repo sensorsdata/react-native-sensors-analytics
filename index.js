@@ -514,6 +514,12 @@ async function isNetworkRequestEnablePromise() {
   }
 }
 
+function enableDataCollect(){
+  RNSensorsAnalyticsModule &&
+    RNSensorsAnalyticsModule.enableDataCollect &&
+    RNSensorsAnalyticsModule.enableDataCollect();
+}
+
 /************** Android only end *****************/
 
 
@@ -560,5 +566,6 @@ export default {
   enableNetworkRequest,
   isNetworkRequestEnablePromise,
   trackAppInstall,
+  enableDataCollect,
   sa: RNSensorsAnalyticsModule,
 };
