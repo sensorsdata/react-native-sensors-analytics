@@ -97,13 +97,10 @@ public class RNAgent {
                 properties.put("$title", title);
             }
             RNViewUtils.saveScreenAndTitle(screenName, title);
-            //关闭 AutoTrack
-            if (isAuto && !SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
-                return;
-            }
-            //$AppViewScreen 被过滤
-            if (isAuto && SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
-                return;
+            if (isAuto && (properties.optBoolean("SAIgnoreViewScreen", false)
+                   || !SensorsDataAPI.sharedInstance().isAutoTrackEnabled()
+                   || SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN))) {
+                    return;
             }
             SensorsDataAPI.sharedInstance().trackViewScreen(url, RNPropertyManager.mergeProperty(properties, isAuto));
         } catch (Exception e) {
@@ -153,8 +150,9 @@ public class RNAgent {
 
     /**
      * 添加 View 调用,Android 插件调用,勿删
+     *
      * @param view View
-     * @param index  index
+     * @param index index
      */
     public static void addView(View view, int index) {
         SAViewProperties properties = viewPropertiesArray.get(view.getId());

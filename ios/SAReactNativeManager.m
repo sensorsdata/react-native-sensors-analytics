@@ -213,10 +213,17 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
         self.screenProperties = pageProps;
     });
 
+    // 忽略 React Native 触发的 $AppViewScreen 事件
+    if (autoTrack && [properties[@"SAIgnoreViewScreen"] boolValue]) {
+        return;
+    }
+
+    // 检查 SDK 全埋点功能开启状态
     if (autoTrack && ![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
     }
-    // 忽略 $AppViewScreen 事件
+
+    // 忽略所有 $AppViewScreen 事件
     if (autoTrack && [[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
         return;
     }
