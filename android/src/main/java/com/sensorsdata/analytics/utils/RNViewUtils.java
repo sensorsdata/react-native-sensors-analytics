@@ -18,34 +18,24 @@
 package com.sensorsdata.analytics.utils;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
-import com.facebook.react.uimanager.UIImplementation;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.UIViewOperationQueue;
-import java.lang.ref.SoftReference;
-import com.sensorsdata.analytics.android.sdk.SALog;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import android.view.ViewGroup;
-import android.view.View;
-import android.view.ViewParent;
-import org.json.JSONObject;
+import java.util.WeakHashMap;
 
 public class RNViewUtils {
 
-    private static SoftReference mSoftCurrentActivityReference;
+    private static WeakReference mWeakCurrentActivityReference;
     private static String currentTitle;
     private static String currentScreenName;
     public static boolean isScreenVisiable = false;
-    private static JSONObject properties = new JSONObject();
+    private static JSONObject screenProperties;
     private static WeakReference onTouchViewReference;
-
+    private static WeakHashMap<Activity, JSONObject> mScreenMap = new WeakHashMap<>();
 
     public static void setOnTouchView(View nativeTargetView) {
         onTouchViewReference = new WeakReference(nativeTargetView);
@@ -53,15 +43,15 @@ public class RNViewUtils {
 
     public static View getViewByTag(int viewTag) {
         View clickView = null;
-        try{
+        try {
             Activity currentActivity = getCurrentActivity();
-            if(currentActivity != null){
+            if (currentActivity != null) {
                 clickView = currentActivity.findViewById(viewTag);
             }
-            if(clickView == null){
+            if (clickView == null) {
                 clickView = getTouchViewByTag(viewTag);
             }
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
 
         }
         return clickView;
@@ -113,56 +103,80 @@ public class RNViewUtils {
         return null;
     }
 
-    public static void saveScreenAndTitle(String screenName,String title){
+    public static void saveScreenAndTitle(String screenName, String title) {
         currentScreenName = screenName;
         currentTitle = title;
-        try{
-            properties.put("$title", title);
-            properties.put("$screen_name", screenName);
-        }catch (Exception ignored){
+        try {
+            screenProperties = new JSONObject();
+            screenProperties.put("$title", title);
+            screenProperties.put("$screen_name", screenName);
+        } catch (Exception ignored) {
 
+        }
+        Activity currentActivity;
+        if ((currentActivity = getCurrentActivity()) != null) {
+            mScreenMap.put(currentActivity, screenProperties);
         }
     }
 
-    public static String getTitle(){
+    public static String getTitle() {
         return currentTitle;
     }
 
-    public static String getScreenName(){
+    public static String getScreenName() {
         return currentScreenName;
     }
 
     /**
      * 供可视化调用，返回 $title，$screen_name，勿删
+     *
      * @return json 格式
      */
-    public static String getVisualizeProperties(){
-        if(!isScreenVisiable){
+    public static String getVisualizeProperties() {
+        //当前页面不可见或无 $screen_name $title 时，可视化获取原生页面信息
+        if (!isScreenVisiable || screenProperties == null) {
             return "";
         }
-        return properties.toString();
+        return screenProperties.toString();
     }
 
-    public static void setScreenVisiable(boolean isVisiable){
+    public static void setScreenVisiable(boolean isVisiable) {
         isScreenVisiable = isVisiable;
     }
 
-    public static void setCurrentActivity(Activity currentActivity) {
+    private static void setCurrentActivity(Activity currentActivity) {
         clearCurrentActivityReference();
-        mSoftCurrentActivityReference = new SoftReference(currentActivity);
+        mWeakCurrentActivityReference = new WeakReference(currentActivity);
+        JSONObject properties = mScreenMap.get(currentActivity);
+        if (properties != null && properties.has("$screen_name")) {
+            saveScreenAndTitle(properties.optString("$screen_name"), properties.optString("$title"));
+        } else {
+            currentScreenName = null;
+            currentTitle = null;
+            screenProperties = null;
+        }
     }
 
-    private static Activity getCurrentActivity(){
-        if(mSoftCurrentActivityReference == null){
+    private static Activity getCurrentActivity() {
+        if (mWeakCurrentActivityReference == null) {
             return null;
         }
-        return (Activity)mSoftCurrentActivityReference.get();
+        return (Activity) mWeakCurrentActivityReference.get();
     }
 
     public static void clearCurrentActivityReference() {
-        if(mSoftCurrentActivityReference != null){
-            mSoftCurrentActivityReference.clear();
-            mSoftCurrentActivityReference = null;
+        if (mWeakCurrentActivityReference != null) {
+            mWeakCurrentActivityReference.clear();
+            mWeakCurrentActivityReference = null;
         }
+    }
+
+    public static void onActivityResumed(Activity currentActivity) {
+        setScreenVisiable(true);
+        setCurrentActivity(currentActivity);
+    }
+
+    public static void onActivityPaused() {
+        setScreenVisiable(false);
     }
 }

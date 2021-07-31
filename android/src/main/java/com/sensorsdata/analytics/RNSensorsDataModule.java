@@ -20,17 +20,15 @@ package com.sensorsdata.analytics;
 
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.property.LibMethodInterceptor;
+import com.sensorsdata.analytics.property.PluginVersionInterceptor;
+import com.sensorsdata.analytics.property.RNPropertyManager;
 import com.sensorsdata.analytics.utils.RNUtils;
 import com.sensorsdata.analytics.utils.RNViewUtils;
-import com.sensorsdata.analytics.property.RNPropertyManager;
-import com.sensorsdata.analytics.property.PluginVersionInterceptor;
 
 import org.json.JSONObject;
 
@@ -47,13 +45,13 @@ import org.json.JSONObject;
  * ReadableArray -> Array
  */
 
-public class RNSensorsDataModule extends ReactContextBaseJavaModule{
+public class RNSensorsDataModule extends ReactContextBaseJavaModule {
 
     public RNSensorsDataModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        try{
+        try {
             reactContext.addLifecycleEventListener(new SensorsDataLifecycleListener());
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
         RNAgent.ignoreView();
@@ -79,23 +77,23 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule{
 
     @ReactMethod
     public void trackViewScreen(ReadableMap params) {
-        try{
+        try {
             if (params != null) {
                 JSONObject jsonParams = RNUtils.convertToJSONObject(params);
                 JSONObject properties = null;
-                if(jsonParams.has("sensorsdataparams")){
+                if (jsonParams.has("sensorsdataparams")) {
                     properties = jsonParams.optJSONObject("sensorsdataparams");
                 }
                 String url = null;
-                if(jsonParams.has("sensorsdataurl")){
+                if (jsonParams.has("sensorsdataurl")) {
                     url = jsonParams.getString("sensorsdataurl");
                 }
-                if(url == null){
+                if (url == null) {
                     return;
                 }
                 RNAgent.trackViewScreen(url, properties, true);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             SALog.printStackTrace(e);
         }
     }
@@ -107,13 +105,11 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule{
 
     class SensorsDataLifecycleListener implements LifecycleEventListener {
         public void onHostResume() {
-            RNViewUtils.setScreenVisiable(true);
-            RNViewUtils.setCurrentActivity(getCurrentActivity());
+            RNViewUtils.onActivityResumed(getCurrentActivity());
         }
 
         public void onHostPause() {
-            RNViewUtils.setScreenVisiable(false);
-            RNViewUtils.clearCurrentActivityReference();
+            RNViewUtils.onActivityPaused();
         }
 
         public void onHostDestroy() {

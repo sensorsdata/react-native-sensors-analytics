@@ -25,8 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SAReactNativeManager : NSObject
 
-@property (nonatomic, assign) BOOL isRootViewVisible;
-
 + (instancetype)sharedInstance;
 
 /**

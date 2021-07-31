@@ -38,32 +38,10 @@ NSString *const kSAEventScreenNameProperty = @"$screen_name";
 NSString *const kSAEventTitleProperty = @"$title";
 NSString *const kSAEventElementContentProperty = @"$element_content";
 
-#pragma mark - View Property
-@interface SAReactNativeViewProperty : NSObject
-
-/// View 唯一标识符
-@property (nonatomic, strong) NSNumber *reactTag;
-/// View 可点击状态
-@property (nonatomic, assign) BOOL clickable;
-/// View 自定义属性
-@property (nonatomic, strong) NSDictionary *properties;
-
-@end
-
-@implementation SAReactNativeViewProperty
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@; reactTag: %@; clickable: %@; properties: %@", [super description], self.reactTag, @(self.clickable), self.properties];
-}
-
-@end
-
 #pragma mark - React Native Manager
 @interface SAReactNativeManager ()
 
-@property (nonatomic, copy) NSDictionary *screenProperties;
 @property (nonatomic, strong) NSSet *reactNativeIgnoreClasses;
-@property (nonatomic, strong) NSMutableSet<SAReactNativeViewProperty *> *viewProperties;
 
 @end
 
@@ -89,27 +67,17 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
             }
         }
         _reactNativeIgnoreClasses = [NSSet setWithObjects:@"RCTScrollView", @"RCTBaseTextInputView", nil];
-        _viewProperties = [[NSMutableSet alloc] init];
-        _isRootViewVisible = NO;
     }
     return self;
 }
 
-- (UIView *)viewWithReactTag:(NSNumber *)reactTag {
-    RCTRootView *rootView = [self rootView];
-    RCTUIManager *manager = rootView.bridge.uiManager;
-    return [manager viewForReactTag:reactTag];
-}
-
-- (SAReactNativeViewProperty *)viewPropertyWithReactTag:(NSNumber *)reactTag {
-    __block SAReactNativeViewProperty *viewProperty;
-    [_viewProperties enumerateObjectsUsingBlock:^(SAReactNativeViewProperty *obj, BOOL * _Nonnull stop) {
-        if (obj.reactTag.integerValue == reactTag.integerValue) {
-            viewProperty = obj;
-            *stop = YES;
+- (SAReactNativeViewProperty *)viewPropertyWithReactTag:(NSNumber *)reactTag fromViewProperties:(NSSet <SAReactNativeViewProperty *>*)properties {
+    for (SAReactNativeViewProperty *property in properties) {
+        if (property.reactTag.integerValue == reactTag.integerValue) {
+            return property;
         }
-    }];
-    return viewProperty;
+    }
+    return nil;
 }
 
 - (BOOL)clickableForView:(UIView *)view {
@@ -121,27 +89,24 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
             return NO;
         }
     }
-    SAReactNativeViewProperty *viewProperties = [self viewPropertyWithReactTag:view.reactTag];
+
+    // 通过 RCTRootView 获取 viewProperty
+    UIViewController *reactViewController = [self rootView].reactViewController;
+    NSSet *viewProperties = reactViewController.sa_reactnative_viewProperties;
+    NSDictionary *screenProperties = reactViewController.sa_reactnative_screenProperties;
+    view.sa_reactnative_screenProperties = screenProperties;
 
     // 兼容 Native 可视化全埋点 UISegmentedControl 整体不可圈选的场景
     if  ([view isKindOfClass:NSClassFromString(@"UISegmentedControl")]) {
-        view.sa_reactnative_screenProperties = _screenProperties;
         return NO;
     }
 
     // UISegmentedControl 只有子视图 UISegment 是可点击的
     if ([view isKindOfClass:NSClassFromString(@"UISegment")]) {
-        SAReactNativeViewProperty *superviewProperties = [self viewPropertyWithReactTag:view.superview.reactTag];
-        view.sa_reactnative_screenProperties = _screenProperties;
-        return superviewProperties.clickable;
+        return [self viewPropertyWithReactTag:view.superview.reactTag fromViewProperties:viewProperties].clickable;
     }
 
-    if (viewProperties.clickable) {
-        // 可点击控件需要将当前页面信息保存在 sa_reactnative_screenProperties 中，在可视化全埋点时使用
-        view.sa_reactnative_screenProperties = _screenProperties;
-        return YES;
-    }
-    return NO;
+    return [self viewPropertyWithReactTag:view.reactTag fromViewProperties:viewProperties].clickable;
 }
 
 - (BOOL)prepareView:(NSNumber *)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters {
@@ -156,13 +121,19 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
     viewProperty.reactTag = reactTag;
     viewProperty.clickable = clickable;
     viewProperty.properties = paramters;
-    [_viewProperties addObject:viewProperty];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        RCTRootView *rootView = [self rootView];
+        NSMutableSet *viewProperties = [NSMutableSet setWithSet:rootView.reactViewController.sa_reactnative_viewProperties];
+        [viewProperties addObject:viewProperty];
+        rootView.reactViewController.sa_reactnative_viewProperties = [viewProperties copy];
+    });
     return YES;
 }
 
 #pragma mark - visualize
 - (NSDictionary *)visualizeProperties {
-    return _isRootViewVisible ? _screenProperties : nil;
+    UIView *rootView = [self rootView];
+    return rootView.window ? rootView.reactViewController.sa_reactnative_screenProperties : nil;
 }
 
 #pragma mark - AppClick
@@ -175,13 +146,18 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
         return;
     }
 
-    SAReactNativeViewProperty *viewProperties = [self viewPropertyWithReactTag:reactTag];
-    if ([viewProperties.properties[@"ignore"] boolValue]) {
-        return;
-    }
-
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIView *view = [self viewWithReactTag:reactTag];
+        // 通过 RCTRootView 获取 viewProperty
+        RCTRootView *rootView = [self rootView];
+        NSSet *viewProperties = rootView.reactViewController.sa_reactnative_viewProperties;
+        NSDictionary *screenProperties = rootView.reactViewController.sa_reactnative_screenProperties;
+        SAReactNativeViewProperty *viewProperty = [self viewPropertyWithReactTag:reactTag fromViewProperties:viewProperties];
+        id ignoreParam = viewProperty.properties[@"ignore"];
+        if ([ignoreParam respondsToSelector:@selector(boolValue)] && [ignoreParam boolValue]) {
+            return;
+        }
+
+        UIView *view = [rootView.bridge.uiManager viewForReactTag:reactTag];
         for (NSString *className in self.reactNativeIgnoreClasses) {
             if ([view isKindOfClass:NSClassFromString(className)]) {
                 return;
@@ -190,8 +166,8 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
         NSMutableDictionary *properties = [NSMutableDictionary dictionary];
         NSString *content = [view.accessibilityLabel stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         properties[kSAEventElementContentProperty] = content;
-        [properties addEntriesFromDictionary:self.screenProperties];
-        [properties addEntriesFromDictionary:viewProperties.properties];
+        [properties addEntriesFromDictionary:screenProperties];
+        [properties addEntriesFromDictionary:viewProperty.properties];
         NSDictionary *newProps = [SAReactNativeEventProperty eventProperties:properties isAuto:YES];
         [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:newProps];
     });
@@ -210,7 +186,7 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
     pageProps[kSAEventScreenNameProperty] = screenName;
     pageProps[kSAEventTitleProperty] = title;
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.screenProperties = pageProps;
+        [self rootView].reactViewController.sa_reactnative_screenProperties = [pageProps copy];
     });
 
     // 忽略 React Native 触发的 $AppViewScreen 事件
@@ -243,27 +219,26 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
 
 #pragma mark - Find RCTRootView
 - (RCTRootView *)rootView {
-    UIViewController *root = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    RCTRootView *rootView = [self findRootViewFromController:root];
-    // 如果当前 RootViewController 中有 RCTRootView，就直接返回查找到的 RCTRootView
-    if (rootView) {
-        return rootView;
-    }
-    // 混编 React Native 项目时获取当前显示的 UIViewController 中的 RCTRootView
     UIViewController *current = [[SensorsAnalyticsSDK sharedInstance] currentViewController];
-    return [self findRootViewFromController:current];
+    RCTRootView *rootView = [self rootViewWithCurrentView:current.view];
+    while (current && !rootView) {
+        current = current.presentingViewController;
+        rootView = [self rootViewWithCurrentView:current.view];
+    }
+    return rootView;
 }
 
-- (RCTRootView *)findRootViewFromController:(UIViewController *)controller {
-    if (!controller) {
+- (RCTRootView *)rootViewWithCurrentView:(UIView *)currentView {
+    if (!currentView) {
         return nil;
     }
-    if ([controller.view isKindOfClass:RCTRootView.class]) {
-        return (RCTRootView *)controller.view;
+    if (currentView.isReactRootView) {
+        return (RCTRootView *)currentView;
     }
-    for (UIView *subview in controller.view.subviews) {
-        if ([subview isKindOfClass:RCTRootView.class]) {
-            return (RCTRootView *)subview;
+    for (UIView *subView in currentView.subviews) {
+        RCTRootView *rootView = [self rootViewWithCurrentView:subView];
+        if (rootView) {
+            return rootView;
         }
     }
     return nil;
