@@ -225,6 +225,15 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
         current = current.presentingViewController;
         rootView = [self rootViewWithCurrentView:current.view];
     }
+
+    if (!rootView) {
+        // 当 rootViewController 为普通 UIViewController，且添加了 childController 时无法获取到 RCTRootView
+        // 此时直接通过 rootViewController 的 subview 获取 RCTRootView
+        // 这里是通过遍历所有的  subviews 查找，作为补充逻辑存在
+        UIViewController *root = [UIApplication sharedApplication].keyWindow.rootViewController;
+        rootView = [self rootViewWithCurrentView:root.view];
+    }
+
     return rootView;
 }
 
