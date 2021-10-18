@@ -1,22 +1,22 @@
 #! node option
 // 系统变量
 var path = require("path"),
-    fs = require("fs"),
-    dir = path.resolve(__dirname, "..");
+  fs = require("fs"),
+  dir = path.resolve(__dirname, "..");
 var userPackageJson = require("../../package.json");
 var ignoreScreen = false;
 if (userPackageJson && userPackageJson['sensorsData'] && userPackageJson['sensorsData']['ignoreScreen']) {
     ignoreScreen = true;
 }
 var reactNavigationPath = dir + '/react-navigation',
-    reactNavigationPath3X = dir + '/@react-navigation/native/src',
-    reactNavigationPath4X = dir + '/@react-navigation/native/lib/module',
-    reactNavigationPath5X = dir + '/@react-navigation/core/src/BaseNavigationContainer.tsx';
+  reactNavigationPath3X = dir + '/@react-navigation/native/src',
+  reactNavigationPath4X = dir + '/@react-navigation/native/lib/module',
+  reactNavigationPath5X = dir + '/@react-navigation/core/src/BaseNavigationContainer.tsx';
 // 自定义变量
 
-var reactNavigationReduxCreatePath =[dir +'/react-navigation-redux-helpers/src/reduxify-navigator.js',
+var reactNavigationReduxCreatePath = [dir + '/react-navigation-redux-helpers/src/reduxify-navigator.js',
 dir + '/react-navigation-redux-helpers/src/create-redux-container.js'];
-var reactNavigationReduxMiddlePath = dir +'/react-navigation-redux-helpers/src/middleware.js';
+var reactNavigationReduxMiddlePath = dir + '/react-navigation-redux-helpers/src/middleware.js';
 var RNClickFilePath = dir + '/react-native/Libraries/Components/Touchable/Touchable.js';
 var RNClickPressabilityFilePath = dir + '/react-native/Libraries/Pressability/Pressability.js';
 var RNClickableFiles = [dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber.js',
@@ -94,6 +94,14 @@ var sensorsdataSwitchHookCode = "if(this.props.onChange != null || this.props.on
                                +"      dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis));\n"
                                +"    } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
                                +"  })(this); /* SENSORSDATA HOOK */}";
+var sensorsdataSwitchHookCode66 = "if(nativeSwitchRef.current && onValueChange){\n"
+                               + "  (function(thatThis){ \n"
+                               + "    try {\n"
+                               + "      var ReactNative = require('react-native');\n"
+                               + "      var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
+                               + "      dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(nativeSwitchRef.current));\n"
+                               + "    } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
+                               + "  })(this); /* SENSORSDATA HOOK */}";
 var sensorsdataImportReactNativeHookCode ="import ReactNative from 'react-native';\n";
 var sensorsdataNavigation5HookCode = `
 
@@ -159,7 +167,7 @@ var sensorsdataNavigation5HookCode = `
 	/* SENSORSDATA HOOK */ `;
 
 var sensorsDataHookReduxCreateCode =
-`   function getParams(route){
+  `   function getParams(route){
         if(!route){
           return null;
         }
@@ -310,57 +318,59 @@ var sensorsDataHookReduxMiddleCode = `
 // hook click
 sensorsdataHookClickRN = function () {
   if (fs.existsSync(RNClickFilePath)) {
-        // 读取文件内容
-        var fileContent = fs.readFileSync(RNClickFilePath, 'utf8');
-        // 已经 hook 过了，不需要再次 hook
-        if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
-            return;
-        }
-        // 获取 hook 的代码插入的位置
-        var hookIndex = fileContent.indexOf("this.touchableHandlePress(");
-        // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
-        if (hookIndex == -1) {
-            throw "Can't not find touchableHandlePress function";
-        };
-        // 插入 hook 代码
-        var hookedContent = `${fileContent.substring(0, hookIndex)}\n${sensorsdataClickHookCode}\n${fileContent.substring(hookIndex)}`;
-        // 备份 Touchable.js 源文件
-        fs.renameSync(RNClickFilePath, `${RNClickFilePath}_sensorsdata_backup`);
-        // 重写 Touchable.js 文件
-        fs.writeFileSync(RNClickFilePath, hookedContent, 'utf8');
-        console.log(`found and modify Touchable.js: ${RNClickFilePath}`);
+    // 读取文件内容
+    var fileContent = fs.readFileSync(RNClickFilePath, 'utf8');
+    // 已经 hook 过了，不需要再次 hook
+    if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
+      return;
     }
+    console.log(`found Touchable.js: ${RNClickFilePath}`);
+    // 获取 hook 的代码插入的位置
+    var hookIndex = fileContent.indexOf("this.touchableHandlePress(");
+    // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
+    if (hookIndex == -1) {
+      throw "Can't not find touchableHandlePress function";
+    };
+    // 插入 hook 代码
+    var hookedContent = `${fileContent.substring(0, hookIndex)}\n${sensorsdataClickHookCode}\n${fileContent.substring(hookIndex)}`;
+    // 备份 Touchable.js 源文件
+    fs.renameSync(RNClickFilePath, `${RNClickFilePath}_sensorsdata_backup`);
+    // 重写 Touchable.js 文件
+    fs.writeFileSync(RNClickFilePath, hookedContent, 'utf8');
+    console.log(`modify Touchable.js succeed`);
+  }
 };
 
 // hook 0.62 0.63 click
 sensorsdataHookPressabilityClickRN = function () {
   if (fs.existsSync(RNClickPressabilityFilePath)) {
-        // 读取文件内容
-        var fileContent = fs.readFileSync(RNClickPressabilityFilePath, 'utf8');
-        // 已经 hook 过了，不需要再次 hook
-        if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
-            return;
-        }
-        // 获取 hook 的代码插入的位置
-        var scriptStr = 'onPress(event);';
-        var hookIndex = fileContent.lastIndexOf(scriptStr);
-        // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
-        if (hookIndex == -1) {
-            throw "Can't not find onPress(event); code";
-        };
-        // 插入 hook 代码
-        var hookedContent = `${fileContent.substring(
-          0,
-          hookIndex
-        )}\n${sensorsdataClickHookPressabilityCode}\n${fileContent.substring(
-          hookIndex
-        )}`;
-        // 备份 Pressability.js 源文件
-        fs.renameSync(RNClickPressabilityFilePath, `${RNClickPressabilityFilePath}_sensorsdata_backup`);
-        // 重写 Pressability.js 文件
-        fs.writeFileSync(RNClickPressabilityFilePath, hookedContent, 'utf8');
-        console.log(`found and modify Pressability.js: ${RNClickPressabilityFilePath}`);
+    // 读取文件内容
+    var fileContent = fs.readFileSync(RNClickPressabilityFilePath, 'utf8');
+    // 已经 hook 过了，不需要再次 hook
+    if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
+      return;
     }
+    console.log(`found Pressability.js: ${RNClickPressabilityFilePath}`);
+    // 获取 hook 的代码插入的位置
+    var scriptStr = 'onPress(event);';
+    var hookIndex = fileContent.lastIndexOf(scriptStr);
+    // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
+    if (hookIndex == -1) {
+      throw "Can't not find onPress(event); code";
+    };
+    // 插入 hook 代码
+    var hookedContent = `${fileContent.substring(
+      0,
+      hookIndex
+    )}\n${sensorsdataClickHookPressabilityCode}\n${fileContent.substring(
+      hookIndex
+    )}`;
+    // 备份 Pressability.js 源文件
+    fs.renameSync(RNClickPressabilityFilePath, `${RNClickPressabilityFilePath}_sensorsdata_backup`);
+    // 重写 Pressability.js 文件
+    fs.writeFileSync(RNClickPressabilityFilePath, hookedContent, 'utf8');
+    console.log(`modify Pressability.js succeed`);
+  }
 };
 
 
@@ -373,6 +383,7 @@ sensorsdataHookNavigation5 = function () {
     if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
       return;
     }
+    console.log(`found BaseNavigationContainer.tsx: ${reactNavigationPath5X}`);
     // 获取 hook 的代码插入的位置
     var scriptStr = 'isFirstMountRef.current = false;';
     var hookIndex = fileContent.lastIndexOf(scriptStr);
@@ -382,9 +393,7 @@ sensorsdataHookNavigation5 = function () {
     }
 
     // 插入 hook 代码
-    var hookedContent = `${fileContent.substring(
-    0,
-      hookIndex
+    var hookedContent = `${fileContent.substring(0,hookIndex
     )}\n${sensorsdataNavigation5HookCode}\n${fileContent.substring(hookIndex)}`;
     // BaseNavigationContainer.tsx
     fs.renameSync(
@@ -394,94 +403,92 @@ sensorsdataHookNavigation5 = function () {
     hookedContent = sensorsdataImportReactNativeHookCode + hookedContent;
     // BaseNavigationContainer.tsx
     fs.writeFileSync(reactNavigationPath5X, hookedContent, 'utf8');
-    console.log(
-      `found and modify BaseNavigationContainer.tsx: ${reactNavigationPath5X}`
-    );
+    console.log(`modify BaseNavigationContainer.tsx succeed`);
   }
 };
 
 // hook react-navigation-redux-helper create
 sensorsdataHookNavigationReduxCreate = function (reset = false) {
   reactNavigationReduxCreatePath.forEach(function (onefile) {
-      if (fs.existsSync(onefile)) {
-        // 读取文件内容
-        var fileContent = fs.readFileSync(onefile, 'utf8');
-        if (reset) {
-          // 未被 hook 过代码，不需要处理
-          if (fileContent.indexOf('SENSORSDATA HOOK') == -1) {
-            return;
-          }
-          // 检查备份文件是否存在
-          var backFilePath = `${onefile}_sensorsdata_backup`;
-          if (!fs.existsSync(backFilePath)) {
-            throw `File: ${backFilePath} not found, Please rm -rf node_modules and npm install again`;
-          }
-          // 将备份文件重命名恢复 + 自动覆盖被 hook 过的同名文件
-          fs.renameSync(backFilePath, onefile);
-          console.log(`found and reset js: ${onefile}`);
-        } else {
-          // 已经 hook 过了，不需要再次 hook
-          if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
-            return;
-          }
-          // 获取 hook 的代码插入的位置
-          var scriptStr = 'initializeListeners(key, this.props.state);';
-          var hookIndex = fileContent.indexOf(scriptStr);
-          // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
-          if (hookIndex == -1) {
-            throw "Can't not find code \"initializeListeners(key, this.props.state);\"";
-          }
-          // 插入 hook 代码
-          var hookedContent = sensorsdataImportReactNativeHookCode + `${fileContent.substring(
-            0,
-            hookIndex + scriptStr.length
-          )}\n${sensorsDataHookReduxCreateCode}\n${fileContent.substring(
-            hookIndex + scriptStr.length
-          )}`;
-          // 备份源文件
-          fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
-          // 重写文件
-          fs.writeFileSync(onefile, hookedContent, 'utf8');
-          console.log(`found and modify js: ${onefile}`);
+    if (fs.existsSync(onefile)) {
+      // 读取文件内容
+      var fileContent = fs.readFileSync(onefile, 'utf8');
+      if (reset) {
+        // 未被 hook 过代码，不需要处理
+        if (fileContent.indexOf('SENSORSDATA HOOK') == -1) {
+          return;
         }
+        // 检查备份文件是否存在
+        var backFilePath = `${onefile}_sensorsdata_backup`;
+        if (!fs.existsSync(backFilePath)) {
+          throw `File: ${backFilePath} not found, Please rm -rf node_modules and npm install again`;
+        }
+        // 将备份文件重命名恢复 + 自动覆盖被 hook 过的同名文件
+        fs.renameSync(backFilePath, onefile);
+        console.log(`found and reset js: ${onefile}`);
+      } else {
+        // 已经 hook 过了，不需要再次 hook
+        if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
+          return;
+        }
+        console.log(`found redux : ${onefile}`);
+        // 获取 hook 的代码插入的位置
+        var scriptStr = 'initializeListeners(key, this.props.state);';
+        var hookIndex = fileContent.indexOf(scriptStr);
+        // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
+        if (hookIndex == -1) {
+          throw "Can't not find code \"initializeListeners(key, this.props.state);\"";
+        }
+        // 插入 hook 代码
+        var hookedContent = sensorsdataImportReactNativeHookCode + `${fileContent.substring(
+          0,
+          hookIndex + scriptStr.length
+        )}\n${sensorsDataHookReduxCreateCode}\n${fileContent.substring(
+          hookIndex + scriptStr.length
+        )}`;
+        // 备份源文件
+        fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
+        // 重写文件
+        fs.writeFileSync(onefile, hookedContent, 'utf8');
+        console.log(`modify redux succeed`);
       }
-    });
+    }
+  });
 };
 
 // hook react-navigation-redux-helper middle
 sensorsdataHookNavigationReduxMiddle = function () {
   if (fs.existsSync(reactNavigationReduxMiddlePath)) {
-      // 读取文件内容
-      var fileContent = fs.readFileSync(reactNavigationReduxMiddlePath, 'utf8');
-      // 已经 hook 过了，不需要再次 hook
-      if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
-        return;
-      }
-      // 获取 hook 的代码插入的位置
-      var scriptStr = 'const newState = store.getState();';
-      var hookIndex = fileContent.indexOf(scriptStr);
-      // 判断文件是否异常，不存在该代码，导致无法 hook 点击事件
-      if (hookIndex == -1) {
-        throw "Can't not find code \"const newState = store.getState();\n";
-      }
-      // 插入 hook 代码
-      var hookedContent =  sensorsdataImportReactNativeHookCode + `${fileContent.substring(
-        0,
-        hookIndex + scriptStr.length
-      )}\n${sensorsDataHookReduxMiddleCode}\n${fileContent.substring(
-        hookIndex + scriptStr.length
-      )}`;
-      // 备份 middleware.js 源文件
-      fs.renameSync(
-        reactNavigationReduxMiddlePath,
-        `${reactNavigationReduxMiddlePath}_sensorsdata_backup`
-      );
-      // 重写 middleware.js 文件
-      fs.writeFileSync(reactNavigationReduxMiddlePath, hookedContent, 'utf8');
-      console.log(
-        `found and modify middleware.js: ${reactNavigationReduxMiddlePath}`
-      );
+    // 读取文件内容
+    var fileContent = fs.readFileSync(reactNavigationReduxMiddlePath, 'utf8');
+    // 已经 hook 过了，不需要再次 hook
+    if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
+      return;
     }
+    console.log(`found middleware.js: ${reactNavigationReduxMiddlePath}`);
+    // 获取 hook 的代码插入的位置
+    var scriptStr = 'const newState = store.getState();';
+    var hookIndex = fileContent.indexOf(scriptStr);
+    // 判断文件是否异常，不存在该代码，导致无法 hook 点击事件
+    if (hookIndex == -1) {
+      throw "Can't not find code \"const newState = store.getState();\n";
+    }
+    // 插入 hook 代码
+    var hookedContent = sensorsdataImportReactNativeHookCode + `${fileContent.substring(
+      0,
+      hookIndex + scriptStr.length
+    )}\n${sensorsDataHookReduxMiddleCode}\n${fileContent.substring(
+      hookIndex + scriptStr.length
+    )}`;
+    // 备份 middleware.js 源文件
+    fs.renameSync(
+      reactNavigationReduxMiddlePath,
+      `${reactNavigationReduxMiddlePath}_sensorsdata_backup`
+    );
+    // 重写 middleware.js 文件
+    fs.writeFileSync(reactNavigationReduxMiddlePath, hookedContent, 'utf8');
+    console.log(`modify middleware.js succeed`);
+  }
 };
 
 // hook slider
@@ -508,6 +515,7 @@ sensorsdataHookSliderRN = function (reset = false) {
         if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
           return;
         }
+        console.log(`found Slider.js: ${onefile}`);
         // 获取 hook 的代码插入的位置
         var scriptStr = 'onSlidingComplete(event.nativeEvent.value);';
         var hookIndex = fileContent.indexOf(scriptStr);
@@ -526,7 +534,7 @@ sensorsdataHookSliderRN = function (reset = false) {
         fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
         // 重写文件
         fs.writeFileSync(onefile, hookedContent, 'utf8');
-        console.log(`found and modify Slider.js: ${onefile}`);
+        console.log(`modify Slider.js succeed`);
       }
     }
   });
@@ -555,6 +563,7 @@ sensorsdataHookSwitchRN = function (reset = false) {
         if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
           return;
         }
+        console.log(`found Switch.js: ${onefile}`);
         // 特殊情况的单独插入
         // if (this.props.onValueChange != null) {
         var scriptStr = 'if (this.props.onValueChange != null) {';
@@ -571,11 +580,19 @@ sensorsdataHookSwitchRN = function (reset = false) {
           fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
           // 重写文件
           fs.writeFileSync(onefile, hookedContent, 'utf8');
-          console.log(`found and modify Switch.js: ${onefile}`);
+          console.log(`modify Switch.js: ${onefile}`);
         } else {
           // 获取 hook 的代码插入的位置
           scriptStr = 'this.props.onValueChange(event.nativeEvent.value);';
           hookIndex = fileContent.indexOf(scriptStr);
+          var hookcontent;
+          if (hookIndex == -1) {
+            scriptStr = 'onValueChange?.(event.nativeEvent.value);';
+            hookIndex = fileContent.indexOf(scriptStr);
+            hookcontent = sensorsdataSwitchHookCode66;
+          } else {
+            hookcontent = sensorsdataSwitchHookCode;
+          }
           // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
           if (hookIndex == -1) {
             throw "Can't not find onValueChange function";
@@ -584,14 +601,14 @@ sensorsdataHookSwitchRN = function (reset = false) {
           var hookedContent = `${fileContent.substring(
             0,
             hookIndex + scriptStr.length
-          )}\n${sensorsdataSwitchHookCode}\n${fileContent.substring(
+          )}\n${hookcontent}\n${fileContent.substring(
             hookIndex + scriptStr.length
           )}`;
           // 备份源文件
           fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
           // 重写文件
           fs.writeFileSync(onefile, hookedContent, 'utf8');
-          console.log(`found and modify Switch.js: ${onefile}`);
+          console.log(`modify Switch.js succeed`);
         }
       }
     }
@@ -621,6 +638,7 @@ sensorsdataHookSegmentedControlRN = function (reset = false) {
         if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
           return;
         }
+        console.log(`found SegmentedControl.js: ${onefile}`);
         // 获取 hook 的代码插入的位置
         var scriptStr = 'this.props.onValueChange(event.nativeEvent.value);';
         var hookIndex = fileContent.indexOf(scriptStr);
@@ -639,7 +657,7 @@ sensorsdataHookSegmentedControlRN = function (reset = false) {
         fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
         // 重写 Touchable.js 文件
         fs.writeFileSync(onefile, hookedContent, 'utf8');
-        console.log(`found and modify SegmentedControl.js: ${onefile}`);
+        console.log(`modify SegmentedControl.js succeed`);
       }
     }
   });
@@ -668,6 +686,7 @@ sensorsdataHookGestureButtonsRN = function (reset = false) {
         if (fileContent.indexOf('SENSORSDATA HOOK') > -1) {
           return;
         }
+        console.log(`found GestureButtons: ${onefile}`);
         // 获取 hook 的代码插入的位置
         var scriptStr = 'this.props.onPress(active);';
         var hookIndex = fileContent.indexOf(scriptStr);
@@ -689,9 +708,7 @@ sensorsdataHookGestureButtonsRN = function (reset = false) {
         );
         // 重写修改后的文件
         fs.writeFileSync(onefile, hookedContent, 'utf8');
-        console.log(
-          `found and modify GestureButtons: ${onefile}`,
-        );
+        console.log(`modify GestureButtons succeed`);
       }
     }
   });
@@ -723,6 +740,7 @@ sensorsdataHookClickableRN = function (reset = false) {
         if (content.indexOf('SENSORSDATA HOOK') > -1) {
           return;
         }
+        console.log(`found clickable.js: ${onefile}`);
         // 获取 hook 的代码插入的位置
         var objRe = /ReactNativePrivateInterface\.UIManager\.createView\([\s\S]{1,60}\.uiViewClassName,[\s\S]*?\)[,;]/;
         var match = objRe.exec(content);
@@ -823,7 +841,7 @@ sensorsdataHookClickableRN = function (reset = false) {
         fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
         // 重写文件
         fs.writeFileSync(onefile, hookedContent, 'utf8');
-        console.log(`found and modify clickable.js: ${onefile}`);
+        console.log(`modify clickable.js succeed`);
       }
     }
   });
@@ -861,7 +879,7 @@ addTryCatch = function (functionBody) {
   );
 };
 // 工具函数 - 计算位置
-function lastArgumentName(content, index) {
+function lastArgumentName (content, index) {
   --index;
   var lastComma = content.lastIndexOf(',', index);
   var lastParentheses = content.lastIndexOf('(', index);
@@ -1062,6 +1080,7 @@ injectReactNavigation = function (dirPath, type, reset = false) {
       if (content.indexOf('SENSORSDATA HOOK') > -1) {
         return;
       }
+      console.log(`found navigation.js: ${getChildEventSubscriberJsFilePath}`);
       // 获取 hook 的代码插入的位置
       var index = content.indexOf(
         "if (typeof this.props.onNavigationStateChange === 'function') {"
@@ -1118,9 +1137,7 @@ injectReactNavigation = function (dirPath, type, reset = false) {
       );
       // 重写文件
       fs.writeFileSync(getChildEventSubscriberJsFilePath, content, 'utf8');
-      console.log(
-        `found and modify navigation.js: ${getChildEventSubscriberJsFilePath}`
-      );
+      console.log(`modify navigation.js succeed`);
     }
   } else if (type == 2) {
     const createAppContainerJsFilePath = `${dirPath}/createAppContainer.js`;
@@ -1137,6 +1154,7 @@ injectReactNavigation = function (dirPath, type, reset = false) {
       if (content.indexOf('SENSORSDATA HOOK') > -1) {
         return;
       }
+      console.log(`found navigation.js: ${createAppContainerJsFilePath}`);
       var index = content.indexOf(
         "if (typeof this.props.onNavigationStateChange === 'function') {"
       );
@@ -1174,9 +1192,7 @@ injectReactNavigation = function (dirPath, type, reset = false) {
       );
       // 重写文件
       fs.writeFileSync(createAppContainerJsFilePath, content, 'utf8');
-      console.log(
-        `found and modify navigation.js: ${createAppContainerJsFilePath}`
-      );
+      console.log(`modify navigation.js succeed`);
     }
   }
 };
@@ -1243,11 +1259,11 @@ allSensorsdataHookRN = function () {
     // 3 期
     sensorsdataHookPressabilityClickRN(RNClickPressabilityFilePath);
   }
-    sensorsdataHookNavigationRN();
-    sensorsdataHookNavigation5();
-    // react-navigation-redux-helper
-    sensorsdataHookNavigationReduxCreate();
-    sensorsdataHookNavigationReduxMiddle(reactNavigationReduxMiddlePath);
+  sensorsdataHookNavigationRN();
+  sensorsdataHookNavigation5();
+  // react-navigation-redux-helper
+  sensorsdataHookNavigationReduxCreate();
+  sensorsdataHookNavigationReduxMiddle(reactNavigationReduxMiddlePath);
 };
 // 命令行
 switch (process.argv[2]) {

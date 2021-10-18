@@ -110,6 +110,7 @@ public class RNViewUtils {
             screenProperties = new JSONObject();
             screenProperties.put("$title", title);
             screenProperties.put("$screen_name", screenName);
+            screenProperties.put("isSetRNViewTag", true);//标识当前页面已区分 RNView 和原生 View
         } catch (Exception ignored) {
 
         }

@@ -158,6 +158,7 @@ public class RNAgent {
         SAViewProperties properties = viewPropertiesArray.get(view.getId());
         if (properties != null) {
             properties.setViewClickable(view);
+            properties.setViewTag(view);
         }
     }
 
