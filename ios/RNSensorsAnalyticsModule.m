@@ -32,7 +32,7 @@
 #import "SAReactNativeManager.h"
 #import "SAReactNativeEventProperty.h"
 
-NSString *const kSAReactNativePluginVersion = @"react_native:2.1.5";
+NSString *const kSAReactNativePluginVersion = @"react_native:2.2.0";
 
 @implementation RNSensorsAnalyticsModule
 
@@ -56,26 +56,6 @@ RCT_EXPORT_METHOD(track:(NSString *)event withProperties:(NSDictionary *)propert
     @try {
         NSDictionary *properties = [SAReactNativeEventProperty eventProperties:propertyDict];
         [[SensorsAnalyticsSDK sharedInstance] track:event withProperties:properties];
-    } @catch (NSException *exception) {
-        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
-    }
-}
-/**
- * 导出 trackTimerBegin 方法给 RN 使用.
- *
- * 初始化事件的计时器，默认计时单位为毫秒(计时开始).
- * @param eventName 事件的名称.
- *
- *  RN 中使用示例：（计时器事件名称 viewTimer ）
- *     <Button
- *            title="Button"
- *            onPress={()=>
- *            RNSensorsAnalyticsModule.trackTimerBegin("viewTimer")}>
- *     </Button>
- */
-RCT_EXPORT_METHOD(trackTimerBegin:(NSString *)event){
-    @try {
-        [[SensorsAnalyticsSDK sharedInstance] trackTimerStart:event];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }

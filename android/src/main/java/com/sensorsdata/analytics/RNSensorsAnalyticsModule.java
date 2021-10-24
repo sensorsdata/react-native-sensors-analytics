@@ -128,30 +128,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 导出 trackTimerBegin 方法给 RN 使用.
-     * <p>
-     * 初始化事件的计时器，默认计时单位为毫秒(计时开始).
-     *
-     * @param eventName 事件的名称.
-     * <p>
-     * RN 中使用示例：（计时器事件名称 viewTimer ）
-     * <Button
-     * title="Button"
-     * onPress={()=>
-     * RNSensorsAnalyticsModule.trackTimerBegin("viewTimer")}>
-     * </Button>
-     */
-    @ReactMethod
-    public void trackTimerBegin(String eventName) {
-        try {
-            SensorsDataAPI.sharedInstance().trackTimerBegin(eventName);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(LOGTAG, e.toString() + "");
-        }
-    }
-
-    /**
      * 导出 trackTimerEnd 方法给 RN 使用.
      * <p>
      * 初始化事件的计时器，默认计时单位为毫秒(计时结束，并触发事件)
@@ -174,7 +150,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             Log.e(LOGTAG, e.toString() + "");
         }
     }
-
 
     /**
      * 导出 clearTrackTimer 方法给 RN 使用.
