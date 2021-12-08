@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		452E43642758986E0074530B /* SAReactNativeSwizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E43612758986E0074530B /* SAReactNativeSwizzler.m */; };
+		4532EFF7275E319600D57554 /* SAReactNativeRootViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4532EFF6275E319600D57554 /* SAReactNativeRootViewManager.m */; };
 		A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */; };
 		FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC39004B244715AE00F486A7 /* SAReactNativeManager.m */; };
 		FC6EF7A9259DA6A40099EEB5 /* SAReactNativeEventProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = FC6EF7A8259DA6A40099EEB5 /* SAReactNativeEventProperty.m */; };
@@ -27,6 +29,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		452E43612758986E0074530B /* SAReactNativeSwizzler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeSwizzler.m; sourceTree = "<group>"; };
+		452E43622758986E0074530B /* SAReactNativeSwizzler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAReactNativeSwizzler.h; sourceTree = "<group>"; };
+		4532EFF5275E319600D57554 /* SAReactNativeRootViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAReactNativeRootViewManager.h; sourceTree = "<group>"; };
+		4532EFF6275E319600D57554 /* SAReactNativeRootViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeRootViewManager.m; sourceTree = "<group>"; };
 		A18E9FA621A6AB4300A66E41 /* libRNSensorsAnalyticsModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNSensorsAnalyticsModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSensorsAnalyticsModule.m; sourceTree = "<group>"; };
 		A18E9FB321A6AEDD00A66E41 /* RNSensorsAnalyticsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSensorsAnalyticsModule.h; sourceTree = "<group>"; };
@@ -54,6 +60,10 @@
 		A18E9F9D21A6AB4300A66E41 = {
 			isa = PBXGroup;
 			children = (
+				4532EFF5275E319600D57554 /* SAReactNativeRootViewManager.h */,
+				4532EFF6275E319600D57554 /* SAReactNativeRootViewManager.m */,
+				452E43622758986E0074530B /* SAReactNativeSwizzler.h */,
+				452E43612758986E0074530B /* SAReactNativeSwizzler.m */,
 				A18E9FB321A6AEDD00A66E41 /* RNSensorsAnalyticsModule.h */,
 				A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */,
 				FC9EE66F243731C000C45D16 /* RNSensorsDataModule.h */,
@@ -136,7 +146,9 @@
 				FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */,
 				FC6EF7A9259DA6A40099EEB5 /* SAReactNativeEventProperty.m in Sources */,
 				FCD3CF2B25466B7800758260 /* SAReactNativeCategory.m in Sources */,
+				452E43642758986E0074530B /* SAReactNativeSwizzler.m in Sources */,
 				FC9EE671243731C000C45D16 /* RNSensorsDataModule.m in Sources */,
+				4532EFF7275E319600D57554 /* SAReactNativeRootViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

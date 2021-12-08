@@ -46,14 +46,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
 @abstract
+记录 View 的点击状态及自定义属性 (会关联到当前正在显示的 RCTRootView 上)
+
+@param reactTag  React Native 分配的唯一标识符
+@param clickable  是否可点击
+@param paramters  自定义属性
+*/
+- (void)prepareView:(NSNumber *)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters;
+
+/**
+@abstract
 记录 View 的点击状态及自定义属性
 
 @param reactTag  React Native 分配的唯一标识符
 @param clickable  是否可点击
 @param paramters  自定义属性
-@return 可点击控件是否记录成功
+@param rootTag  RCTRootView 的 reactTag
 */
-- (BOOL)prepareView:(NSNumber *)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters;
+- (void)prepareView:(NSNumber *)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters rootTag:(NSNumber *)rootTag;
 
 /**
  @abstract

@@ -15,9 +15,9 @@
 SensorsAnalytics SDK 是国内第一家开源商用版用户行为采集 SDK，目前支持代码埋点、全埋点、App 点击图、可视化全埋点等。目前已累计有 1500 多家付费客户，2500+ 的 App 集成使用，作为 App 数据采集利器，致力于帮助客户挖掘更多的商业价值，为其精准运营和业务支撑提供了可靠的数据来源。其采集全面而灵活、性能良好，并一直保持稳定的迭代，经受住了时间和客户的考验。
 
 ## 基本要求
-App 元素点击事件要求 React Native 0.23 ~ 0.66；
+App 元素点击事件要求 React Native 0.23 ~ 0.66；  
 App 页面浏览事件要求 React Navigation ^2.0 ~ ^5.0；  
-App 可视化全埋点要求 React Native 0.46 ~ 0.66；
+App 可视化全埋点要求 React Native 0.46 ~ 0.66；  
 App 点击事件自定义属性要求 React Native 0.46 ~ 0.66。
 
 ## 集成方式
@@ -42,9 +42,9 @@ react-native link sensorsdata-analytics-react-native
 }
 ```
 
-#### 4. 执行 npm install 命令
+#### 4. 执行 npm 命令
    ```sh
-   npm install
+   npm run-script postinstall
    ```
 
 ### 详细文档请参考：[Android & iOS SDK 在 React Native 中使用说明](https://www.sensorsdata.cn/manual/sdk_reactnative.html)

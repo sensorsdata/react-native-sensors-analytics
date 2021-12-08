@@ -21,6 +21,12 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#if __has_include(<React/RCTRootView.h>)
+#import <React/RCTRootView.h>
+#else
+#import "RCTRootView.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Property
@@ -42,13 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface UIViewController (SAReactNative)
-
-/// 触发页面浏览时, 记录页面信息 (和 RCTRootView 关联: rctRootView.reactViewController)
-@property (nonatomic, copy) NSDictionary *sa_reactnative_screenProperties;
-
-/// 用于记录 view 自定义属性 (和 RCTRootView 关联: rctRootView.reactViewController)
-@property (nonatomic, copy) NSSet<SAReactNativeViewProperty *> *sa_reactnative_viewProperties;
+@interface RCTRootView (SAReactNative)
 
 @end
 

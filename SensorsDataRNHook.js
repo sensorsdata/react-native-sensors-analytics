@@ -823,7 +823,24 @@ sensorsdataHookClickableRN = function (reset = false) {
 		         var saProps = eachProgress(saElement);
 		         var ReactNative = require('react-native');
 		         var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
-		         dataModule && dataModule.saveViewProperties && dataModule.saveViewProperties(${tagName}, true , saProps);
+
+             if(dataModule && dataModule.saveRootViewProperties) {
+               var saRootTag;
+               if(typeof nativeTopRootTag !== 'undefined') {
+                 saRootTag = nativeTopRootTag;
+               } else if(typeof rootContainerInstance !== 'undefined') {
+                 saRootTag = rootContainerInstance;
+               } else if(typeof renderExpirationTime !== 'undefined') {
+                 saRootTag = renderExpirationTime;
+               } else if(typeof renderLanes !== 'undefined') {
+                 saRootTag = renderLanes;
+               }
+               if (saRootTag && (typeof saRootTag === 'number')) {
+                 dataModule.saveRootViewProperties(${tagName}, true , saProps, saRootTag);
+                 return;
+               }
+             }  
+             dataModule && dataModule.saveViewProperties && dataModule.saveViewProperties(${tagName}, true , saProps);
 	     }
      }`;
         var call = addTryCatch(functionBody);
