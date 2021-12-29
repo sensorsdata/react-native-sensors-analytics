@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 获取 RN 页面中的元素信息
 /// @param rootTag 当前 RN 页面 RCTRootView 对应的 reactTag
-- (NSMutableSet<SAReactNativeViewProperty *> *)viewPropertiesWithRootTag:(NSNumber *)rootTag;
+- (NSSet<SAReactNativeViewProperty *> *)viewPropertiesWithRootTag:(NSNumber *)rootTag;
 
 @end
 

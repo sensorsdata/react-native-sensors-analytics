@@ -84,8 +84,8 @@
     [viewProperties addObject:property];
 }
 
-- (NSMutableSet<SAReactNativeViewProperty *> *)viewPropertiesWithRootTag:(NSNumber *)rootTag {
-    return self.viewProperties[rootTag];
+- (NSSet<SAReactNativeViewProperty *> *)viewPropertiesWithRootTag:(NSNumber *)rootTag {
+    return [self.viewProperties[rootTag] copy];
 }
 
 #pragma mark - utils

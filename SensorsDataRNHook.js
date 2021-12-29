@@ -997,6 +997,9 @@ navigationEventString = function () {
                 }else{
                     saProperties.sensorsdataurl = payload.state.params.sensorsdataurl;
                 }
+                if(payload.state.params.sensorsdataparams){
+                   saProperties.sensorsdataparams = JSON.parse(JSON.stringify(payload.state.params.sensorsdataparams));
+                }
             }else{
                 saProperties.sensorsdataurl = payload.state.routeName;
             }
