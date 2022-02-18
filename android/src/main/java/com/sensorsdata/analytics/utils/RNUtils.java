@@ -22,6 +22,8 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
+
+import java.util.HashMap;
 import java.util.Iterator;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SALog;
@@ -72,5 +74,21 @@ public class RNUtils {
             }
         }
         return writableMap;
+    }
+
+    /**
+     * ReadableMap 转换成 HashMap
+     */
+    public static HashMap<String, Object> convertToHashMap(ReadableMap properties) {
+        if (properties == null) {
+            return null;
+        }
+        HashMap<String, Object> map = null;
+        try {
+            map = ((ReadableNativeMap)properties).toHashMap();
+        }catch (Exception e){
+            SALog.printStackTrace(e);
+        }
+        return map;
     }
 }

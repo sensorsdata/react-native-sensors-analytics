@@ -24,11 +24,14 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.sensorsdata.analytics.android.sdk.SALog;
+import com.sensorsdata.analytics.android.sdk.plugin.property.SensorsDataPropertyPluginManager;
 import com.sensorsdata.analytics.property.LibMethodInterceptor;
 import com.sensorsdata.analytics.property.PluginVersionInterceptor;
+import com.sensorsdata.analytics.property.RNDynamicPropertyPlugin;
 import com.sensorsdata.analytics.property.RNPropertyManager;
 import com.sensorsdata.analytics.utils.RNUtils;
 import com.sensorsdata.analytics.utils.RNViewUtils;
+import com.sensorsdata.analytics.utils.VersionUtils;
 
 import org.json.JSONObject;
 
@@ -46,6 +49,8 @@ import org.json.JSONObject;
  */
 
 public class RNSensorsDataModule extends ReactContextBaseJavaModule {
+
+    private RNDynamicPropertyPlugin mDynamicPlugin;
 
     public RNSensorsDataModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -101,6 +106,18 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void saveViewProperties(int viewId, boolean clickable, ReadableMap viewProperties) {
         RNAgent.saveViewProperties(viewId, clickable, viewProperties);
+    }
+
+    @ReactMethod
+    public void setDynamicSuperProperties(ReadableMap dynamicSuperProperties) {
+        if (!VersionUtils.checkSAVersion("6.2.1")) {
+            return;
+        }
+        if (mDynamicPlugin == null) {
+            mDynamicPlugin = new RNDynamicPropertyPlugin();
+            SensorsDataPropertyPluginManager.getInstance().registerPropertyPlugin(mDynamicPlugin);
+        }
+        RNAgent.setDynamicSuperProperties(RNUtils.convertToHashMap(dynamicSuperProperties));
     }
 
     class SensorsDataLifecycleListener implements LifecycleEventListener {

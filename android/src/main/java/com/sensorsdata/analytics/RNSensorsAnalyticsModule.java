@@ -995,4 +995,36 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             Log.e(LOGTAG, e.toString() + "");
         }
     }
+
+    /**
+     * 绑定业务
+     *
+     * @param key ID
+     * @param value 值
+     */
+    @ReactMethod
+    public void bind(String key, String value) {
+        try {
+            SensorsDataAPI.sharedInstance().bind(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    /**
+     * 解绑业务
+     *
+     * @param key ID
+     * @param value 值
+     */
+    @ReactMethod
+    public void unbind(String key, String value) {
+        try {
+            SensorsDataAPI.sharedInstance().unbind(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOGTAG, e.toString() + "");
+        }
+    }
 }

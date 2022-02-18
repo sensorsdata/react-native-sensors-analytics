@@ -27,12 +27,7 @@
 #import "SAReactNativeEventProperty.h"
 #import "SAReactNativeRootViewManager.h"
 #import <React/RCTUIManager.h>
-
-#if __has_include(<SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>)
-#import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
-#else
-#import "SensorsAnalyticsSDK.h"
-#endif
+#import "SAReactNativeDynamicPropertyPlugin.h"
 
 #pragma mark - Constants
 NSString *const kSAEventScreenNameProperty = @"$screen_name";
@@ -43,6 +38,7 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
 @interface SAReactNativeManager ()
 
 @property (nonatomic, strong) NSSet *reactNativeIgnoreClasses;
+@property (nonatomic, weak) SAReactNativeDynamicPropertyPlugin *dynamicPropertyPlugin;
 
 @end
 
@@ -125,6 +121,15 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
     viewProperty.clickable = clickable;
     viewProperty.properties = paramters;
     [[SAReactNativeRootViewManager sharedInstance] addViewProperty:viewProperty withRootTag:rootTag];
+}
+
+- (void)setDynamicSuperProperties:(NSDictionary *)properties {
+    if (!self.dynamicPropertyPlugin) {
+        SAReactNativeDynamicPropertyPlugin *plugin = [[SAReactNativeDynamicPropertyPlugin alloc] init];
+        [SensorsAnalyticsSDK.sharedInstance registerPropertyPlugin:plugin];
+        self.dynamicPropertyPlugin = plugin;
+    }
+    self.dynamicPropertyPlugin.properties = properties;
 }
 
 #pragma mark - visualize

@@ -1,6 +1,6 @@
 import { NativeModules} from 'react-native';
 
-const { RNSensorsAnalyticsModule } = NativeModules;
+const { RNSensorsAnalyticsModule, RNSensorsDataModule } = NativeModules;
 
 /**
  * 登录
@@ -457,6 +457,34 @@ function trackAppInstall(properties) {
     RNSensorsAnalyticsModule.trackAppInstall(properties);
 }
 
+function registerDynamicSuperProperties() {
+  var dynamicProxy = {};
+  try {
+    Object.defineProperty(dynamicProxy,'properties', {
+      set: function (value) {
+        if (typeof value === 'object') {
+          RNSensorsDataModule && RNSensorsDataModule.setDynamicSuperProperties && RNSensorsDataModule.setDynamicSuperProperties(value);
+        }
+      }
+  });
+  } catch (e) {
+    console.log(e)
+  }
+  return dynamicProxy;
+}
+
+function bind(key, value){
+      RNSensorsAnalyticsModule &&
+        RNSensorsAnalyticsModule.bind &&
+        RNSensorsAnalyticsModule.bind(key, value);
+}
+
+function unbind(key, value){
+      RNSensorsAnalyticsModule &&
+        RNSensorsAnalyticsModule.unbind &&
+        RNSensorsAnalyticsModule.unbind(key, value);
+}
+
 /************** Android only start *****************/
 /**
  * 设置 App 切换到后台与下次事件的事件间隔
@@ -567,5 +595,8 @@ export default {
   isNetworkRequestEnablePromise,
   trackAppInstall,
   enableDataCollect,
+  registerDynamicSuperProperties,
+  bind,
+  unbind,
   sa: RNSensorsAnalyticsModule,
 };

@@ -32,7 +32,7 @@
 #import "SAReactNativeManager.h"
 #import "SAReactNativeEventProperty.h"
 
-NSString *const kSAReactNativePluginVersion = @"react_native:2.2.2";
+NSString *const kSAReactNativePluginVersion = @"react_native:2.2.3";
 
 @implementation RNSensorsAnalyticsModule
 
@@ -1019,6 +1019,34 @@ RCT_EXPORT_METHOD(isHeatMapEnabledPromise:(RCTPromiseResolveBlock)resolve reject
 RCT_EXPORT_METHOD(trackAppInstall:(NSDictionary *)property) {
     @try {
         [[SensorsAnalyticsSDK sharedInstance] trackInstallation:@"$AppInstall" withProperties:property];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * ID-Mapping 3.0 功能下绑定业务 ID 功能
+ *
+ * @param key 绑定业务 ID 的键名
+ * @param value 绑定业务 ID 的键值
+ */
+RCT_EXPORT_METHOD(bind:(NSString *)key value:(NSString *)value) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] bind:key value:value];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
+
+/**
+ * ID-Mapping 3.0 功能下解绑业务 ID 功能
+ *
+ * @param key 解绑业务 ID 的键名
+ * @param value 解绑业务 ID 的键值
+ */
+RCT_EXPORT_METHOD(unbind:(NSString *)key value:(NSString *)value) {
+    @try {
+        [[SensorsAnalyticsSDK sharedInstance] unbind:key value:value];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }

@@ -273,6 +273,29 @@ declare module 'sensorsdata-analytics-react-native'{
    */
    export function trackAppInstall(properties: PropertiesObjectType | null)
 
+  /**
+   * 注册事件动态公共属性
+   * @return 动态公共属性监听对象
+   */
+  export function registerDynamicSuperProperties():Object
+
+
+    /**
+     * 绑定业务 ID
+     *
+     * @param key ID
+     * @param value 值
+     */
+    export function bind(key: string, value: string);
+
+    /**
+     * 解绑业务 ID
+     *
+     * @param key ID
+     * @param value 值
+     */
+    export function unbind(key: string, value: string);
+
   /************** Android only start *****************/
   /**
    * 设置 App 切换到后台与下次事件的事件间隔

@@ -74,4 +74,10 @@ RCT_EXPORT_METHOD(saveRootViewProperties:(NSInteger)reactTag clickable:(BOOL)cli
     [[SAReactNativeManager sharedInstance] prepareView:@(reactTag) clickable:clickable paramters:paramters rootTag:@(rootTag)];
 }
 
+/// 设置 React Native 的动态公共属性
+/// @param dynamicProperties 动态公共属性
+RCT_EXPORT_METHOD(setDynamicSuperProperties:(NSDictionary *)properties) {
+    [[SAReactNativeManager sharedInstance] setDynamicSuperProperties:properties];
+}
+
 @end

@@ -36,11 +36,13 @@ import com.sensorsdata.analytics.utils.RNViewUtils;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.WeakHashMap;
 
 public class RNAgent {
     private static final WeakHashMap jsTouchDispatcherViewGroupWeakHashMap = new WeakHashMap();
     private static SparseArray<SAViewProperties> viewPropertiesArray = new SparseArray();
+    private static HashMap<String,Object> mDynamicSuperProperties;
 
     public static void handleTouchEvent(
             JSTouchDispatcher jsTouchDispatcher, MotionEvent event, EventDispatcher eventDispatcher) {
@@ -98,9 +100,9 @@ public class RNAgent {
             }
             RNViewUtils.saveScreenAndTitle(screenName, title);
             if (isAuto && (properties.optBoolean("SAIgnoreViewScreen", false)
-                   || !SensorsDataAPI.sharedInstance().isAutoTrackEnabled()
-                   || SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN))) {
-                    return;
+                    || !SensorsDataAPI.sharedInstance().isAutoTrackEnabled()
+                    || SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN))) {
+                return;
             }
             SensorsDataAPI.sharedInstance().trackViewScreen(url, RNPropertyManager.mergeProperty(properties, isAuto));
         } catch (Exception e) {
@@ -181,5 +183,13 @@ public class RNAgent {
         } catch (Exception e) {
             //ignored
         }
+    }
+
+    public static HashMap<String, Object> getDynamicSuperProperties(){
+        return mDynamicSuperProperties;
+    }
+
+    static void setDynamicSuperProperties(HashMap<String,Object> dynamicSuperProperties){
+        mDynamicSuperProperties = dynamicSuperProperties;
     }
 }
