@@ -32,7 +32,7 @@
 #import "SAReactNativeManager.h"
 #import "SAReactNativeEventProperty.h"
 
-NSString *const kSAReactNativePluginVersion = @"react_native:2.2.3";
+NSString *const kSAReactNativePluginVersion = @"react_native:2.2.4";
 
 @implementation RNSensorsAnalyticsModule
 
@@ -229,7 +229,7 @@ RCT_EXPORT_METHOD(trackViewScreen:(NSString *)url withProperties:(NSDictionary *
  */
 RCT_EXPORT_METHOD(set:(NSDictionary *)profileDict){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] set:profileDict];
+        [[SensorsAnalyticsSDK sharedInstance] set:profileDict];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -248,7 +248,7 @@ RCT_EXPORT_METHOD(set:(NSDictionary *)profileDict){
  */
 RCT_EXPORT_METHOD(profileSet:(NSDictionary *)profileDict){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] set:profileDict];
+        [[SensorsAnalyticsSDK sharedInstance] set:profileDict];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -270,7 +270,7 @@ RCT_EXPORT_METHOD(profileSet:(NSDictionary *)profileDict){
  */
 RCT_EXPORT_METHOD(setOnce:(NSDictionary *)profileDict){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] setOnce:profileDict];
+        [[SensorsAnalyticsSDK sharedInstance] setOnce:profileDict];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -292,7 +292,7 @@ RCT_EXPORT_METHOD(setOnce:(NSDictionary *)profileDict){
  */
 RCT_EXPORT_METHOD(profileSetOnce:(NSDictionary *)profileDict){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] setOnce:profileDict];
+        [[SensorsAnalyticsSDK sharedInstance] setOnce:profileDict];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -313,7 +313,7 @@ RCT_EXPORT_METHOD(profileSetOnce:(NSDictionary *)profileDict){
  */
 RCT_EXPORT_METHOD(unset:(NSString *) profile){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] unset:profile];
+        [[SensorsAnalyticsSDK sharedInstance] unset:profile];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -335,7 +335,7 @@ RCT_EXPORT_METHOD(unset:(NSString *) profile){
  */
 RCT_EXPORT_METHOD(profileUnset:(NSString *) profile){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] unset:profile];
+        [[SensorsAnalyticsSDK sharedInstance] unset:profile];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -359,7 +359,7 @@ RCT_EXPORT_METHOD(profileUnset:(NSString *) profile){
  */
 RCT_EXPORT_METHOD(increment:(NSString *)profile by:(nonnull NSNumber *)amount){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] increment:profile by:amount];
+        [[SensorsAnalyticsSDK sharedInstance] increment:profile by:amount];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -383,7 +383,7 @@ RCT_EXPORT_METHOD(increment:(NSString *)profile by:(nonnull NSNumber *)amount){
  */
 RCT_EXPORT_METHOD(profileIncrement:(NSString *)profile by:(nonnull NSNumber *)amount){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] increment:profile by:amount];
+        [[SensorsAnalyticsSDK sharedInstance] increment:profile by:amount];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -407,7 +407,7 @@ RCT_EXPORT_METHOD(profileIncrement:(NSString *)profile by:(nonnull NSNumber *)am
 RCT_EXPORT_METHOD(append:(NSString *)profile by:(NSArray *)content){
     @try {
         NSSet *setCntent = [NSSet setWithArray:content];
-        [[[SensorsAnalyticsSDK sharedInstance] people] append:profile by:setCntent];
+        [[SensorsAnalyticsSDK sharedInstance] append:profile by:setCntent];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -431,7 +431,7 @@ RCT_EXPORT_METHOD(append:(NSString *)profile by:(NSArray *)content){
 RCT_EXPORT_METHOD(profileAppend:(NSString *)profile by:(NSArray *)content){
     @try {
         NSSet *setCntent = [NSSet setWithArray:content];
-        [[[SensorsAnalyticsSDK sharedInstance] people] append:profile by:setCntent];
+        [[SensorsAnalyticsSDK sharedInstance] append:profile by:setCntent];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -451,7 +451,7 @@ RCT_EXPORT_METHOD(profileAppend:(NSString *)profile by:(NSArray *)content){
  */
 RCT_EXPORT_METHOD(deleteUser){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] deleteUser];
+        [[SensorsAnalyticsSDK sharedInstance] deleteUser];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
@@ -471,7 +471,7 @@ RCT_EXPORT_METHOD(deleteUser){
  */
 RCT_EXPORT_METHOD(profileDelete){
     @try {
-        [[[SensorsAnalyticsSDK sharedInstance] people] deleteUser];
+        [[SensorsAnalyticsSDK sharedInstance] deleteUser];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
