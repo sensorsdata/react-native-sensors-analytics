@@ -56,20 +56,16 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        NSSet *nativeIgnoreClasses = [NSSet setWithObjects:@"RCTSwitch", @"RCTSlider", @"RCTSegmentedControl", @"RNGestureHandlerButton", @"RNCSlider", @"RNCSegmentedControl", nil];
-        for (NSString *className in nativeIgnoreClasses) {
-            if (NSClassFromString(className)) {
-                [[SensorsAnalyticsSDK sharedInstance] ignoreViewType:NSClassFromString(className)];
-            }
-        }
+        [SAReactNativeManager addNativeIgnoreClasses];
         _reactNativeIgnoreClasses = [NSSet setWithObjects:@"RCTScrollView", @"RCTBaseTextInputView", nil];
     }
     return self;
 }
 
 - (SAReactNativeViewProperty *)viewPropertyWithReactTag:(NSNumber *)reactTag fromViewProperties:(NSSet <SAReactNativeViewProperty *>*)properties {
-    for (SAReactNativeViewProperty *property in properties) {
-        if (property.reactTag.integerValue == reactTag.integerValue) {
+    NSMutableSet *tempProperties = [properties mutableCopy];
+    for (SAReactNativeViewProperty *property in tempProperties) {
+        if ([property isKindOfClass:[SAReactNativeViewProperty class]] && property.reactTag.integerValue == reactTag.integerValue) {
             return property;
         }
     }
@@ -220,6 +216,76 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
         [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:properties];
 #pragma clang diagnostic pop
     });
+}
+
++ (void)configureSDKWithSettings:(NSDictionary *)settings {
+    if (![settings isKindOfClass:[NSDictionary class]]) {
+        return;
+    }
+    NSString *serverURL = settings[@"server_url"];
+    if (![serverURL isKindOfClass:[NSString class]]) {
+        return;
+    }
+
+    SAConfigOptions *options = [[SAConfigOptions alloc] initWithServerURL:serverURL launchOptions:nil];
+    NSNumber *enableLog = settings[@"show_log"];
+    if ([enableLog isKindOfClass:[NSNumber class]]) {
+        options.enableLog = [enableLog boolValue];
+    }
+    NSNumber *autoTrack = settings[@"auto_track"];
+    if ([autoTrack isKindOfClass:[NSNumber class]]) {
+        options.autoTrackEventType = [autoTrack integerValue];
+    }
+    NSNumber *flushInterval = settings[@"flush_interval"];
+    if ([flushInterval isKindOfClass:[NSNumber class]]) {
+        options.flushInterval = [flushInterval integerValue];
+    }
+    NSNumber *flushBulksize = settings[@"flush_bulksize"];
+    if ([flushBulksize isKindOfClass:[NSNumber class]]) {
+        options.flushBulkSize = [flushBulksize integerValue];
+    }
+    NSNumber *enableEncrypt = settings[@"encrypt"];
+    if ([enableEncrypt isKindOfClass:[NSNumber class]]) {
+        options.enableEncrypt = [enableEncrypt boolValue];
+    }
+    NSNumber *enableJavascriptBridge = settings[@"javascript_bridge"];
+    if ([enableJavascriptBridge isKindOfClass:[NSNumber class]]) {
+        options.enableJavaScriptBridge = [enableJavascriptBridge boolValue];
+    }
+    NSDictionary *iOSSettings = settings[@"ios"];
+    if ([iOSSettings isKindOfClass:[NSDictionary class]] && [iOSSettings[@"max_cache_size"] isKindOfClass:[NSNumber class]]) {
+        options.maxCacheSize = [iOSSettings[@"max_cache_size"] integerValue];
+    }
+    NSDictionary *visualizedSettings = settings[@"visualized"];
+    if ([visualizedSettings isKindOfClass:[NSDictionary class]]) {
+        if ([visualizedSettings[@"auto_track"] isKindOfClass:[NSNumber class]]) {
+            options.enableVisualizedAutoTrack = [visualizedSettings[@"auto_track"] boolValue];
+        }
+        if ([visualizedSettings[@"properties"] isKindOfClass:[NSNumber class]]) {
+            options.enableVisualizedProperties = [visualizedSettings[@"properties"] boolValue];
+        }
+    }
+    NSNumber *enableHeatMap = settings[@"heat_map"];
+    if ([enableHeatMap isKindOfClass:[NSNumber class]]) {
+        options.enableHeatMap = [enableHeatMap boolValue];
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [SensorsAnalyticsSDK startWithConfigOptions:options];
+        [self addNativeIgnoreClasses];
+    });
+}
+
++ (void)addNativeIgnoreClasses {
+    @try {
+        NSSet *nativeIgnoreClasses = [NSSet setWithObjects:@"RCTSwitch", @"RCTSlider", @"RCTSegmentedControl", @"RNGestureHandlerButton", @"RNCSlider", @"RNCSegmentedControl", nil];
+        for (NSString *className in nativeIgnoreClasses) {
+            if (NSClassFromString(className)) {
+                [[SensorsAnalyticsSDK sharedInstance] ignoreViewType:NSClassFromString(className)];
+            }
+        }
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
 }
 
 @end

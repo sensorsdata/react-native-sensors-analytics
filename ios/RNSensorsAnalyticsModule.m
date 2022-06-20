@@ -32,11 +32,19 @@
 #import "SAReactNativeManager.h"
 #import "SAReactNativeEventProperty.h"
 
-NSString *const kSAReactNativePluginVersion = @"react_native:2.2.4";
+NSString *const kSAReactNativePluginVersion = @"react_native:2.2.5";
 
 @implementation RNSensorsAnalyticsModule
 
 RCT_EXPORT_MODULE(RNSensorsAnalyticsModule)
+
+RCT_EXPORT_METHOD(init:(NSDictionary *)settings){
+    @try {
+        [SAReactNativeManager configureSDKWithSettings:settings];
+    } @catch (NSException *exception) {
+        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+    }
+}
 
 /**
  * 导出 track 方法给 RN 使用.

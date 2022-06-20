@@ -2,6 +2,12 @@ import { NativeModules} from 'react-native';
 
 const { RNSensorsAnalyticsModule, RNSensorsDataModule } = NativeModules;
 
+const SAAutoTrackType = {
+  START : 1,
+  END : 2,
+  CLICK : 4,
+  VIEW_SCREEN : 8
+}
 /**
  * 登录
  *
@@ -485,6 +491,12 @@ function unbind(key, value){
         RNSensorsAnalyticsModule.unbind(key, value);
 }
 
+function init(config){
+  RNSensorsAnalyticsModule &&
+    RNSensorsAnalyticsModule.init &&
+    RNSensorsAnalyticsModule.init(config);
+}
+
 /************** Android only start *****************/
 /**
  * 设置 App 切换到后台与下次事件的事件间隔
@@ -542,6 +554,9 @@ async function isNetworkRequestEnablePromise() {
   }
 }
 
+/**
+ * 开启数据采集
+ */
 function enableDataCollect(){
   RNSensorsAnalyticsModule &&
     RNSensorsAnalyticsModule.enableDataCollect &&
@@ -549,7 +564,7 @@ function enableDataCollect(){
 }
 
 /************** Android only end *****************/
-
+export {SAAutoTrackType}
 
 export default {
   login,
@@ -594,6 +609,7 @@ export default {
   enableNetworkRequest,
   isNetworkRequestEnablePromise,
   trackAppInstall,
+  init,
   enableDataCollect,
   registerDynamicSuperProperties,
   bind,

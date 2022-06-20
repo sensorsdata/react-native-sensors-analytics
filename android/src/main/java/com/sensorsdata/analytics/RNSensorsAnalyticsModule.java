@@ -29,9 +29,12 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.sensorsdata.analytics.android.sdk.SAConfigOptions;
+import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.property.RNPropertyManager;
 import com.sensorsdata.analytics.utils.RNUtils;
+import com.sensorsdata.analytics.utils.VersionUtils;
 
 import org.json.JSONObject;
 
@@ -464,7 +467,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getDistinctIdPromise(Promise promise) {
-        if(promise == null){
+        if (promise == null) {
             return;
         }
         try {
@@ -493,7 +496,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getAnonymousIdPromise(Promise promise) {
-        if(promise == null){
+        if (promise == null) {
             return;
         }
         try {
@@ -630,7 +633,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
 
     /**
      * 导出 trackTimerPause 方法给 RN 使用.
-     *
      * <p>暂停事件计时器，计时单位为秒。
      *
      * @param eventName 事件的名称
@@ -646,12 +648,11 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-    * 导出 trackTimerResume 方法给 RN 使用.
-    *
-    * <p>恢复事件计时器，计时单位为秒。
-    *
-    * @param eventName 事件的名称
-    */
+     * 导出 trackTimerResume 方法给 RN 使用.
+     * <p>恢复事件计时器，计时单位为秒。
+     *
+     * @param eventName 事件的名称
+     */
     @ReactMethod
     public void trackTimerResume(String eventName) {
         try {
@@ -663,13 +664,13 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-    * 保存用户推送 ID 到用户表
-    *
-    * @param pushTypeKey 属性名称（例如 jgId）
-    * @param pushId 推送 ID
-    *     <p>使用 profilePushId("jgId", pushId) 例如极光 pushId
-    *     获取方式：JPushModule.getRegistrationID(callback)
-    */
+     * 保存用户推送 ID 到用户表
+     *
+     * @param pushTypeKey 属性名称（例如 jgId）
+     * @param pushId 推送 ID
+     * <p>使用 profilePushId("jgId", pushId) 例如极光 pushId
+     * 获取方式：JPushModule.getRegistrationID(callback)
+     */
     @ReactMethod
     public void profilePushId(String pushTypeKey, String pushId) {
         try {
@@ -681,10 +682,10 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-    * 删除用户设置的 pushId
-    *
-    * @param pushTypeKey 属性名称（例如 jgId）
-    */
+     * 删除用户设置的 pushId
+     *
+     * @param pushTypeKey 属性名称（例如 jgId）
+     */
     @ReactMethod
     public void profileUnsetPushId(String pushTypeKey) {
         try {
@@ -709,10 +710,10 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-    * 设置当前 serverUrl
-    *
-    * @param serverUrl 当前 serverUrl
-    */
+     * 设置当前 serverUrl
+     *
+     * @param serverUrl 当前 serverUrl
+     */
     @ReactMethod
     public void setServerUrl(String serverUrl) {
         try {
@@ -724,12 +725,12 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-    * 设置 item
-    *
-    * @param itemType item 类型
-    * @param itemId item ID
-    * @param properties item 相关属性
-    */
+     * 设置 item
+     *
+     * @param itemType item 类型
+     * @param itemId item ID
+     * @param properties item 相关属性
+     */
     @ReactMethod
     public void itemSet(final String itemType, final String itemId, ReadableMap properties) {
         try {
@@ -741,11 +742,11 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-    * 删除 item
-    *
-    * @param itemType item 类型
-    * @param itemId item ID
-    */
+     * 删除 item
+     *
+     * @param itemType item 类型
+     * @param itemId item ID
+     */
     @ReactMethod
     public void itemDelete(final String itemType, final String itemId) {
         try {
@@ -761,7 +762,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getSuperPropertiesPromise(Promise promise) {
-        if(promise == null){
+        if (promise == null) {
             return;
         }
         try {
@@ -782,7 +783,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getPresetPropertiesPromise(Promise promise) {
-        if(promise == null){
+        if (promise == null) {
             return;
         }
         try {
@@ -799,10 +800,10 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-    * 获取当前用户的 loginId 若调用前未调用 {@link #login(String)} 设置用户的 loginId，会返回 null
-    *
-    * @return 当前用户的 loginId
-    */
+     * 获取当前用户的 loginId 若调用前未调用 {@link #login(String)} 设置用户的 loginId，会返回 null
+     *
+     * @return 当前用户的 loginId
+     */
     @ReactMethod
     public void getLoginIdPromise(Promise promise) {
         if (promise == null) {
@@ -818,13 +819,12 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     /**
-    * 设置 App 切换到后台与下次事件的事件间隔
-    * 默认值为 30*1000 毫秒
-    * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
-    *
-    * @platform Android
-    * @param sessionIntervalTime int
-    */
+     * 设置 App 切换到后台与下次事件的事件间隔
+     * 默认值为 30*1000 毫秒
+     * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
+     *
+     * @param sessionIntervalTime int
+     */
     @ReactMethod
     public void setSessionIntervalTime(int sessionIntervalTime) {
         SensorsDataAPI.sharedInstance().setSessionIntervalTime(sessionIntervalTime);
@@ -835,7 +835,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * 默认值为 30*1000 毫秒
      * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
      *
-     * @platform Android
      * @return 返回设置的 SessionIntervalTime ，默认是 30s
      */
     @ReactMethod
@@ -858,7 +857,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * @return true: 开启 AutoTrack; false：没有开启 AutoTrack
      */
     @ReactMethod
-    public void isAutoTrackEnabledPromise(Promise promise){
+    public void isAutoTrackEnabledPromise(Promise promise) {
         if (promise == null) {
             return;
         }
@@ -877,7 +876,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * @return true 代表开启了可视化全埋点， false 代表关闭了可视化全埋点
      */
     @ReactMethod
-    public void isVisualizedAutoTrackEnabledPromise(Promise promise){
+    public void isVisualizedAutoTrackEnabledPromise(Promise promise) {
         if (promise == null) {
             return;
         }
@@ -896,7 +895,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * @return true 代表开启了点击图，false 代表关闭了点击图
      */
     @ReactMethod
-    public void isHeatMapEnabledPromise(Promise promise){
+    public void isHeatMapEnabledPromise(Promise promise) {
         if (promise == null) {
             return;
         }
@@ -921,7 +920,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * 例：若需要开启 4G 5G 发送数据，则需要设置 4 + 16 = 20
      */
     @ReactMethod
-    public void setFlushNetworkPolicy(int networkType){
+    public void setFlushNetworkPolicy(int networkType) {
         try {
             SensorsDataAPI.sharedInstance().setFlushNetworkPolicy(networkType);
         } catch (Exception e) {
@@ -933,11 +932,10 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     /**
      * 设置是否允许请求网络，默认是 true
      *
-     * @platform Android
      * @param isRequest boolean
      */
     @ReactMethod
-    public void enableNetworkRequest(boolean isRequest){
+    public void enableNetworkRequest(boolean isRequest) {
         try {
             SensorsDataAPI.sharedInstance().enableNetworkRequest(isRequest);
         } catch (Exception e) {
@@ -949,11 +947,10 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     /**
      * 是否允许请求网络，默认是 true
      *
-     * @platform Android
      * @return 是否允许请求网络
      */
     @ReactMethod
-    public void isNetworkRequestEnablePromise(Promise promise){
+    public void isNetworkRequestEnablePromise(Promise promise) {
         if (promise == null) {
             return;
         }
@@ -987,12 +984,16 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * 开启数据采集
      */
     @ReactMethod
+    @Deprecated
     public void enableDataCollect() {
-        try {
-            SensorsDataAPI.sharedInstance().enableDataCollect();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(LOGTAG, e.toString() + "");
+        if (!VersionUtils.checkSAVersion("6.4.0")) {
+            try {
+                SensorsDataAPI.sharedInstance().enableDataCollect();
+                SALog.i(LOGTAG, "enableDataCollect() 方法已在 「6.4.0」版本删除!可升级致该版本后使用延迟初始化方案");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(LOGTAG, e.toString() + "");
+            }
         }
     }
 
@@ -1025,6 +1026,50 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
+        }
+    }
+
+    @ReactMethod
+    public void init(ReadableMap config) {
+        if (getCurrentActivity() == null) {
+            return;
+        }
+        try {
+            JSONObject configJson = RNUtils.convertToJSONObject(config);
+            SAConfigOptions saConfigOptions;
+            if (configJson == null) {
+                saConfigOptions = new SAConfigOptions("");
+            } else {
+                saConfigOptions = new SAConfigOptions(configJson.optString("server_url"));
+                saConfigOptions.enableLog(configJson.optBoolean("show_log"))
+                        .enableEncrypt(configJson.optBoolean("encrypt"))
+                        .setAutoTrackEventType(configJson.optInt("auto_track", 0))
+                        .setFlushBulkSize(configJson.optInt("flush_bulksize", 100))
+                        .setFlushInterval(configJson.optInt("flush_interval", 15000));
+                JSONObject androidConfig = configJson.optJSONObject("android");
+                boolean javascriptBridge = configJson.optBoolean("javascript_bridge", false);
+                boolean isSupportJellybean = false;
+                if (androidConfig != null && androidConfig.length() > 0) {
+                    saConfigOptions.setMaxCacheSize(androidConfig.optLong("max_cache_size", 32 * 1024 * 1024));
+                    if (androidConfig.optBoolean("sub_process_flush", false)) {
+                        saConfigOptions.enableSubProcessFlushData();
+                    }
+                    isSupportJellybean = androidConfig.optBoolean("jellybean", false);
+                }
+                if (javascriptBridge) {
+                    saConfigOptions.enableJavaScriptBridge(isSupportJellybean);
+                }
+                JSONObject visualizedConfig = configJson.optJSONObject("visualized");
+                if (visualizedConfig != null && visualizedConfig.length() > 0) {
+                    saConfigOptions.enableVisualizedAutoTrack(visualizedConfig.optBoolean("auto_track", false));
+                    saConfigOptions.enableVisualizedProperties(visualizedConfig.optBoolean("properties", false));
+                }
+                saConfigOptions.enableHeatMap(configJson.optBoolean("heat_map", false));
+            }
+            SensorsDataAPI.startWithConfigOptions(getCurrentActivity(), saConfigOptions);
+            SALog.i(LOGTAG, "init success");
+        } catch (Exception e) {
+            SALog.i(LOGTAG, "SDK init failed:" + e.getMessage());
         }
     }
 }

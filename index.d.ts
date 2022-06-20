@@ -2,6 +2,36 @@ declare type PropertiesType = string | number | boolean | Array<string>;
 
 declare type PropertiesObjectType = { [key: string]: PropertiesType }
 
+declare type Config = {
+  server_url:string,//数据接收地址，默认 ""
+  show_log:true,//是否显示日志,默认 false
+  ios:{//iOS 端特有配置
+    max_cache_size:number //最大缓存条数，默认 10000
+  },
+  auto_track:SAAutoTrackType,// 全埋点开关，默认不开启
+  javascript_bridge:true,//H5 打通开关，默认 false
+  flush_interval:number,//数据上报间隔，默认 15*1000 豪秒
+  flush_bulksize:number,//数据缓存上报最大条数，默认 100 条
+  encrypt:boolean,//默认 false
+  android:{//Android 端特有配置
+    max_cache_size:long,//最大缓存数，默认 32*1024*1024
+    jellybean:boolean, //支持 Android 16 以下版本打通，默认 false
+    sub_process_flush:boolean //支持子进程上报，默认 false
+  },
+  visualized:{
+    auto_track:boolean,// 可视化开关，默认 false
+    properties:boolean // 可视化自定义属性，默认 false
+  },
+  heat_map:boolean     // 点击图开关，默认 false
+}
+
+declare enum SAAutoTrackType {
+  START = 1,
+  END = 2,
+  CLICK = 4,
+  VIEW_SCREEN = 8
+}
+
 declare module 'sensorsdata-analytics-react-native'{
 
   /**
@@ -277,7 +307,7 @@ declare module 'sensorsdata-analytics-react-native'{
    * 注册事件动态公共属性
    * @return 动态公共属性监听对象
    */
-  export function registerDynamicSuperProperties():Object
+  export function registerDynamicSuperProperties():object
 
 
     /**
@@ -295,6 +325,13 @@ declare module 'sensorsdata-analytics-react-native'{
      * @param value 值
      */
     export function unbind(key: string, value: string);
+
+    /**
+     * 初始化 SDK
+     *
+     * @param config 初始化配置，支持参数可参考{link https://manual.sensorsdata.cn/sa/latest/react-native-1574001.html#id-.ReactNativev1.13-%E5%88%9D%E5%A7%8B%E5%8C%96SDK}
+     */
+    export function init(config: Config);
 
   /************** Android only start *****************/
   /**

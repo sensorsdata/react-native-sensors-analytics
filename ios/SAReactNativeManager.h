@@ -87,6 +87,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param properties 动态公共属性
 - (void)setDynamicSuperProperties:(NSDictionary *)properties;
 
+
+/// init SDK with settings
+/// @param settings SDK init settings
++ (void)configureSDKWithSettings:(NSDictionary *)settings;
+
 @end
 
 NS_ASSUME_NONNULL_END
