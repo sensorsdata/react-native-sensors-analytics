@@ -22,8 +22,8 @@
 
 @implementation SAReactNativeDynamicPropertyPlugin
 
-- (SAPropertyPluginEventTypes)eventTypeFilter {
-    return SAPropertyPluginEventTypeTrack | SAPropertyPluginEventTypeSignup | SAPropertyPluginEventTypeBind | SAPropertyPluginEventTypeUnbind;
+- (BOOL)isMatchedWithFilter:(id<SAPropertyPluginEventFilter>)filter {
+    return filter.type & SAEventTypeDefault;
 }
 
 - (SAPropertyPluginPriority)priority {

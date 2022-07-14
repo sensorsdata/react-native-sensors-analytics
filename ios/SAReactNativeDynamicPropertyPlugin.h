@@ -27,13 +27,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SensorsAnalyticsSDK ()
-
-- (void)registerPropertyPlugin:(id<SAPropertyPluginProtocol>)plugin;
-
-@end
-
-@interface SAReactNativeDynamicPropertyPlugin : NSObject <SAPropertyPluginProtocol>
+@interface SAReactNativeDynamicPropertyPlugin : SAPropertyPlugin
 
 @property (atomic, copy) NSDictionary *properties;
 
