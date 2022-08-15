@@ -34,7 +34,6 @@ import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.property.RNPropertyManager;
 import com.sensorsdata.analytics.utils.RNUtils;
-import com.sensorsdata.analytics.utils.VersionUtils;
 
 import org.json.JSONObject;
 
@@ -986,15 +985,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     @Deprecated
     public void enableDataCollect() {
-        if (!VersionUtils.checkSAVersion("6.4.0")) {
-            try {
-                SensorsDataAPI.sharedInstance().enableDataCollect();
-                SALog.i(LOGTAG, "enableDataCollect() 方法已在 「6.4.0」版本删除!可升级致该版本后使用延迟初始化方案");
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(LOGTAG, e.toString() + "");
-            }
-        }
+        SALog.i(LOGTAG, "enableDataCollect() 方法已在 「6.4.0」版本删除!可升级致该版本后使用延迟初始化方案");
     }
 
     /**

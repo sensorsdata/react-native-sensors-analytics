@@ -465,6 +465,7 @@ function trackAppInstall(properties) {
 
 function registerDynamicSuperProperties() {
   var dynamicProxy = {};
+  RNSensorsDataModule && RNSensorsDataModule.registerDynamicPlugin && RNSensorsDataModule.registerDynamicPlugin();
   try {
     Object.defineProperty(dynamicProxy,'properties', {
       set: function (value) {
@@ -495,6 +496,7 @@ function init(config){
   RNSensorsAnalyticsModule &&
     RNSensorsAnalyticsModule.init &&
     RNSensorsAnalyticsModule.init(config);
+    RNSensorsDataModule && RNSensorsDataModule.registerDynamicPlugin && RNSensorsDataModule.registerDynamicPlugin();
 }
 
 /************** Android only start *****************/

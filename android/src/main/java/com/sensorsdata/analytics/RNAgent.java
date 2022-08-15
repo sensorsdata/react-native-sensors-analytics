@@ -27,22 +27,21 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
-import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 import com.sensorsdata.analytics.data.SAViewProperties;
 import com.sensorsdata.analytics.property.RNPropertyManager;
 import com.sensorsdata.analytics.utils.RNTouchTargetHelper;
+import com.sensorsdata.analytics.utils.RNUtils;
 import com.sensorsdata.analytics.utils.RNViewUtils;
 
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.WeakHashMap;
 
 public class RNAgent {
     private static final WeakHashMap jsTouchDispatcherViewGroupWeakHashMap = new WeakHashMap();
     private static SparseArray<SAViewProperties> viewPropertiesArray = new SparseArray();
-    private static HashMap<String,Object> mDynamicSuperProperties;
+    private static JSONObject mDynamicSuperProperties;
 
     public static void handleTouchEvent(
             JSTouchDispatcher jsTouchDispatcher, MotionEvent event, EventDispatcher eventDispatcher) {
@@ -135,7 +134,7 @@ public class RNAgent {
                         return;
                     }
                     viewProperties.properties.remove("ignore");
-                    SensorsDataUtils.mergeJSONObject(viewProperties.properties, properties);
+                    RNUtils.mergeJSONObject(viewProperties.properties, properties);
                 }
                 SensorsDataAPI.sharedInstance().trackViewAppClick(clickView, RNPropertyManager.mergeProperty(properties, true));
             }
@@ -185,11 +184,11 @@ public class RNAgent {
         }
     }
 
-    public static HashMap<String, Object> getDynamicSuperProperties(){
+    public static JSONObject getDynamicSuperProperties(){
         return mDynamicSuperProperties;
     }
 
-    static void setDynamicSuperProperties(HashMap<String,Object> dynamicSuperProperties){
+    static void setDynamicSuperProperties(JSONObject dynamicSuperProperties){
         mDynamicSuperProperties = dynamicSuperProperties;
     }
 }

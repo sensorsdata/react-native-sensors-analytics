@@ -17,7 +17,6 @@
 
 package com.sensorsdata.analytics.utils;
 
-import android.view.View;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -25,7 +24,6 @@ import com.facebook.react.bridge.WritableMap;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import org.json.JSONObject;
 
@@ -90,5 +88,23 @@ public class RNUtils {
             SALog.printStackTrace(e);
         }
         return map;
+    }
+
+    /**
+     * merge source JSONObject to dest JSONObject
+     * @param source
+     * @param dest
+     */
+    public static void mergeJSONObject(final JSONObject source, JSONObject dest) {
+        try {
+            Iterator<String> sourceIterator = source.keys();
+            while (sourceIterator.hasNext()) {
+                String key = sourceIterator.next();
+                Object value = source.get(key);
+                dest.put(key, value);
+            }
+        } catch (Exception ex) {
+            SALog.printStackTrace(ex);
+        }
     }
 }

@@ -24,7 +24,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.plugin.property.SensorsDataPropertyPluginManager;
+import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
+import com.sensorsdata.analytics.android.sdk.SensorsDataAPIEmptyImplementation;
 import com.sensorsdata.analytics.property.LibMethodInterceptor;
 import com.sensorsdata.analytics.property.PluginVersionInterceptor;
 import com.sensorsdata.analytics.property.RNDynamicPropertyPlugin;
@@ -110,14 +111,19 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setDynamicSuperProperties(ReadableMap dynamicSuperProperties) {
-        if (!VersionUtils.checkSAVersion("6.2.1")) {
+        RNAgent.setDynamicSuperProperties(RNUtils.convertToJSONObject(dynamicSuperProperties));
+    }
+
+    @ReactMethod
+    public void registerDynamicPlugin() {
+        if (!VersionUtils.checkSAVersion("6.4.3")) {
+            SALog.i(TAG, "请升级 Android SDK 至「6.4.3」及以上版本");
             return;
         }
-        if (mDynamicPlugin == null) {
+        if (mDynamicPlugin == null && !(SensorsDataAPI.sharedInstance() instanceof SensorsDataAPIEmptyImplementation)) {
             mDynamicPlugin = new RNDynamicPropertyPlugin();
-            SensorsDataPropertyPluginManager.getInstance().registerPropertyPlugin(mDynamicPlugin);
+            SensorsDataAPI.sharedInstance().registerPropertyPlugin(mDynamicPlugin);
         }
-        RNAgent.setDynamicSuperProperties(RNUtils.convertToHashMap(dynamicSuperProperties));
     }
 
     class SensorsDataLifecycleListener implements LifecycleEventListener {

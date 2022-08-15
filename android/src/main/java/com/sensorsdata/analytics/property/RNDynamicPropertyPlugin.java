@@ -1,36 +1,34 @@
 package com.sensorsdata.analytics.property;
 
-import com.sensorsdata.analytics.R;
 import com.sensorsdata.analytics.RNAgent;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SAPropertyPlugin;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SAPropertyPluginPriority;
+import com.sensorsdata.analytics.android.sdk.plugin.property.beans.SAPropertiesFetcher;
+import com.sensorsdata.analytics.android.sdk.plugin.property.beans.SAPropertyFilter;
+import com.sensorsdata.analytics.utils.RNUtils;
 
-import java.util.Map;
-import java.util.Set;
+import org.json.JSONObject;
 
 public class RNDynamicPropertyPlugin extends SAPropertyPlugin {
-    @Override
-    public void appendProperties(Map<String, Object> properties) {
 
+    @Override
+    public boolean isMatchedWithFilter(SAPropertyFilter filter) {
+        return filter.getType() == EventType.TRACK
+                || filter.getType() == EventType.TRACK_ID_BIND
+                || filter.getType() == EventType.TRACK_ID_UNBIND
+                || filter.getType() == EventType.TRACK_SIGNUP;
     }
 
     @Override
-    public void appendDynamicProperties(Map<String, Object> dynamicProperties) {
-        if (dynamicProperties != null) {
-            Map<String, Object> properties = RNAgent.getDynamicSuperProperties();
-            if (properties != null && !properties.isEmpty()) {
-                dynamicProperties.putAll(properties);
+    public void properties(SAPropertiesFetcher fetcher) {
+        JSONObject properties = fetcher.getProperties();
+        if (properties != null) {
+            JSONObject dynamicProperties = RNAgent.getDynamicSuperProperties();
+            if (dynamicProperties != null && dynamicProperties.length() > 0) {
+                RNUtils.mergeJSONObject(dynamicProperties, properties);
             }
         }
-    }
-
-    @Override
-    public void eventTypeFilter(Set<EventType> eventTypeFilter) {
-        eventTypeFilter.add(EventType.TRACK);
-        eventTypeFilter.add(EventType.TRACK_ID_BIND);
-        eventTypeFilter.add(EventType.TRACK_SIGNUP);
-        eventTypeFilter.add(EventType.TRACK_ID_UNBIND);
     }
 
     @Override
