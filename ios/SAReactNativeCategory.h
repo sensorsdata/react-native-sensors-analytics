@@ -30,14 +30,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Property
-@interface SAReactNativeViewProperty : NSObject
+@interface SAReactNativeViewProperty : NSObject <NSCopying>
 
 /// View 唯一标识符
 @property (nonatomic, strong) NSNumber *reactTag;
 /// View 可点击状态
 @property (nonatomic, assign) BOOL clickable;
 /// View 自定义属性
-@property (nonatomic, strong) NSDictionary *properties;
+@property (nonatomic, copy) NSDictionary *properties;
 
 @end
 

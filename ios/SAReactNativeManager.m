@@ -63,9 +63,12 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
 }
 
 - (SAReactNativeViewProperty *)viewPropertyWithReactTag:(NSNumber *)reactTag fromViewProperties:(NSSet <SAReactNativeViewProperty *>*)properties {
-    NSMutableSet *tempProperties = [properties mutableCopy];
+    if (!properties || ![reactTag isKindOfClass:[NSNumber class]]) {
+        return nil;
+    }
+    NSSet *tempProperties = [[NSSet alloc] initWithSet:properties copyItems:YES];
     for (SAReactNativeViewProperty *property in tempProperties) {
-        if ([property isKindOfClass:[SAReactNativeViewProperty class]] && property.reactTag.integerValue == reactTag.integerValue) {
+        if ([property isKindOfClass:[SAReactNativeViewProperty class]] && [property.reactTag isKindOfClass:[NSNumber class]] && property.reactTag.integerValue == reactTag.integerValue) {
             return property;
         }
     }

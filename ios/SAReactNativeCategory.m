@@ -32,6 +32,14 @@ static void *const kSensorsAnalyticsRNViewPropertiesKey = (void *)&kSensorsAnaly
 
 @implementation SAReactNativeViewProperty
 
+- (nonnull id)copyWithZone:(nullable NSZone *)zone {
+    SAReactNativeViewProperty *property = [[[self class] allocWithZone:zone] init];
+    property.reactTag = self.reactTag;
+    property.clickable = self.clickable;
+    property.properties = self.properties;
+    return property;
+}
+
 - (NSString *)description {
     return [NSString stringWithFormat:@"%@; reactTag: %@; clickable: %@; properties: %@", [super description], self.reactTag, (self.clickable ? @"YES" : @"NO"), self.properties];
 }
