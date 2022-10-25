@@ -10,6 +10,7 @@
 		452E43642758986E0074530B /* SAReactNativeSwizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E43612758986E0074530B /* SAReactNativeSwizzler.m */; };
 		4532EFF7275E319600D57554 /* SAReactNativeRootViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4532EFF6275E319600D57554 /* SAReactNativeRootViewManager.m */; };
 		4535DFF727B24DB700456830 /* SAReactNativeDynamicPropertyPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4535DFF627B24DB700456830 /* SAReactNativeDynamicPropertyPlugin.m */; };
+		4D618ED828F27706002F3CCA /* SAReactNativeGlobalPropertyPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D618ED728F27706002F3CCA /* SAReactNativeGlobalPropertyPlugin.m */; };
 		A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */; };
 		FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC39004B244715AE00F486A7 /* SAReactNativeManager.m */; };
 		FC6EF7A9259DA6A40099EEB5 /* SAReactNativeEventProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = FC6EF7A8259DA6A40099EEB5 /* SAReactNativeEventProperty.m */; };
@@ -36,6 +37,8 @@
 		4532EFF6275E319600D57554 /* SAReactNativeRootViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeRootViewManager.m; sourceTree = "<group>"; };
 		4535DFF527B24DB700456830 /* SAReactNativeDynamicPropertyPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAReactNativeDynamicPropertyPlugin.h; sourceTree = "<group>"; };
 		4535DFF627B24DB700456830 /* SAReactNativeDynamicPropertyPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeDynamicPropertyPlugin.m; sourceTree = "<group>"; };
+		4D618ED628F27706002F3CCA /* SAReactNativeGlobalPropertyPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAReactNativeGlobalPropertyPlugin.h; sourceTree = "<group>"; };
+		4D618ED728F27706002F3CCA /* SAReactNativeGlobalPropertyPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeGlobalPropertyPlugin.m; sourceTree = "<group>"; };
 		A18E9FA621A6AB4300A66E41 /* libRNSensorsAnalyticsModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNSensorsAnalyticsModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSensorsAnalyticsModule.m; sourceTree = "<group>"; };
 		A18E9FB321A6AEDD00A66E41 /* RNSensorsAnalyticsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSensorsAnalyticsModule.h; sourceTree = "<group>"; };
@@ -73,6 +76,8 @@
 				A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */,
 				FC9EE66F243731C000C45D16 /* RNSensorsDataModule.h */,
 				FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */,
+				4D618ED628F27706002F3CCA /* SAReactNativeGlobalPropertyPlugin.h */,
+				4D618ED728F27706002F3CCA /* SAReactNativeGlobalPropertyPlugin.m */,
 				FC39004A244715AE00F486A7 /* SAReactNativeManager.h */,
 				FC39004B244715AE00F486A7 /* SAReactNativeManager.m */,
 				FC6EF7A7259DA6A40099EEB5 /* SAReactNativeEventProperty.h */,
@@ -152,6 +157,7 @@
 				4535DFF727B24DB700456830 /* SAReactNativeDynamicPropertyPlugin.m in Sources */,
 				FC6EF7A9259DA6A40099EEB5 /* SAReactNativeEventProperty.m in Sources */,
 				FCD3CF2B25466B7800758260 /* SAReactNativeCategory.m in Sources */,
+				4D618ED828F27706002F3CCA /* SAReactNativeGlobalPropertyPlugin.m in Sources */,
 				452E43642758986E0074530B /* SAReactNativeSwizzler.m in Sources */,
 				FC9EE671243731C000C45D16 /* RNSensorsDataModule.m in Sources */,
 				4532EFF7275E319600D57554 /* SAReactNativeRootViewManager.m in Sources */,

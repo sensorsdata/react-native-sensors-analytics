@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
+import com.sensorsdata.analytics.android.sdk.SensorsDataAPIEmptyImplementation;
 
 import java.lang.reflect.Field;
 
@@ -30,7 +31,12 @@ public class VersionUtils {
     public static boolean checkSAVersion(final String requiredVersion) {
         try {
             SensorsDataAPI sensorsDataAPI = SensorsDataAPI.sharedInstance();
-            Field field = sensorsDataAPI.getClass().getDeclaredField("VERSION");
+            Field field;
+            if (sensorsDataAPI instanceof SensorsDataAPIEmptyImplementation) {
+                field = sensorsDataAPI.getClass().getSuperclass().getDeclaredField("VERSION");
+            } else {
+                field = sensorsDataAPI.getClass().getDeclaredField("VERSION");
+            }
             field.setAccessible(true);
             String version = (String) field.get(sensorsDataAPI);
             String compareVersion = version;

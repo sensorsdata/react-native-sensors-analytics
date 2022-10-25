@@ -33,7 +33,9 @@ import com.sensorsdata.analytics.android.sdk.SAConfigOptions;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.property.RNPropertyManager;
+import com.sensorsdata.analytics.property.RNGlobalPropertyPlugin;
 import com.sensorsdata.analytics.utils.RNUtils;
+import com.sensorsdata.analytics.utils.VersionUtils;
 
 import org.json.JSONObject;
 
@@ -1037,6 +1039,10 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
                         .setAutoTrackEventType(configJson.optInt("auto_track", 0))
                         .setFlushBulkSize(configJson.optInt("flush_bulksize", 100))
                         .setFlushInterval(configJson.optInt("flush_interval", 15000));
+                if (VersionUtils.checkSAVersion("6.4.3")) {
+                    final JSONObject globalProperties = configJson.optJSONObject("global_properties");
+                    saConfigOptions.registerPropertyPlugin(new RNGlobalPropertyPlugin(globalProperties));
+                }
                 JSONObject androidConfig = configJson.optJSONObject("android");
                 boolean javascriptBridge = configJson.optBoolean("javascript_bridge", false);
                 boolean isSupportJellybean = false;
@@ -1050,6 +1056,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
                 if (javascriptBridge) {
                     saConfigOptions.enableJavaScriptBridge(isSupportJellybean);
                 }
+
                 JSONObject visualizedConfig = configJson.optJSONObject("visualized");
                 if (visualizedConfig != null && visualizedConfig.length() > 0) {
                     saConfigOptions.enableVisualizedAutoTrack(visualizedConfig.optBoolean("auto_track", false));

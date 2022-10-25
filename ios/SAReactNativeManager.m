@@ -28,6 +28,7 @@
 #import "SAReactNativeRootViewManager.h"
 #import <React/RCTUIManager.h>
 #import "SAReactNativeDynamicPropertyPlugin.h"
+#import "SAReactNativeGlobalPropertyPlugin.h"
 
 #pragma mark - Constants
 NSString *const kSAEventScreenNameProperty = @"$screen_name";
@@ -272,6 +273,14 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
     if ([enableHeatMap isKindOfClass:[NSNumber class]]) {
         options.enableHeatMap = [enableHeatMap boolValue];
     }
+
+    // 注册全局属性插件
+    NSDictionary *properties = settings[@"global_properties"];
+    if ([properties isKindOfClass:NSDictionary.class]) {
+        SAReactNativeGlobalPropertyPlugin *propertyPlugin = [[SAReactNativeGlobalPropertyPlugin alloc] initWithProperties:properties];
+        [options registerPropertyPlugin:propertyPlugin];
+    }
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [SensorsAnalyticsSDK startWithConfigOptions:options];
         [self addNativeIgnoreClasses];

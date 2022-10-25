@@ -184,11 +184,11 @@ public class RNAgent {
         }
     }
 
-    public static JSONObject getDynamicSuperProperties(){
+    public static JSONObject getDynamicSuperProperties() {
         return mDynamicSuperProperties;
     }
 
-    static void setDynamicSuperProperties(JSONObject dynamicSuperProperties){
+    static void setDynamicSuperProperties(JSONObject dynamicSuperProperties) {
         mDynamicSuperProperties = dynamicSuperProperties;
     }
 }
