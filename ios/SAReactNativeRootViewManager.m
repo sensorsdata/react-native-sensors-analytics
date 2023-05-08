@@ -85,7 +85,11 @@
 }
 
 - (NSSet<SAReactNativeViewProperty *> *)viewPropertiesWithRootTag:(NSNumber *)rootTag {
-    return [self.viewProperties[rootTag] copy];
+    NSSet *viewProperties = self.viewProperties[rootTag];
+    if (!viewProperties) {
+        return nil;
+    }
+    return [[NSSet alloc] initWithSet:viewProperties copyItems:YES];
 }
 
 #pragma mark - utils

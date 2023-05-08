@@ -41,6 +41,9 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
 @property (nonatomic, strong) NSSet *reactNativeIgnoreClasses;
 @property (nonatomic, weak) SAReactNativeDynamicPropertyPlugin *dynamicPropertyPlugin;
 
+/// temp view properties to avoid memory release
+@property (nonatomic, copy) NSSet *viewProperties;
+
 @end
 
 @implementation SAReactNativeManager
@@ -152,10 +155,10 @@ NSString *const kSAEventElementContentProperty = @"$element_content";
         // 通过 RCTRootView 获取 viewProperty
         SAReactNativeRootViewManager *rootViewManager = [SAReactNativeRootViewManager sharedInstance];
         RCTRootView *rootView = [rootViewManager currentRootView];
-        NSSet *viewProperties = [rootViewManager viewPropertiesWithRootTag:rootView.reactTag];
+        self.viewProperties = [rootViewManager viewPropertiesWithRootTag:rootView.reactTag];
         NSDictionary *screenProperties = rootView.sa_reactnative_screenProperties;
 
-        SAReactNativeViewProperty *viewProperty = [self viewPropertyWithReactTag:reactTag fromViewProperties:viewProperties];
+        SAReactNativeViewProperty *viewProperty = [self viewPropertyWithReactTag:reactTag fromViewProperties:self.viewProperties];
         id ignoreParam = viewProperty.properties[@"ignore"];
         if ([ignoreParam respondsToSelector:@selector(boolValue)] && [ignoreParam boolValue]) {
             return;
