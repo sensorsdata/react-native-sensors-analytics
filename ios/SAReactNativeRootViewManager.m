@@ -21,10 +21,19 @@
 #import "SAReactNativeRootViewManager.h"
 #import <React/RCTUIManager.h>
 
+void sensors_reactnative_dispatch_safe_sync(dispatch_queue_t queue,DISPATCH_NOESCAPE dispatch_block_t block) {
+    if ((dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL)) == dispatch_queue_get_label(queue)) {
+        block();
+    } else {
+        dispatch_sync(queue, block);
+    }
+}
+
 @interface SAReactNativeRootViewManager ()
 
 @property (nonatomic, strong) NSPointerArray *rootViews;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSMutableSet *> *viewProperties;
+@property (nonatomic, strong) dispatch_queue_t serialQueue;
 
 @end
 
@@ -44,6 +53,7 @@
     if (self) {
         _rootViews = [NSPointerArray weakObjectsPointerArray];
         _viewProperties = [NSMutableDictionary dictionary];
+        _serialQueue = dispatch_queue_create("cn.SensorsData.SAReactNativeRootViewManagerQueue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -76,20 +86,25 @@
         return;
     }
 
-    NSMutableSet *viewProperties = self.viewProperties[rootTag];
-    if (!viewProperties) {
-        viewProperties = [NSMutableSet set];
-        self.viewProperties[rootTag] = viewProperties;
-    }
-    [viewProperties addObject:property];
+    sensors_reactnative_dispatch_safe_sync(self.serialQueue, ^{
+        NSMutableSet *viewProperties = self.viewProperties[rootTag];
+        if (!viewProperties) {
+            viewProperties = [NSMutableSet set];
+            self.viewProperties[rootTag] = viewProperties;
+        }
+        [viewProperties addObject:property];
+    });
 }
 
 - (NSSet<SAReactNativeViewProperty *> *)viewPropertiesWithRootTag:(NSNumber *)rootTag {
-    NSSet *viewProperties = self.viewProperties[rootTag];
-    if (!viewProperties) {
-        return nil;
-    }
-    return [[NSSet alloc] initWithSet:viewProperties copyItems:YES];
+    __block NSSet *viewProperties = nil;
+    sensors_reactnative_dispatch_safe_sync(self.serialQueue, ^{
+        NSSet *tempProperties = self.viewProperties[rootTag];
+        if (tempProperties) {
+            viewProperties = [[NSSet alloc] initWithSet:tempProperties copyItems:YES];
+        }
+    });
+    return viewProperties;
 }
 
 #pragma mark - utils
@@ -109,9 +124,11 @@
         [rootTags addObject:rootView.reactTag];
     }
 
-    NSMutableSet *removeTags = [NSMutableSet setWithArray:[self.viewProperties allKeys]];
-    [removeTags minusSet:rootTags];
-    [self.viewProperties removeObjectsForKeys:removeTags.allObjects];
+    sensors_reactnative_dispatch_safe_sync(self.serialQueue, ^{
+        NSMutableSet *removeTags = [NSMutableSet setWithArray:[self.viewProperties allKeys]];
+        [removeTags minusSet:rootTags];
+        [self.viewProperties removeObjectsForKeys:removeTags.allObjects];
+    });
 }
 
 @end
