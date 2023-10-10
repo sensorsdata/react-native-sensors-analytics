@@ -41,15 +41,17 @@ public class RNUtils {
         ReadableNativeMap nativeMap = null;
         try {
             nativeMap = (ReadableNativeMap) properties;
-            json = new JSONObject(properties.toString()).getJSONObject("NativeMap");
+            json = new JSONObject(properties.toString());
+            if (json.has("NativeMap")) {
+                json = json.optJSONObject("NativeMap");
+            } else {
+                String superName = nativeMap.getClass().getSuperclass().getSimpleName();
+                if (json.has(superName)) {
+                    json = json.optJSONObject(superName);
+                }
+            }
         } catch (Exception e) {
             SALog.printStackTrace(e);
-            String superName = nativeMap.getClass().getSuperclass().getSimpleName();
-            try {
-                json = new JSONObject(properties.toString()).getJSONObject(superName);
-            } catch (Exception e1) {
-                SALog.printStackTrace(e1);
-            }
         }
         return json;
     }
@@ -97,6 +99,14 @@ public class RNUtils {
      */
     public static void mergeJSONObject(final JSONObject source, JSONObject dest) {
         try {
+            if (source == null) {
+                return;
+            }
+
+            if (dest == null) {
+                dest = new JSONObject();
+            }
+
             Iterator<String> sourceIterator = source.keys();
             while (sourceIterator.hasNext()) {
                 String key = sourceIterator.next();
