@@ -6,12 +6,19 @@ var path = require("path"),
 var userPackageJson = require("../../package.json");
 var ignoreScreen = false;
 if (userPackageJson && userPackageJson['sensorsData'] && userPackageJson['sensorsData']['ignoreScreen']) {
-    ignoreScreen = true;
+  ignoreScreen = true;
 }
+
+
+
+
 var reactNavigationPath = dir + '/react-navigation',
   reactNavigationPath3X = dir + '/@react-navigation/native/src',
   reactNavigationPath4X = dir + '/@react-navigation/native/lib/module',
-  reactNavigationPath5X = dir + '/@react-navigation/core/src/BaseNavigationContainer.tsx';
+  reactNavigationPath7XCommon = dir + '/@react-navigation/core/lib/commonjs/BaseNavigationContainer.js',
+  reactNavigationPath7XSrc = dir + '/@react-navigation/core/src/BaseNavigationContainer.tsx';
+
+
 // 自定义变量
 
 var reactNavigationReduxCreatePath = [dir + '/react-navigation-redux-helpers/src/reduxify-navigator.js',
@@ -52,57 +59,56 @@ var RNGestureButtonsFilePaths = [dir + '/react-native-gesture-handler/GestureBut
 dir + '/react-native-gesture-handler/src/components/GestureButtons.tsx'];
 // click 需 hook 的自执行代码
 var sensorsdataClickHookCode = "(function(thatThis){ \n"
-                               +"  try {\n"
-                               +"    var ReactNative = require('react-native');\n"
-                               +"    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
-                               +"    thatThis.props.onPress && dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis))\n"
-                               +"  } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
-                               +"})(this); /* SENSORSDATA HOOK */ ";
-var sensorsdataClickHookPressabilityCode = " var tag = event.currentTarget && event.currentTarget._nativeTag?event.currentTarget._nativeTag:event.currentTarget;+\n"
-                                            +"(function(thatThis){\n"
-                                            +"  if(thatThis){\n"
-                                            +"    try {\n"
-                                            +"      var ReactNative = require('react-native');\n"
-                                            +"      var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
-                                            +"      dataModule && dataModule.trackViewClick && dataModule.trackViewClick(thatThis);\n"
-                                            +"    }catch (error){\n"
-                                            +"      throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}}}\n"
-                                            +")(tag); /* SENSORSDATA HOOK */ ";
+  + "  try {\n"
+  + "    var ReactNative = require('react-native');\n"
+  + "    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
+  + "    thatThis.props.onPress && dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis))\n"
+  + "  } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
+  + "})(this); /* SENSORSDATA HOOK */ ";
+var sensorsdataClickHookPressabilityCode = "(function(thatThis){\n"
+  + "  try {\n"
+  + "    var ReactNative = require('react-native');\n"
+  + "    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
+  + "    dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);\n"
+  + "  } catch (error) { \n"
+  + "      throw new Error('SensorsData RN Hook Code 调用异常: ' + error);\n"
+  + "  }\n"
+  + "})(this); /* SENSORSDATA HOOK */";
 var sensorsdataSliderHookCode = "(function(thatThis){\n"
-                               +"  try {\n"
-                               +"    var ReactNative = require('react-native');\n"
-                               +"    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
-                               +"    dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);\n"
-                               +"  } catch (error) { \n"
-                               +"      throw new Error('SensorsData RN Hook Code 调用异常: ' + error);\n"
-                               +"  }\n"
-                               +"})(this); /* SENSORSDATA HOOK */";
+  + "  try {\n"
+  + "    var ReactNative = require('react-native');\n"
+  + "    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
+  + "    dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);\n"
+  + "  } catch (error) { \n"
+  + "      throw new Error('SensorsData RN Hook Code 调用异常: ' + error);\n"
+  + "  }\n"
+  + "})(this); /* SENSORSDATA HOOK */";
 var sensorsdataSegmentedControlHookCode = "if(this.props.onChange != null || this.props.onValueChange != null){\n"
-                               +"(function(thatThis){\n"
-                               +"  try {\n"
-                               +"    var ReactNative = require('react-native');\n"
-                               +"    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
-                               +"    dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);\n"
-                               +"  } catch (error) { \n"
-                               +"      throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
-                               +"})(this); /* SENSORSDATA HOOK */}";
+  + "(function(thatThis){\n"
+  + "  try {\n"
+  + "    var ReactNative = require('react-native');\n"
+  + "    var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
+  + "    dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);\n"
+  + "  } catch (error) { \n"
+  + "      throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
+  + "})(this); /* SENSORSDATA HOOK */}";
 var sensorsdataSwitchHookCode = "if(this.props.onChange != null || this.props.onValueChange != null){\n"
-                               +"  (function(thatThis){ \n"
-                               +"    try {\n"
-                               +"      var ReactNative = require('react-native');\n"
-                               +"      var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
-                               +"      dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis));\n"
-                               +"    } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
-                               +"  })(this); /* SENSORSDATA HOOK */}";
+  + "  (function(thatThis){ \n"
+  + "    try {\n"
+  + "      var ReactNative = require('react-native');\n"
+  + "      var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
+  + "      dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis));\n"
+  + "    } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
+  + "  })(this); /* SENSORSDATA HOOK */}";
 var sensorsdataSwitchHookCode66 = "if(nativeSwitchRef.current && onValueChange){\n"
-                               + "  (function(thatThis){ \n"
-                               + "    try {\n"
-                               + "      var ReactNative = require('react-native');\n"
-                               + "      var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
-                               + "      dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(nativeSwitchRef.current));\n"
-                               + "    } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
-                               + "  })(this); /* SENSORSDATA HOOK */}";
-var sensorsdataImportReactNativeHookCode ="import ReactNative from 'react-native';\n";
+  + "  (function(thatThis){ \n"
+  + "    try {\n"
+  + "      var ReactNative = require('react-native');\n"
+  + "      var dataModule = ReactNative.NativeModules.RNSensorsDataModule;\n"
+  + "      dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(nativeSwitchRef.current));\n"
+  + "    } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n"
+  + "  })(this); /* SENSORSDATA HOOK */}";
+var sensorsdataImportReactNativeHookCode = "import ReactNative from 'react-native';\n";
 var sensorsdataNavigation5HookCode = `
 
 	  function getCurrentRouteName(){
@@ -375,7 +381,14 @@ sensorsdataHookPressabilityClickRN = function () {
 
 
 // hook navigation 5.x
-sensorsdataHookNavigation5 = function () {
+sensorsdataHookNavigation5 = function (arg) {
+  var reactNavigationPath5X;
+  if (arg === 'src') {
+    reactNavigationPath5X = reactNavigationPath7XSrc;
+  } else if (arg === 'commonjs') {
+    reactNavigationPath5X = reactNavigationPath7XCommon;
+  }
+
   if (fs.existsSync(reactNavigationPath5X)) {
     // 读取文件内容
     var fileContent = fs.readFileSync(reactNavigationPath5X, 'utf8');
@@ -393,7 +406,7 @@ sensorsdataHookNavigation5 = function () {
     }
 
     // 插入 hook 代码
-    var hookedContent = `${fileContent.substring(0,hookIndex
+    var hookedContent = `${fileContent.substring(0, hookIndex
     )}\n${sensorsdataNavigation5HookCode}\n${fileContent.substring(hookIndex)}`;
     // BaseNavigationContainer.tsx
     fs.renameSync(
@@ -692,7 +705,8 @@ sensorsdataHookGestureButtonsRN = function (reset = false) {
         var hookIndex = fileContent.indexOf(scriptStr);
         // 判断文件是否异常，不存在 this.props.onPress(active); 导致无法 hook 点击事件
         if (hookIndex == -1) {
-          throw "Can't not find this.props.onPress(active); ";
+          console.log("Can't not find this.props.onPress(active); ");
+          return false;
         }
         // 插入 hook 代码
         var hookedContent = `${fileContent.substring(
@@ -896,7 +910,7 @@ addTryCatch = function (functionBody) {
   );
 };
 // 工具函数 - 计算位置
-function lastArgumentName (content, index) {
+function lastArgumentName(content, index) {
   --index;
   var lastComma = content.lastIndexOf(',', index);
   var lastParentheses = content.lastIndexOf('(', index);
@@ -1243,7 +1257,8 @@ resetAllSensorsdataHookRN = function () {
   sensorsdataHookGestureButtonsRN(true)
   // 3 期
   sensorsdataResetRN(RNClickPressabilityFilePath);
-  sensorsdataResetRN(reactNavigationPath5X);
+  sensorsdataResetRN(reactNavigationPath7XCommon);
+  sensorsdataResetRN(reactNavigationPath7XSrc);
   // react-navigation-redux-helper
   sensorsdataHookNavigationReduxCreate(true);
   sensorsdataResetRN(reactNavigationReduxMiddlePath);
@@ -1280,7 +1295,8 @@ allSensorsdataHookRN = function () {
     sensorsdataHookPressabilityClickRN(RNClickPressabilityFilePath);
   }
   sensorsdataHookNavigationRN();
-  sensorsdataHookNavigation5();
+  sensorsdataHookNavigation5('src');
+  sensorsdataHookNavigation5('commonjs');
   // react-navigation-redux-helper
   sensorsdataHookNavigationReduxCreate();
   sensorsdataHookNavigationReduxMiddle(reactNavigationReduxMiddlePath);
