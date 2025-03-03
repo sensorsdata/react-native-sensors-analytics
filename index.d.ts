@@ -1,3 +1,4 @@
+// index.ts
 declare type PropertiesType = string | number | boolean | Array<string>;
 
 declare type PropertiesObjectType = { [key: string]: PropertiesType }
@@ -8,8 +9,11 @@ declare type Config = {
   ios: {//iOS 端特有配置
     max_cache_size?: number //最大缓存条数，默认 10000
   },
-  global_properties?:PropertiesObjectType,// 全局属性
-  auto_track: SAAutoTrackType,// 全埋点开关，默认不开启
+  harmony: {// HarmonyOS 端特有配置
+    max_cache_size?: number //最大缓存条数，默认 10000
+  },
+  global_properties?: PropertiesObjectType,// 全局属性
+  auto_track: SAAutoTrackType,// 全埋点开关，默认不开启，HarmonyOS 暂不支持此接口
   javascript_bridge: boolean,//H5 打通开关，默认 false
   flush_interval: number,//数据上报间隔，默认 15*1000 毫秒
   flush_bulksize: number,//数据缓存上报最大条数，默认 100 条
@@ -89,6 +93,7 @@ export function clearTrackTimer(): void;
 
 /**
  * 用于记录首次安装激活、渠道追踪的事件.
+ * 旧版接口，HarmonyOS 不支持
  *
  * @param eventName 事件名称
  * @param properties 事件属性
@@ -261,6 +266,7 @@ export function getLoginIdPromise(): Promise<string>;
 
 /**
  * 是否开启 AutoTrack
+ * HarmonyOS 暂不支持此接口
  *
  * @return true: 开启 AutoTrack; false：没有开启 AutoTrack
  */
@@ -268,6 +274,7 @@ export function isAutoTrackEnabledPromise(): Promise<boolean>;
 
 /**
  * 是否开启可视化全埋点
+ * HarmonyOS 暂不支持此接口
  *
  * @return true 代表开启了可视化全埋点， false 代表关闭了可视化全埋点
  */
@@ -275,6 +282,7 @@ export function isVisualizedAutoTrackEnabledPromise(): Promise<boolean>;
 
 /**
  * 是否开启点击图
+ * HarmonyOS 暂不支持此接口
  *
  * @return true 代表开启了点击图，false 代表关闭了点击图
  */
@@ -282,6 +290,8 @@ export function isHeatMapEnabledPromise(): Promise<boolean>;
 
 /**
  * 设置 flush 时网络发送策略，默认 3G、4G、WI-FI 环境下都会尝试 flush
+ * HarmonyOS 暂不支持此接口
+ * 
  * TYPE_NONE = 0;//NULL
  * TYPE_2G = 1;//2G
  * TYPE_3G = 1 << 1;//3G 2

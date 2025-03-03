@@ -1,31 +1,50 @@
-import { NativeModules} from 'react-native';
+import { NativeModules, TurboModuleRegistry } from 'react-native';
+// index.ts
+import NativeSensorsAnalyticsModule from "./src/NativeSensorsAnalyticsModule";
 
 const { RNSensorsAnalyticsModule, RNSensorsDataModule } = NativeModules;
 
+// 默认使用原有的 NativeModules 实现
+let SensorsAnalyticsModule = RNSensorsAnalyticsModule;
+let SensorsDataModule = RNSensorsDataModule;
+
+// 判断是否为鸿蒙平台
+if (NativeSensorsAnalyticsModule) {
+  try {
+    if (NativeSensorsAnalyticsModule.currentPlatform && NativeSensorsAnalyticsModule.currentPlatform() === 'HarmonyOS') {
+      // 鸿蒙加载神策鸿蒙 TurboModul，即 NativeSensorsAnalyticsModule
+      SensorsAnalyticsModule = NativeSensorsAnalyticsModule;
+      SensorsDataModule = NativeSensorsAnalyticsModule;
+    }
+  } catch (e) {
+    // 获取失败则继续使用原有实现
+  }
+}
+
 const SAAutoTrackType = {
-  START : 1,
-  END : 2,
-  CLICK : 4,
-  VIEW_SCREEN : 8
+  START: 1,
+  END: 2,
+  CLICK: 4,
+  VIEW_SCREEN: 8
 }
 /**
  * 登录
  *
  * @param loginId
  */
-function login (loginId) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.login &&
-    RNSensorsAnalyticsModule.login(loginId);
+function login(loginId) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.login &&
+    SensorsAnalyticsModule.login(loginId);
 }
 
 /**
  * 退出登录
  */
-function logout () {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.logout &&
-    RNSensorsAnalyticsModule.logout();
+function logout() {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.logout &&
+    SensorsAnalyticsModule.logout();
 }
 
 /**
@@ -35,10 +54,10 @@ function logout () {
  * Sex
  * Age
  */
-function profileSet (profile) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.profileSet &&
-    RNSensorsAnalyticsModule.profileSet(profile);
+function profileSet(profile) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.profileSet &&
+    SensorsAnalyticsModule.profileSet(profile);
 }
 
 /**
@@ -46,10 +65,10 @@ function profileSet (profile) {
  *
  * @param profile 类型 {}
  */
-function profileSetOnce (profile) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.profileSetOnce &&
-    RNSensorsAnalyticsModule.profileSetOnce(profile);
+function profileSetOnce(profile) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.profileSetOnce &&
+    SensorsAnalyticsModule.profileSetOnce(profile);
 }
 
 
@@ -59,10 +78,10 @@ function profileSetOnce (profile) {
  * @param event 事件名称，类型 String
  * @param properties 事件属性，类型 {}
  */
-function track (event, properties) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.track &&
-    RNSensorsAnalyticsModule.track(event, properties);
+function track(event, properties) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.track &&
+    SensorsAnalyticsModule.track(event, properties);
 }
 
 /**
@@ -70,10 +89,10 @@ function track (event, properties) {
  *
  * @param event 事件名称，类型 String
  */
-function trackTimerStart (event) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.trackTimerStart &&
-    RNSensorsAnalyticsModule.trackTimerStart(event);
+function trackTimerStart(event) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.trackTimerStart &&
+    SensorsAnalyticsModule.trackTimerStart(event);
 }
 
 /**
@@ -82,31 +101,32 @@ function trackTimerStart (event) {
  * @param event 事件名称，类型 String
  * @param properties 事件属性，类型 {}
  */
-function trackTimerEnd (event, properties) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.trackTimerEnd &&
-    RNSensorsAnalyticsModule.trackTimerEnd(event, properties);
+function trackTimerEnd(event, properties) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.trackTimerEnd &&
+    SensorsAnalyticsModule.trackTimerEnd(event, properties);
 }
 
 /**
  * 清除所有事件计时器
  */
-function clearTrackTimer(){
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.clearTrackTimer &&
-    RNSensorsAnalyticsModule.clearTrackTimer();
+function clearTrackTimer() {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.clearTrackTimer &&
+    SensorsAnalyticsModule.clearTrackTimer();
 }
 
 /**
  * 用于记录首次安装激活、渠道追踪的事件.
+ * 旧版接口，HarmonyOS 不支持
  *
  * @param eventName 事件名称，类型 String
  * @param properties 事件属性，类型 {}
  */
-function trackInstallation(eventName, properties){
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.trackInstallation &&
-    RNSensorsAnalyticsModule.trackInstallation(eventName, properties);
+function trackInstallation(eventName, properties) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.trackInstallation &&
+    SensorsAnalyticsModule.trackInstallation(eventName, properties);
 }
 
 /**
@@ -115,10 +135,10 @@ function trackInstallation(eventName, properties){
  * @param url 类型 String
  * @param properties 事件属性，类型 {}
  */
-function trackViewScreen(url, properties){
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.trackViewScreen &&
-    RNSensorsAnalyticsModule.trackViewScreen(url, properties);
+function trackViewScreen(url, properties) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.trackViewScreen &&
+    SensorsAnalyticsModule.trackViewScreen(url, properties);
 }
 
 /**
@@ -128,10 +148,10 @@ function trackViewScreen(url, properties){
  * @param property 属性名称，类型 String
  * @param value 属性值，类型 Number
  */
-function profileIncrement (property, value) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.profileIncrement &&
-    RNSensorsAnalyticsModule.profileIncrement(property, value);
+function profileIncrement(property, value) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.profileIncrement &&
+    SensorsAnalyticsModule.profileIncrement(property, value);
 }
 
 /**
@@ -140,10 +160,10 @@ function profileIncrement (property, value) {
  * @param property 属性名称，类型 String
  * @param strList 属性值，类型 []
  */
-function profileAppend (property, strList) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.profileAppend &&
-    RNSensorsAnalyticsModule.profileAppend(property, strList);
+function profileAppend(property, strList) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.profileAppend &&
+    SensorsAnalyticsModule.profileAppend(property, strList);
 }
 
 /**
@@ -151,44 +171,44 @@ function profileAppend (property, strList) {
  *
  * @param property 属性名称，类型 String
  */
-function profileUnset (property) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.profileUnset &&
-    RNSensorsAnalyticsModule.profileUnset(property);
+function profileUnset(property) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.profileUnset &&
+    SensorsAnalyticsModule.profileUnset(property);
 }
 
 /**
  * 删除用户所有 Profile.
  */
-function profileDelete () {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.profileDelete &&
-    RNSensorsAnalyticsModule.profileDelete();
+function profileDelete() {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.profileDelete &&
+    SensorsAnalyticsModule.profileDelete();
 }
 
 /**
  * Promise 方式，获取 distinctId
  */
-async function getDistinctIdPromise (){
-  if(RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.getDistinctIdPromise){
-    try{
-      return await RNSensorsAnalyticsModule.getDistinctIdPromise();
-    }catch(e){
-   	  console.log(e);
-   	}
+async function getDistinctIdPromise() {
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.getDistinctIdPromise) {
+    try {
+      return await SensorsAnalyticsModule.getDistinctIdPromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
 /**
  * Promise 方式 getAnonymousId 获取匿名 ID.
  */
-async function getAnonymousIdPromise () {
-  if(RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.getAnonymousIdPromise){
-    try{
-      return await RNSensorsAnalyticsModule.getAnonymousIdPromise();
-    }catch(e){
-   	  console.log(e);
-   	}
+async function getAnonymousIdPromise() {
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.getAnonymousIdPromise) {
+    try {
+      return await SensorsAnalyticsModule.getAnonymousIdPromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
@@ -197,10 +217,10 @@ async function getAnonymousIdPromise () {
  *
  * @param properties 公共属性，类型 {}
  */
-function registerSuperProperties (properties) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.registerSuperProperties &&
-    RNSensorsAnalyticsModule.registerSuperProperties(properties);
+function registerSuperProperties(properties) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.registerSuperProperties &&
+    SensorsAnalyticsModule.registerSuperProperties(properties);
 }
 
 /**
@@ -208,37 +228,37 @@ function registerSuperProperties (properties) {
  *
  * @param property 要删除的公共属性属性名称，类型 String
  */
-function unregisterSuperProperty (property) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.unregisterSuperProperty &&
-    RNSensorsAnalyticsModule.unregisterSuperProperty(property);
+function unregisterSuperProperty(property) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.unregisterSuperProperty &&
+    SensorsAnalyticsModule.unregisterSuperProperty(property);
 }
 
 /**
  * 删除所有公共属性
  */
-function clearSuperProperties () {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.clearSuperProperties &&
-    RNSensorsAnalyticsModule.clearSuperProperties();
+function clearSuperProperties() {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.clearSuperProperties &&
+    SensorsAnalyticsModule.clearSuperProperties();
 }
 
 /**
  * 强制发送数据到服务端
  */
-function flush () {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.flush &&
-    RNSensorsAnalyticsModule.flush();
+function flush() {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.flush &&
+    SensorsAnalyticsModule.flush();
 }
 
 /**
  * 删除本地数据库的所有数据！！！请谨慎使用
  */
-function deleteAll () {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.deleteAll &&
-    RNSensorsAnalyticsModule.deleteAll();
+function deleteAll() {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.deleteAll &&
+    SensorsAnalyticsModule.deleteAll();
 }
 
 /**
@@ -246,10 +266,10 @@ function deleteAll () {
  *
  * @param anonymousId 传入的的匿名 ID，仅接受数字、下划线和大小写字母，类型 String
  */
-function identify (anonymousId) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.identify &&
-    RNSensorsAnalyticsModule.identify(anonymousId);
+function identify(anonymousId) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.identify &&
+    SensorsAnalyticsModule.identify(anonymousId);
 }
 /**
  * 导出 trackTimerPause 方法给 RN 使用.
@@ -259,9 +279,9 @@ function identify (anonymousId) {
  * @param eventName 事件的名称
  */
 function trackTimerPause(eventName) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.trackTimerPause &&
-    RNSensorsAnalyticsModule.trackTimerPause(eventName);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.trackTimerPause &&
+    SensorsAnalyticsModule.trackTimerPause(eventName);
 }
 
 /**
@@ -272,13 +292,14 @@ function trackTimerPause(eventName) {
  * @param eventName 事件的名称
  */
 function trackTimerResume(eventName) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.trackTimerResume &&
-    RNSensorsAnalyticsModule.trackTimerResume(eventName);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.trackTimerResume &&
+    SensorsAnalyticsModule.trackTimerResume(eventName);
 }
 
 /**
  * 保存用户推送 ID 到用户表
+ * HarmonyOS 暂不支持此接口
  *
  * @param pushTypeKey 属性名称（例如 jgId）
  * @param pushId 推送 ID
@@ -286,40 +307,42 @@ function trackTimerResume(eventName) {
  *     获取方式：JPushModule.getRegistrationID(callback)
  */
 function profilePushId(pushTypeKey, pushId) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.profilePushId &&
-    RNSensorsAnalyticsModule.profilePushId(pushTypeKey, pushId);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.profilePushId &&
+    SensorsAnalyticsModule.profilePushId(pushTypeKey, pushId);
 }
 
 /**
  * 删除用户设置的 pushId
+ * HarmonyOS 暂不支持此接口
  *
  * @param pushTypeKey 属性名称（例如 jgId）
  */
 function profileUnsetPushId(pushTypeKey) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.profileUnsetPushId &&
-    RNSensorsAnalyticsModule.profileUnsetPushId(pushTypeKey);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.profileUnsetPushId &&
+    SensorsAnalyticsModule.profileUnsetPushId(pushTypeKey);
 }
 
 /**
  * 重置默认匿名 id
  */
 function resetAnonymousId() {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.resetAnonymousId &&
-    RNSensorsAnalyticsModule.resetAnonymousId();
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.resetAnonymousId &&
+    SensorsAnalyticsModule.resetAnonymousId();
 }
 
 /**
  * 设置当前 serverUrl
+ * HarmonyOS 暂不支持此接口
  *
  * @param serverUrl 当前 serverUrl
  */
 function setServerUrl(serverUrl) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.setServerUrl &&
-    RNSensorsAnalyticsModule.setServerUrl(serverUrl);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.setServerUrl &&
+    SensorsAnalyticsModule.setServerUrl(serverUrl);
 }
 
 /**
@@ -330,9 +353,9 @@ function setServerUrl(serverUrl) {
  * @param properties item 相关属性
  */
 function itemSet(itemType, itemId, properties) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.itemSet &&
-    RNSensorsAnalyticsModule.itemSet(itemType, itemId, properties);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.itemSet &&
+    SensorsAnalyticsModule.itemSet(itemType, itemId, properties);
 }
 
 /**
@@ -342,21 +365,24 @@ function itemSet(itemType, itemId, properties) {
  * @param itemId item ID
  */
 function itemDelete(itemType, itemId) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.itemDelete &&
-    RNSensorsAnalyticsModule.itemDelete(itemType, itemId);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.itemDelete &&
+    SensorsAnalyticsModule.itemDelete(itemType, itemId);
 }
 
 /**
  * 获取事件公共属性
+ * HarmonyOS 暂不支持此接口
+ * 
+ * @return 返回事件公共属性
  */
 async function getSuperPropertiesPromise() {
-  if (RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.getSuperPropertiesPromise) {
-    try{
-      return await RNSensorsAnalyticsModule.getSuperPropertiesPromise();
-    }catch(e){
-   	  console.log(e);
-   	}
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.getSuperPropertiesPromise) {
+    try {
+      return await SensorsAnalyticsModule.getSuperPropertiesPromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
@@ -364,12 +390,12 @@ async function getSuperPropertiesPromise() {
  * 返回预置属性
  */
 async function getPresetPropertiesPromise() {
-  if (RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.getPresetPropertiesPromise) {
-    try{
-      return await RNSensorsAnalyticsModule.getPresetPropertiesPromise();
-    }catch(e){
-   	  console.log(e);
-   	}
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.getPresetPropertiesPromise) {
+    try {
+      return await SensorsAnalyticsModule.getPresetPropertiesPromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
@@ -379,62 +405,67 @@ async function getPresetPropertiesPromise() {
  * @return 当前用户的 loginId
  */
 async function getLoginIdPromise() {
-  if (RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.getLoginIdPromise) {
-    try{
-      return await RNSensorsAnalyticsModule.getLoginIdPromise();
-    }catch(e){
-   	  console.log(e);
-   	}
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.getLoginIdPromise) {
+    try {
+      return await SensorsAnalyticsModule.getLoginIdPromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
 /**
  * 是否开启 AutoTrack
+ * HarmonyOS 暂不支持此接口
  *
  * @return true: 开启 AutoTrack; false：没有开启 AutoTrack
  */
 async function isAutoTrackEnabledPromise() {
-  if (RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.isAutoTrackEnabledPromise) {
-	try{
-	  return await RNSensorsAnalyticsModule.isAutoTrackEnabledPromise();
-	}catch(e){
-	  console.log(e);
-	}
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.isAutoTrackEnabledPromise) {
+    try {
+      return await SensorsAnalyticsModule.isAutoTrackEnabledPromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
 /**
  * 是否开启可视化全埋点
+ * HarmonyOS 暂不支持此接口
  *
  * @return true 代表开启了可视化全埋点， false 代表关闭了可视化全埋点
  */
 async function isVisualizedAutoTrackEnabledPromise() {
-  if (RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.isVisualizedAutoTrackEnabledPromise) {
-    try{
-      return await RNSensorsAnalyticsModule.isVisualizedAutoTrackEnabledPromise();
-    }catch(e){
-   	  console.log(e);
-   	}
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.isVisualizedAutoTrackEnabledPromise) {
+    try {
+      return await SensorsAnalyticsModule.isVisualizedAutoTrackEnabledPromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
 /**
  * 是否开启点击图
+ * HarmonyOS 暂不支持此接口
  *
  * @return true 代表开启了点击图，false 代表关闭了点击图
  */
 async function isHeatMapEnabledPromise() {
-  if (RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.isHeatMapEnabledPromise) {
-    try{
-      return await RNSensorsAnalyticsModule.isHeatMapEnabledPromise();
-    }catch(e){
-   	  console.log(e);
-   	}
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.isHeatMapEnabledPromise) {
+    try {
+      return await SensorsAnalyticsModule.isHeatMapEnabledPromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
 /**
  * 设置 flush 时网络发送策略，默认 3G、4G、WI-FI 环境下都会尝试 flush
+ * HarmonyOS 暂不支持此接口
+ * 
  * TYPE_NONE = 0;//NULL
  * TYPE_2G = 1;//2G
  * TYPE_3G = 1 << 1;//3G 2
@@ -442,13 +473,14 @@ async function isHeatMapEnabledPromise() {
  * TYPE_WIFI = 1 << 3;//WIFI 8
  * TYPE_5G = 1 << 4;//5G 16
  * TYPE_ALL = 0xFF;//ALL 255
+ * HarmonyOS 暂不支持此接口
  * 例：若需要开启 4G 5G 发送数据，则需要设置 4 + 16 = 20
  */
 
 function setFlushNetworkPolicy(networkType) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.setFlushNetworkPolicy &&
-    RNSensorsAnalyticsModule.setFlushNetworkPolicy(networkType);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.setFlushNetworkPolicy &&
+    SensorsAnalyticsModule.setFlushNetworkPolicy(networkType);
 }
 
 /**
@@ -458,45 +490,49 @@ function setFlushNetworkPolicy(networkType) {
  * @param properties 渠道追踪事件的属性
  */
 function trackAppInstall(properties) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.trackAppInstall &&
-    RNSensorsAnalyticsModule.trackAppInstall(properties);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.trackAppInstall &&
+    SensorsAnalyticsModule.trackAppInstall(properties);
 }
 
 function registerDynamicSuperProperties() {
   var dynamicProxy = {};
-  RNSensorsDataModule && RNSensorsDataModule.registerDynamicPlugin && RNSensorsDataModule.registerDynamicPlugin();
+  // 鸿蒙新版直接支持，没必要判断，Androd/iOS 使用原有的接口，使用 registerDynamicPlugin 实现
+  if (!NativeSensorsAnalyticsModule.currentPlatform || NativeSensorsAnalyticsModule.currentPlatform() !== 'HarmonyOS') {
+    SensorsDataModule && SensorsDataModule.registerDynamicPlugin && SensorsDataModule.registerDynamicPlugin();
+  }
+
   try {
-    Object.defineProperty(dynamicProxy,'properties', {
+    Object.defineProperty(dynamicProxy, 'properties', {
       set: function (value) {
         if (typeof value === 'object') {
-          RNSensorsDataModule && RNSensorsDataModule.setDynamicSuperProperties && RNSensorsDataModule.setDynamicSuperProperties(value);
+          SensorsDataModule && SensorsDataModule.setDynamicSuperProperties && SensorsDataModule.setDynamicSuperProperties(value);
         }
       }
-  });
+    });
   } catch (e) {
     console.log(e)
   }
   return dynamicProxy;
 }
 
-function bind(key, value){
-      RNSensorsAnalyticsModule &&
-        RNSensorsAnalyticsModule.bind &&
-        RNSensorsAnalyticsModule.bind(key, value);
+function bind(key, value) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.bind &&
+    SensorsAnalyticsModule.bind(key, value);
 }
 
-function unbind(key, value){
-      RNSensorsAnalyticsModule &&
-        RNSensorsAnalyticsModule.unbind &&
-        RNSensorsAnalyticsModule.unbind(key, value);
+function unbind(key, value) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.unbind &&
+    SensorsAnalyticsModule.unbind(key, value);
 }
 
-function init(config){
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.init &&
-    RNSensorsAnalyticsModule.init(config);
-    RNSensorsDataModule && RNSensorsDataModule.registerDynamicPlugin && RNSensorsDataModule.registerDynamicPlugin();
+function init(config) {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.init &&
+    SensorsAnalyticsModule.init(config);
+  SensorsDataModule && SensorsDataModule.registerDynamicPlugin && SensorsDataModule.registerDynamicPlugin();
 }
 
 /************** Android only start *****************/
@@ -508,9 +544,9 @@ function init(config){
  * @param sessionIntervalTime int
  */
 function setSessionIntervalTime(sessionIntervalTime) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.setSessionIntervalTime &&
-    RNSensorsAnalyticsModule.setSessionIntervalTime(sessionIntervalTime);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.setSessionIntervalTime &&
+    SensorsAnalyticsModule.setSessionIntervalTime(sessionIntervalTime);
 }
 
 /**
@@ -521,12 +557,12 @@ function setSessionIntervalTime(sessionIntervalTime) {
  * @return 返回设置的 SessionIntervalTime ，默认是 30s
  */
 async function getSessionIntervalTimePromise() {
-  if (RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.getSessionIntervalTimePromise) {
-	try{
-	  return await RNSensorsAnalyticsModule.getSessionIntervalTimePromise();
-	}catch(e){
-	  console.log(e);
-	}
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.getSessionIntervalTimePromise) {
+    try {
+      return await SensorsAnalyticsModule.getSessionIntervalTimePromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
@@ -536,9 +572,9 @@ async function getSessionIntervalTimePromise() {
  * @param isRequest boolean
  */
 function enableNetworkRequest(isRequest) {
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.enableNetworkRequest &&
-    RNSensorsAnalyticsModule.enableNetworkRequest(isRequest);
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.enableNetworkRequest &&
+    SensorsAnalyticsModule.enableNetworkRequest(isRequest);
 }
 
 /**
@@ -547,26 +583,27 @@ function enableNetworkRequest(isRequest) {
  * @return 是否允许请求网络
  */
 async function isNetworkRequestEnablePromise() {
-  if (RNSensorsAnalyticsModule && RNSensorsAnalyticsModule.isNetworkRequestEnablePromise) {
-	try{
-	  return await RNSensorsAnalyticsModule.isNetworkRequestEnablePromise();
-	}catch(e){
-	  console.log(e);
-	}
+  if (SensorsAnalyticsModule && SensorsAnalyticsModule.isNetworkRequestEnablePromise) {
+    try {
+      return await SensorsAnalyticsModule.isNetworkRequestEnablePromise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
 /**
  * 开启数据采集
  */
-function enableDataCollect(){
-  RNSensorsAnalyticsModule &&
-    RNSensorsAnalyticsModule.enableDataCollect &&
-    RNSensorsAnalyticsModule.enableDataCollect();
+function enableDataCollect() {
+  SensorsAnalyticsModule &&
+    SensorsAnalyticsModule.enableDataCollect &&
+    SensorsAnalyticsModule.enableDataCollect();
 }
 
 /************** Android only end *****************/
-export {SAAutoTrackType}
+export { SAAutoTrackType }
+export const RNSensorsAnalyticsTurboModule = NativeSensorsAnalyticsModule;
 
 export default {
   login,

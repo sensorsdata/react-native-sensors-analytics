@@ -1,23 +1,37 @@
 {
   "name": "sensorsdata-analytics-react-native",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "private": false,
   "description": "神策分析 RN 组件",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "sensors",
-    "analytics",
-    "神策",
-    "神策分析"
-  ],
-  "author": "chenru",
+  "author": "chuqiangsheng@sensorsdata.cn",
   "license": "Apache-2.0",
+  "harmony": {
+    "alias": "sensorsdata-analytics-react-native"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.47",
+    "react": "18.2.0",
+    "react-native": "0.72.5"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sensorsdata/react-native-sensors-analytics.git"
   },
-   "homepage": "https://github.com/sensorsdata/react-native-sensors-analytics"
+  "homepage": "https://github.com/sensorsdata/react-native-sensors-analytics",
+  "keywords": [
+    "sensors",
+    "analytics",
+    "sensorsdata",
+    "神策",
+    "神策分析",
+    "神策分析 RN 插件"
+  ]
 }
