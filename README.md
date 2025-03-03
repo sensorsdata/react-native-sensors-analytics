@@ -47,7 +47,7 @@ react-native link sensorsdata-analytics-react-native
    npm run-script postinstall
    ```
 
-### 详细文档请参考：[Android & iOS SDK 在 React Native 中使用说明](https://www.sensorsdata.cn/manual/sdk_reactnative.html)
+### 详细文档请参考：[集成文档（React Native）](https://manual.sensorsdata.cn/sa/docs/tech_sdk_client_rn_install)
 
 
 ## 新书推荐
