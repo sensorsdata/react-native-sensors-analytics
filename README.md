@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/github/license/sensorsdata/react-native-sensors-analytics.svg)](https://github.com/sensorsdata/react-native-sensors-analytics/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/tag/sensorsdata/react-native-sensors-analytics.svg?label=release)](https://github.com/sensorsdata/react-native-sensors-analytics/releases)
 [![GitHub release date](https://img.shields.io/github/release-date/sensorsdata/react-native-sensors-analytics.svg)](https://github.com/sensorsdata/react-native-sensors-analytics/releases)
+![https://img.shields.io/badge/OS-Android%20%7C%20iOS%20%7C%20HarmonyOS-blue](https://img.shields.io/badge/OS-Android%20%7C%20iOS%20%7C%20HarmonyOS-blue)
 
 ## 神策简介
 
