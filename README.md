@@ -1,8 +1,8 @@
 <img src="https://ow-file.sensorsdata.cn/www/home/header/sensors_header_icon.svg" width="200" >
 
 [![License](https://img.shields.io/github/license/sensorsdata/sa-sdk-android.svg)](https://github.com/sensorsdata/sa-sdk-android/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/tag/sensorsdata/sa-sdk-cpp.svg?label=release)](https://github.com/sensorsdata/sa-sdk-cpp/releases)
-[![GitHub release date](https://img.shields.io/github/release-date/sensorsdata/sa-sdk-cpp.svg)](https://github.com/sensorsdata/sa-sdk-cpp/releases)
+[![GitHub release](https://img.shields.io/github/tag/react-native-sensors-analytics.svg?label=release)](https://github.com/sensorsdata/react-native-sensors-analytics/releases)
+[![GitHub release date](https://img.shields.io/github/release-date/sensorsdata/react-native-sensors-analytics.svg)](https://github.com/sensorsdata/react-native-sensors-analytics/releases)
 
 ## 神策简介
 
