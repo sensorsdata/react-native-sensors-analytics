@@ -15,7 +15,7 @@
 
 namespace rnoh {
 
-class RNOHGeneratedPackageTurboModuleFactoryDelegate : public TurboModuleFactoryDelegate {
+class RNOHSensorsAnalyticsPackageTurboModuleFactoryDelegate : public TurboModuleFactoryDelegate {
   public:
     SharedTurboModule createTurboModule(Context ctx, const std::string &name) const override {
         if (name == "NativeSensorsAnalyticsModule") {
@@ -25,7 +25,7 @@ class RNOHGeneratedPackageTurboModuleFactoryDelegate : public TurboModuleFactory
     };
 };
 
-class GeneratedEventEmitRequestHandler : public EventEmitRequestHandler {
+class SensorsAnalyticsEventEmitRequestHandler : public EventEmitRequestHandler {
   public:
     void handleEvent(Context const &ctx) override {
         auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<facebook::react::EventEmitter>(ctx.tag);
@@ -41,12 +41,12 @@ class GeneratedEventEmitRequestHandler : public EventEmitRequestHandler {
     }
 };
 
-class RNOHGeneratedPackage : public Package {
+class RNOHSensorsAnalyticsPackage : public Package {
   public:
-    RNOHGeneratedPackage(Package::Context ctx) : Package(ctx){};
+    RNOHSensorsAnalyticsPackage(Package::Context ctx) : Package(ctx){};
 
     std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override {
-        return std::make_unique<RNOHGeneratedPackageTurboModuleFactoryDelegate>();
+        return std::make_unique<RNOHSensorsAnalyticsPackageTurboModuleFactoryDelegate>();
     }
 
     std::vector<facebook::react::ComponentDescriptorProvider> createComponentDescriptorProviders() override {
@@ -61,7 +61,7 @@ class RNOHGeneratedPackage : public Package {
 
     EventEmitRequestHandlers createEventEmitRequestHandlers() override {
         return {
-            std::make_shared<GeneratedEventEmitRequestHandler>(),
+            std::make_shared<SensorsAnalyticsEventEmitRequestHandler>(),
         };
     }
 };

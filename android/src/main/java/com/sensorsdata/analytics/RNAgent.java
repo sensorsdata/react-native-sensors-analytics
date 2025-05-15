@@ -1,18 +1,6 @@
 /*
  * Created by chenru on 2019/08/27.
- * Copyright 2015－2021 Sensors Data Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2015－2025 Sensors Data Inc.
  */
 
 package com.sensorsdata.analytics;
@@ -36,10 +24,11 @@ import com.sensorsdata.analytics.utils.RNViewUtils;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 public class RNAgent {
-    private static final WeakHashMap jsTouchDispatcherViewGroupWeakHashMap = new WeakHashMap();
+    private static final WeakHashMap<JSTouchDispatcher, WeakReference<ViewGroup>> jsTouchDispatcherViewGroupWeakHashMap = new WeakHashMap<>();
     private static SparseArray<SAViewProperties> viewPropertiesArray = new SparseArray();
     private static JSONObject mDynamicSuperProperties;
 
@@ -47,13 +36,17 @@ public class RNAgent {
             JSTouchDispatcher jsTouchDispatcher, MotionEvent event, EventDispatcher eventDispatcher) {
         try {
             if (event.getAction() == MotionEvent.ACTION_DOWN) { // ActionDown
-                ViewGroup viewGroup = (ViewGroup) jsTouchDispatcherViewGroupWeakHashMap.get(jsTouchDispatcher);
+                WeakReference<ViewGroup> weakViewGroupRef = jsTouchDispatcherViewGroupWeakHashMap.get(jsTouchDispatcher);
+                ViewGroup viewGroup = weakViewGroupRef != null ? weakViewGroupRef.get() : null;
                 if (viewGroup == null) {
                     try {
                         Field viewGroupField = jsTouchDispatcher.getClass().getDeclaredField("mRootViewGroup");
                         viewGroupField.setAccessible(true);
                         viewGroup = (ViewGroup) viewGroupField.get(jsTouchDispatcher);
-                        jsTouchDispatcherViewGroupWeakHashMap.put(jsTouchDispatcher, viewGroup);
+                        // 解决内存泄漏：存入 WeakReference
+                        if (viewGroup != null) {
+                            jsTouchDispatcherViewGroupWeakHashMap.put(jsTouchDispatcher, new WeakReference<>(viewGroup));
+                        }
                     } catch (Exception e) {
                         SALog.printStackTrace(e);
                     }

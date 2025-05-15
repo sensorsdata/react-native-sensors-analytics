@@ -7,9 +7,20 @@
 //
 
 import { TimeTracker } from "@sensorsdata/analytics";
+import { SA } from './NativeSensorsAnalyticsModule';
+
+// 当前版本号
+const kSAReactNativePluginVersion: string = "3.0.2";
+
+// react_native 插件版本号前缀
+const kSARNLibPrefix: string = "react_native";
+
+// 采集插件版本号
+const kSALibPluginVersionKey: string = "$lib_plugin_version"
 
 export class SAReactNativeManager extends Object {
   private trackTimerList: Map<string, Promise<TimeTracker>> = new Map();
+  private isFirstTrack: boolean = true;
 
   fetchTrackTimer(evetName: string): Promise<TimeTracker> | null {
     if (evetName && typeof evetName === 'string') {
@@ -33,5 +44,18 @@ export class SAReactNativeManager extends Object {
     } else {
       this.trackTimerList.clear();
     }
+
+  }
+
+  buildLibPluginVersion(properties: SA.NativeSensorsAnalyticsModule.SAPropertiesObjectType | null): SA.NativeSensorsAnalyticsModule.SAPropertiesObjectType {
+    // 首次触发事件，采集插件属性
+    if (this.isFirstTrack) {
+      if (properties === undefined || properties === null) {
+        properties = {};
+      }
+      properties[kSALibPluginVersionKey] = [`${kSARNLibPrefix}:${kSAReactNativePluginVersion}`]
+      this.isFirstTrack = false;
+    }
+    return properties;
   }
 }

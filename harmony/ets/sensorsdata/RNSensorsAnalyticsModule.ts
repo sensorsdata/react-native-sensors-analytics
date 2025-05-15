@@ -27,7 +27,8 @@ export class RNSensorsAnalyticsModule extends TurboModule implements SA.NativeSe
   }
 
   login(loginId: string): void {
-    sensors.login(loginId);
+    const newProperties = this.moduleManager.buildLibPluginVersion(null);
+    sensors.login(loginId, newProperties);
   }
 
   logout(): void {
@@ -35,7 +36,8 @@ export class RNSensorsAnalyticsModule extends TurboModule implements SA.NativeSe
   }
 
   track(event: string, properties: SA.NativeSensorsAnalyticsModule.SAPropertiesObjectType): void {
-    sensors.track(event, properties);
+    const newProperties = this.moduleManager.buildLibPluginVersion(properties);
+    sensors.track(event, newProperties);
   }
 
   trackTimerStart(event: string): void {
@@ -46,7 +48,8 @@ export class RNSensorsAnalyticsModule extends TurboModule implements SA.NativeSe
   trackTimerEnd(event: string, properties: SA.NativeSensorsAnalyticsModule.SAPropertiesObjectType): void {
     const timer = this.moduleManager.fetchTrackTimer(event);
     if (timer) {
-      sensors.trackTimerEnd(timer, properties);
+      const newProperties = this.moduleManager.buildLibPluginVersion(properties);
+      sensors.trackTimerEnd(timer, newProperties);
       this.moduleManager.cleanTrackTimer(event);
     }
   }
@@ -67,9 +70,10 @@ export class RNSensorsAnalyticsModule extends TurboModule implements SA.NativeSe
   }
 
   trackViewScreen(url: string, properties: SA.NativeSensorsAnalyticsModule.SAPropertiesObjectType): void {
+    const newProperties = this.moduleManager.buildLibPluginVersion(properties);
     sensors.trackViewScreen({
       $screen_name: url,
-    }, properties);
+    }, newProperties);
   }
 
   profileSet(profile: SA.NativeSensorsAnalyticsModule.SAPropertiesObjectType): void {
@@ -149,7 +153,8 @@ export class RNSensorsAnalyticsModule extends TurboModule implements SA.NativeSe
   }
 
   trackAppInstall(properties: SA.NativeSensorsAnalyticsModule.SAPropertiesObjectType): void {
-    sensors.trackAppInstall(properties);
+    const newProperties = this.moduleManager.buildLibPluginVersion(properties);
+    sensors.trackAppInstall(newProperties);
   }
 
   setDynamicSuperProperties(properties: SA.NativeSensorsAnalyticsModule.SAPropertiesObjectType): void {
