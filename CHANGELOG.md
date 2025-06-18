@@ -1,3 +1,6 @@
+## 3.0.3（2025-6-18）
+1. 修复  registerDynamicSuperProperties().properties 在 TS 下的报错
+
 ## 2.4.0（2024-12-12）
 1. 修复不支持 RN 0.7.x react-navigation 全埋点浏览
 2. 修复 RN 0.7.x 部分情况下点击全埋点报错

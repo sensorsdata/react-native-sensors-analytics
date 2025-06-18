@@ -37,6 +37,10 @@ declare enum SAAutoTrackType {
   VIEW_SCREEN = 8
 }
 
+interface AnyObj {
+  [key: string]: any
+}
+
 /**
  * 登录
  *
@@ -316,7 +320,7 @@ export function trackAppInstall(properties?: PropertiesObjectType): void;
  * 注册事件动态公共属性
  * @return 动态公共属性监听对象
  */
-export function registerDynamicSuperProperties(): object;
+export function registerDynamicSuperProperties(): AnyObj;
 
 
 /**
