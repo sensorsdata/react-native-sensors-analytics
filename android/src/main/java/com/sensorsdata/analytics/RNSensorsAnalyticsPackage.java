@@ -16,17 +16,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class RNSensorsAnalyticsPackage implements ReactPackage {
-    public static final String VERSION = "3.0.2";
+    public static final String VERSION = "3.0.4";
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        //在你们的Package中 添加神策原生模块
+        // 在你们的Package中 添加神策原生模块
         modules.add(new RNSensorsAnalyticsModule(reactContext));
         modules.add(new RNSensorsDataModule(reactContext));
         return modules;
     }
-
 
     public List<Class<? extends JavaScriptModule>> createJSModules() {
         return Collections.emptyList();

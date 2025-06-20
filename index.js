@@ -497,8 +497,9 @@ function trackAppInstall(properties) {
 
 function registerDynamicSuperProperties() {
   var dynamicProxy = {};
-  // 鸿蒙新版直接支持，没必要判断，Androd/iOS 使用原有的接口，使用 registerDynamicPlugin 实现
-  if (!NativeSensorsAnalyticsModule.currentPlatform || NativeSensorsAnalyticsModule.currentPlatform() !== 'HarmonyOS') {
+  // 鸿蒙新版直接支持，没必要注册
+  // Androd/iOS 使用原有的接口，调用 registerDynamicPlugin 实现
+  if (!SensorsDataModule.currentPlatform || SensorsDataModule.currentPlatform() !== 'HarmonyOS') {
     SensorsDataModule && SensorsDataModule.registerDynamicPlugin && SensorsDataModule.registerDynamicPlugin();
   }
 
@@ -603,7 +604,7 @@ function enableDataCollect() {
 
 /************** Android only end *****************/
 export { SAAutoTrackType }
-export const RNSensorsAnalyticsTurboModule = NativeSensorsAnalyticsModule;
+// export const RNSensorsAnalyticsTurboModule = NativeSensorsAnalyticsModule;
 
 export default {
   login,

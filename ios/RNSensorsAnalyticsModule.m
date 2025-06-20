@@ -32,7 +32,7 @@
 #import "SAReactNativeManager.h"
 #import "SAReactNativeEventProperty.h"
 
-NSString *const kSAReactNativePluginVersion = @"react_native:3.0.2";
+NSString *const kSAReactNativePluginVersion = @"react_native:3.0.4";
 
 @implementation RNSensorsAnalyticsModule
 
