@@ -10,7 +10,7 @@ import { TimeTracker } from "@sensorsdata/analytics";
 import { SA } from './NativeSensorsAnalyticsModule';
 
 // 当前版本号
-const kSAReactNativePluginVersion: string = "3.0.4";
+const kSAReactNativePluginVersion: string = "3.0.5";
 
 // react_native 插件版本号前缀
 const kSARNLibPrefix: string = "react_native";

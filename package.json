@@ -1,6 +1,6 @@
 {
   "name": "sensorsdata-analytics-react-native",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "private": false,
   "description": "神策分析 RN 组件",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "dv@sensorsdata.cn",
-  "license": "Apache-2.0",
+  "license": "SEE LICENSE IN LICENSE",
   "harmony": {
     "alias": "sensorsdata-analytics-react-native"
   },
