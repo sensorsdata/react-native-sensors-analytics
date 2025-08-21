@@ -97,7 +97,7 @@ export class RNSensorsAnalyticsModule extends TurboModule implements SA.NativeSe
   }
 
   profileDelete(): void {
-    sensors.deleteProfile({});
+    sensors.deleteProfile();
   }
 
   async getDistinctIdPromise(): Promise<string> {
